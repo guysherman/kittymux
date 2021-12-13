@@ -1,0 +1,756 @@
+[
+  {
+    "id": 1,
+    "is_focused": true,
+    "platform_window_id": 67108878,
+    "tabs": [
+      {
+        "active_window_history": [
+          1,
+          2,
+          3
+        ],
+        "id": 1,
+        "is_focused": false,
+        "layout": "tall",
+        "layout_state": {
+          "biased_map": {},
+          "main_bias": [
+            0.75,
+            0.25
+          ],
+          "num_full_size_windows": 1
+        },
+        "title": "classroom-frontend",
+        "windows": [
+          {
+            "cmdline": [
+              "nvim",
+              "."
+            ],
+            "columns": 239,
+            "cwd": "/home/guy/source/classroom-frontend",
+            "env": {
+              "EDITOR": "nvim",
+              "FZF_DEFAULT_COMMAND": "rg --files --hidden --glob \"!.git/*\"",
+              "HOME": "/home/guy",
+              "KITTY_WINDOW_ID": "1",
+              "LANG": "en_US.UTF-8",
+              "LC_ALL": "en_US.UTF-8",
+              "LESS": "-R",
+              "LSCOLORS": "Gxfxcxdxbxegedabagacad",
+              "LS_COLORS": "",
+              "NVM_BIN": "/home/guy/.nvm/versions/node/v16.13.1/bin",
+              "NVM_CD_FLAGS": "-q",
+              "NVM_DIR": "/home/guy/.nvm",
+              "NVM_INC": "/home/guy/.nvm/versions/node/v16.13.1/include/node",
+              "OLDPWD": "/home/guy/source/classroom-frontend",
+              "PAGER": "less",
+              "PATH": "/home/guy/.local/bin:/home/guy/.nvm/versions/node/v16.13.1/bin:/home/guy/dotfiles/bin:/home/guy/.local/kitty.app/bin:/home/guy/.local/bin:/home/guy/.local/bin:/home/guy/.local/bin:/home/guy/.local/bin:/home/guy/.local/bin:/home/guy/.local/bin:/home/guy/.local/bin:/home/guy/.local/bin:/home/guy/.local/bin:/home/guy/.local/bin:/home/guy/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/snap/bin:/home/guy/.yarn/bin",
+              "PWD": "/home/guy/source/classroom-frontend",
+              "VIRTUALENVWRAPPER_HOOK_DIR": "/home/guy/.virtualenvs",
+              "VIRTUALENVWRAPPER_PROJECT_FILENAME": ".project",
+              "VIRTUALENVWRAPPER_PYTHON": "/usr/bin/python3",
+              "VIRTUALENVWRAPPER_SCRIPT": "/usr/local/bin/virtualenvwrapper.sh",
+              "VIRTUALENVWRAPPER_WORKON_CD": "1",
+              "VIRTUAL_ENV_DISABLE_PROMPT": "1",
+              "WORKON_HOME": "/home/guy/.virtualenvs",
+              "XDG_RUNTIME_DIR": "/run/user/1000",
+              "ZSH": "/home/guy/.oh-my-zsh",
+              "_": "/usr/bin/nvim"
+            },
+            "foreground_processes": [
+              {
+                "cmdline": [
+                  "nvim",
+                  "."
+                ],
+                "cwd": "/home/guy/source/classroom-frontend",
+                "pid": 323203
+              }
+            ],
+            "id": 1,
+            "is_focused": false,
+            "is_self": false,
+            "lines": 47,
+            "pid": 323203,
+            "title": "zsh"
+          },
+          {
+            "cmdline": [
+              "/usr/bin/zsh"
+            ],
+            "columns": 79,
+            "cwd": "/home/guy/source/classroom-frontend",
+            "env": {
+              "HOME": "/home/guy",
+              "KITTY_WINDOW_ID": "2",
+              "LANG": "en_US.UTF-8",
+              "LC_ALL": "en_US.UTF-8",
+              "PATH": "/home/guy/.local/kitty.app/bin:/home/guy/.local/bin:/home/guy/.local/bin:/home/guy/.local/bin:/home/guy/.local/bin:/home/guy/.local/bin:/home/guy/.local/bin:/home/guy/.local/bin:/home/guy/.local/bin:/home/guy/.local/bin:/home/guy/.local/bin:/home/guy/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/snap/bin",
+              "PWD": "/home/guy/source/classroom-frontend",
+              "XDG_RUNTIME_DIR": "/run/user/1000"
+            },
+            "foreground_processes": [
+              {
+                "cmdline": [
+                  "/usr/bin/zsh"
+                ],
+                "cwd": "/home/guy/source/classroom-frontend",
+                "pid": 323204
+              }
+            ],
+            "id": 2,
+            "is_focused": false,
+            "is_self": false,
+            "lines": 23,
+            "pid": 323204,
+            "title": "guy@skynet:~/source/classroom-frontend"
+          },
+          {
+            "cmdline": [
+              "/usr/bin/zsh"
+            ],
+            "columns": 79,
+            "cwd": "/home/guy/source/classroom-frontend",
+            "env": {
+              "HOME": "/home/guy",
+              "KITTY_WINDOW_ID": "3",
+              "LANG": "en_US.UTF-8",
+              "LC_ALL": "en_US.UTF-8",
+              "PATH": "/home/guy/.local/kitty.app/bin:/home/guy/.local/bin:/home/guy/.local/bin:/home/guy/.local/bin:/home/guy/.local/bin:/home/guy/.local/bin:/home/guy/.local/bin:/home/guy/.local/bin:/home/guy/.local/bin:/home/guy/.local/bin:/home/guy/.local/bin:/home/guy/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/snap/bin",
+              "PWD": "/home/guy/source/classroom-frontend",
+              "XDG_RUNTIME_DIR": "/run/user/1000"
+            },
+            "foreground_processes": [
+              {
+                "cmdline": [
+                  "/usr/bin/zsh"
+                ],
+                "cwd": "/home/guy/source/classroom-frontend",
+                "pid": 323210
+              }
+            ],
+            "id": 3,
+            "is_focused": false,
+            "is_self": false,
+            "lines": 24,
+            "pid": 323210,
+            "title": "guy@skynet:~/source/classroom-frontend"
+          }
+        ]
+      },
+      {
+        "active_window_history": [
+          4,
+          5,
+          6
+        ],
+        "id": 2,
+        "is_focused": false,
+        "layout": "tall",
+        "layout_state": {
+          "biased_map": {},
+          "main_bias": [
+            0.75,
+            0.25
+          ],
+          "num_full_size_windows": 1
+        },
+        "title": "classroom-backend",
+        "windows": [
+          {
+            "cmdline": [
+              "nvim",
+              "."
+            ],
+            "columns": 239,
+            "cwd": "/home/guy/source/classroom-backend",
+            "env": {
+              "EDITOR": "nvim",
+              "FZF_DEFAULT_COMMAND": "rg --files --hidden --glob \"!.git/*\"",
+              "HOME": "/home/guy",
+              "KITTY_WINDOW_ID": "4",
+              "LANG": "en_US.UTF-8",
+              "LC_ALL": "en_US.UTF-8",
+              "LESS": "-R",
+              "LSCOLORS": "Gxfxcxdxbxegedabagacad",
+              "LS_COLORS": "",
+              "NVM_BIN": "/home/guy/.nvm/versions/node/v16.13.1/bin",
+              "NVM_CD_FLAGS": "-q",
+              "NVM_DIR": "/home/guy/.nvm",
+              "NVM_INC": "/home/guy/.nvm/versions/node/v16.13.1/include/node",
+              "OLDPWD": "/home/guy/source/classroom-backend",
+              "PAGER": "less",
+              "PATH": "/home/guy/.local/bin:/home/guy/.nvm/versions/node/v16.13.1/bin:/home/guy/dotfiles/bin:/home/guy/.local/kitty.app/bin:/home/guy/.local/bin:/home/guy/.local/bin:/home/guy/.local/bin:/home/guy/.local/bin:/home/guy/.local/bin:/home/guy/.local/bin:/home/guy/.local/bin:/home/guy/.local/bin:/home/guy/.local/bin:/home/guy/.local/bin:/home/guy/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/snap/bin:/home/guy/.yarn/bin",
+              "PWD": "/home/guy/source/classroom-backend",
+              "VIRTUALENVWRAPPER_HOOK_DIR": "/home/guy/.virtualenvs",
+              "VIRTUALENVWRAPPER_PROJECT_FILENAME": ".project",
+              "VIRTUALENVWRAPPER_PYTHON": "/usr/bin/python3",
+              "VIRTUALENVWRAPPER_SCRIPT": "/usr/local/bin/virtualenvwrapper.sh",
+              "VIRTUALENVWRAPPER_WORKON_CD": "1",
+              "VIRTUAL_ENV_DISABLE_PROMPT": "1",
+              "WORKON_HOME": "/home/guy/.virtualenvs",
+              "XDG_RUNTIME_DIR": "/run/user/1000",
+              "ZSH": "/home/guy/.oh-my-zsh",
+              "_": "/usr/bin/nvim"
+            },
+            "foreground_processes": [
+              {
+                "cmdline": [
+                  "nvim",
+                  "."
+                ],
+                "cwd": "/home/guy/source/classroom-backend",
+                "pid": 323216
+              }
+            ],
+            "id": 4,
+            "is_focused": false,
+            "is_self": false,
+            "lines": 47,
+            "pid": 323216,
+            "title": "zsh"
+          },
+          {
+            "cmdline": [
+              "/usr/bin/zsh"
+            ],
+            "columns": 79,
+            "cwd": "/home/guy/source/classroom-backend",
+            "env": {
+              "HOME": "/home/guy",
+              "KITTY_WINDOW_ID": "5",
+              "LANG": "en_US.UTF-8",
+              "LC_ALL": "en_US.UTF-8",
+              "PATH": "/home/guy/.local/kitty.app/bin:/home/guy/.local/bin:/home/guy/.local/bin:/home/guy/.local/bin:/home/guy/.local/bin:/home/guy/.local/bin:/home/guy/.local/bin:/home/guy/.local/bin:/home/guy/.local/bin:/home/guy/.local/bin:/home/guy/.local/bin:/home/guy/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/snap/bin",
+              "PWD": "/home/guy/source/classroom-backend",
+              "XDG_RUNTIME_DIR": "/run/user/1000"
+            },
+            "foreground_processes": [
+              {
+                "cmdline": [
+                  "/usr/bin/zsh"
+                ],
+                "cwd": "/home/guy/source/classroom-backend",
+                "pid": 323217
+              }
+            ],
+            "id": 5,
+            "is_focused": false,
+            "is_self": false,
+            "lines": 23,
+            "pid": 323217,
+            "title": "guy@skynet:~/source/classroom-backend"
+          },
+          {
+            "cmdline": [
+              "/usr/bin/zsh"
+            ],
+            "columns": 79,
+            "cwd": "/home/guy/source/classroom-backend",
+            "env": {
+              "HOME": "/home/guy",
+              "KITTY_WINDOW_ID": "6",
+              "LANG": "en_US.UTF-8",
+              "LC_ALL": "en_US.UTF-8",
+              "PATH": "/home/guy/.local/kitty.app/bin:/home/guy/.local/bin:/home/guy/.local/bin:/home/guy/.local/bin:/home/guy/.local/bin:/home/guy/.local/bin:/home/guy/.local/bin:/home/guy/.local/bin:/home/guy/.local/bin:/home/guy/.local/bin:/home/guy/.local/bin:/home/guy/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/snap/bin",
+              "PWD": "/home/guy/source/classroom-backend",
+              "XDG_RUNTIME_DIR": "/run/user/1000"
+            },
+            "foreground_processes": [
+              {
+                "cmdline": [
+                  "/usr/bin/zsh"
+                ],
+                "cwd": "/home/guy/source/classroom-backend",
+                "pid": 323227
+              }
+            ],
+            "id": 6,
+            "is_focused": false,
+            "is_self": false,
+            "lines": 24,
+            "pid": 323227,
+            "title": "guy@skynet:~/source/classroom-backend"
+          }
+        ]
+      },
+      {
+        "active_window_history": [
+          7,
+          8,
+          9
+        ],
+        "id": 3,
+        "is_focused": false,
+        "layout": "tall",
+        "layout_state": {
+          "biased_map": {},
+          "main_bias": [
+            0.75,
+            0.25
+          ],
+          "num_full_size_windows": 1
+        },
+        "title": "dotfiles",
+        "windows": [
+          {
+            "cmdline": [
+              "nvim",
+              "."
+            ],
+            "columns": 239,
+            "cwd": "/home/guy/dotfiles",
+            "env": {
+              "EDITOR": "nvim",
+              "FZF_DEFAULT_COMMAND": "rg --files --hidden --glob \"!.git/*\"",
+              "HOME": "/home/guy",
+              "KITTY_WINDOW_ID": "7",
+              "LANG": "en_US.UTF-8",
+              "LC_ALL": "en_US.UTF-8",
+              "LESS": "-R",
+              "LSCOLORS": "Gxfxcxdxbxegedabagacad",
+              "LS_COLORS": "",
+              "NVM_BIN": "/home/guy/.nvm/versions/node/v16.13.1/bin",
+              "NVM_CD_FLAGS": "-q",
+              "NVM_DIR": "/home/guy/.nvm",
+              "NVM_INC": "/home/guy/.nvm/versions/node/v16.13.1/include/node",
+              "OLDPWD": "/home/guy/dotfiles",
+              "PAGER": "less",
+              "PATH": "/home/guy/.local/bin:/home/guy/.nvm/versions/node/v16.13.1/bin:/home/guy/dotfiles/bin:/home/guy/.local/kitty.app/bin:/home/guy/.local/bin:/home/guy/.local/bin:/home/guy/.local/bin:/home/guy/.local/bin:/home/guy/.local/bin:/home/guy/.local/bin:/home/guy/.local/bin:/home/guy/.local/bin:/home/guy/.local/bin:/home/guy/.local/bin:/home/guy/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/snap/bin:/home/guy/.yarn/bin",
+              "PWD": "/home/guy/dotfiles",
+              "VIRTUALENVWRAPPER_HOOK_DIR": "/home/guy/.virtualenvs",
+              "VIRTUALENVWRAPPER_PROJECT_FILENAME": ".project",
+              "VIRTUALENVWRAPPER_PYTHON": "/usr/bin/python3",
+              "VIRTUALENVWRAPPER_SCRIPT": "/usr/local/bin/virtualenvwrapper.sh",
+              "VIRTUALENVWRAPPER_WORKON_CD": "1",
+              "VIRTUAL_ENV_DISABLE_PROMPT": "1",
+              "WORKON_HOME": "/home/guy/.virtualenvs",
+              "XDG_RUNTIME_DIR": "/run/user/1000",
+              "ZSH": "/home/guy/.oh-my-zsh",
+              "_": "/usr/bin/nvim"
+            },
+            "foreground_processes": [
+              {
+                "cmdline": [
+                  "nvim",
+                  "."
+                ],
+                "cwd": "/home/guy/dotfiles",
+                "pid": 323250
+              }
+            ],
+            "id": 7,
+            "is_focused": false,
+            "is_self": false,
+            "lines": 47,
+            "pid": 323250,
+            "title": "zsh"
+          },
+          {
+            "cmdline": [
+              "/usr/bin/zsh"
+            ],
+            "columns": 79,
+            "cwd": "/home/guy/dotfiles",
+            "env": {
+              "HOME": "/home/guy",
+              "KITTY_WINDOW_ID": "8",
+              "LANG": "en_US.UTF-8",
+              "LC_ALL": "en_US.UTF-8",
+              "PATH": "/home/guy/.local/kitty.app/bin:/home/guy/.local/bin:/home/guy/.local/bin:/home/guy/.local/bin:/home/guy/.local/bin:/home/guy/.local/bin:/home/guy/.local/bin:/home/guy/.local/bin:/home/guy/.local/bin:/home/guy/.local/bin:/home/guy/.local/bin:/home/guy/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/snap/bin",
+              "PWD": "/home/guy/dotfiles",
+              "XDG_RUNTIME_DIR": "/run/user/1000"
+            },
+            "foreground_processes": [
+              {
+                "cmdline": [
+                  "/usr/bin/zsh"
+                ],
+                "cwd": "/home/guy/dotfiles",
+                "pid": 323265
+              }
+            ],
+            "id": 8,
+            "is_focused": false,
+            "is_self": false,
+            "lines": 23,
+            "pid": 323265,
+            "title": "guy@skynet:~/dotfiles"
+          },
+          {
+            "cmdline": [
+              "/usr/bin/zsh"
+            ],
+            "columns": 79,
+            "cwd": "/home/guy/dotfiles",
+            "env": {
+              "HOME": "/home/guy",
+              "KITTY_WINDOW_ID": "9",
+              "LANG": "en_US.UTF-8",
+              "LC_ALL": "en_US.UTF-8",
+              "PATH": "/home/guy/.local/kitty.app/bin:/home/guy/.local/bin:/home/guy/.local/bin:/home/guy/.local/bin:/home/guy/.local/bin:/home/guy/.local/bin:/home/guy/.local/bin:/home/guy/.local/bin:/home/guy/.local/bin:/home/guy/.local/bin:/home/guy/.local/bin:/home/guy/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/snap/bin",
+              "PWD": "/home/guy/dotfiles",
+              "XDG_RUNTIME_DIR": "/run/user/1000"
+            },
+            "foreground_processes": [
+              {
+                "cmdline": [
+                  "/usr/bin/zsh"
+                ],
+                "cwd": "/home/guy/dotfiles",
+                "pid": 323278
+              }
+            ],
+            "id": 9,
+            "is_focused": false,
+            "is_self": false,
+            "lines": 24,
+            "pid": 323278,
+            "title": "guy@skynet:~/dotfiles"
+          }
+        ]
+      },
+      {
+        "active_window_history": [
+          10,
+          11
+        ],
+        "id": 4,
+        "is_focused": false,
+        "layout": "tall",
+        "layout_state": {
+          "biased_map": {},
+          "main_bias": [
+            0.75,
+            0.25
+          ],
+          "num_full_size_windows": 1
+        },
+        "title": "BTOP",
+        "windows": [
+          {
+            "cmdline": [
+              "/snap/btop/245/usr/local/bin/btop"
+            ],
+            "columns": 239,
+            "cwd": "/home/guy",
+            "env": {
+              "HOME": "/home/guy/snap/btop/245",
+              "KITTY_WINDOW_ID": "10",
+              "LANG": "C.UTF-8",
+              "LC_ALL": "C.UTF-8",
+              "LD_LIBRARY_PATH": "/var/lib/snapd/lib/gl:/var/lib/snapd/lib/gl32:/var/lib/snapd/void",
+              "PATH": "/snap/btop/245/usr/sbin:/snap/btop/245/usr/bin:/snap/btop/245/sbin:/snap/btop/245/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games",
+              "PWD": "/home/guy",
+              "SNAP": "/snap/btop/245",
+              "SNAP_ARCH": "amd64",
+              "SNAP_COMMON": "/var/snap/btop/common",
+              "SNAP_CONTEXT": "MnotwCvEhbgPldNAR3_b5k8qmNNYJZRO_iwhQyVgekS0HE_wg1aS",
+              "SNAP_COOKIE": "MnotwCvEhbgPldNAR3_b5k8qmNNYJZRO_iwhQyVgekS0HE_wg1aS",
+              "SNAP_DATA": "/var/snap/btop/245",
+              "SNAP_INSTANCE_KEY": "",
+              "SNAP_INSTANCE_NAME": "btop",
+              "SNAP_LIBRARY_PATH": "/var/lib/snapd/lib/gl:/var/lib/snapd/lib/gl32:/var/lib/snapd/void",
+              "SNAP_NAME": "btop",
+              "SNAP_REAL_HOME": "/home/guy",
+              "SNAP_REEXEC": "",
+              "SNAP_REVISION": "245",
+              "SNAP_USER_COMMON": "/home/guy/snap/btop/common",
+              "SNAP_USER_DATA": "/home/guy/snap/btop/245",
+              "SNAP_VERSION": "1.1.2",
+              "TEMPDIR": "/tmp",
+              "TMPDIR": "/tmp",
+              "XDG_RUNTIME_DIR": "/run/user/1000/snap.btop"
+            },
+            "foreground_processes": [
+              {
+                "cmdline": [
+                  "/snap/btop/245/usr/local/bin/btop"
+                ],
+                "cwd": "/home/guy",
+                "pid": 323297
+              }
+            ],
+            "id": 10,
+            "is_focused": false,
+            "is_self": false,
+            "lines": 47,
+            "pid": 323297,
+            "title": "btop"
+          },
+          {
+            "cmdline": [
+              "/usr/bin/zsh"
+            ],
+            "columns": 80,
+            "cwd": "/home/guy",
+            "env": {
+              "HOME": "/home/guy",
+              "KITTY_WINDOW_ID": "11",
+              "LANG": "en_US.UTF-8",
+              "LC_ALL": "en_US.UTF-8",
+              "PATH": "/home/guy/.local/kitty.app/bin:/home/guy/.local/bin:/home/guy/.local/bin:/home/guy/.local/bin:/home/guy/.local/bin:/home/guy/.local/bin:/home/guy/.local/bin:/home/guy/.local/bin:/home/guy/.local/bin:/home/guy/.local/bin:/home/guy/.local/bin:/home/guy/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/snap/bin",
+              "PWD": "/home/guy",
+              "XDG_RUNTIME_DIR": "/run/user/1000"
+            },
+            "foreground_processes": [
+              {
+                "cmdline": [
+                  "/usr/bin/zsh"
+                ],
+                "cwd": "/home/guy",
+                "pid": 323305
+              }
+            ],
+            "id": 11,
+            "is_focused": false,
+            "is_self": false,
+            "lines": 47,
+            "pid": 323305,
+            "title": "guy@skynet:~"
+          }
+        ]
+      },
+      {
+        "active_window_history": [
+          12
+        ],
+        "id": 5,
+        "is_focused": false,
+        "layout": "tall",
+        "layout_state": {
+          "biased_map": {},
+          "main_bias": [
+            0.75,
+            0.25
+          ],
+          "num_full_size_windows": 1
+        },
+        "title": "General",
+        "windows": [
+          {
+            "cmdline": [
+              "/usr/bin/zsh"
+            ],
+            "columns": 319,
+            "cwd": "/home/guy",
+            "env": {
+              "HOME": "/home/guy",
+              "KITTY_WINDOW_ID": "12",
+              "LANG": "en_US.UTF-8",
+              "LC_ALL": "en_US.UTF-8",
+              "PATH": "/home/guy/.local/kitty.app/bin:/home/guy/.local/bin:/home/guy/.local/bin:/home/guy/.local/bin:/home/guy/.local/bin:/home/guy/.local/bin:/home/guy/.local/bin:/home/guy/.local/bin:/home/guy/.local/bin:/home/guy/.local/bin:/home/guy/.local/bin:/home/guy/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/snap/bin",
+              "PWD": "/home/guy",
+              "XDG_RUNTIME_DIR": "/run/user/1000"
+            },
+            "foreground_processes": [
+              {
+                "cmdline": [
+                  "/usr/bin/zsh"
+                ],
+                "cwd": "/home/guy",
+                "pid": 323320
+              }
+            ],
+            "id": 12,
+            "is_focused": false,
+            "is_self": false,
+            "lines": 48,
+            "pid": 323320,
+            "title": "guy@skynet:~"
+          }
+        ]
+      },
+      {
+        "active_window_history": [
+          17,
+          13
+        ],
+        "id": 6,
+        "is_focused": true,
+        "layout": "tall",
+        "layout_state": {
+          "biased_map": {},
+          "main_bias": [
+            0.75,
+            0.25
+          ],
+          "num_full_size_windows": 1
+        },
+        "title": "kitty @ ls > test.json",
+        "windows": [
+          {
+            "cmdline": [
+              "/usr/bin/zsh"
+            ],
+            "columns": 239,
+            "cwd": "/home/guy/source/kittymux",
+            "env": {
+              "HOME": "/home/guy",
+              "KITTY_WINDOW_ID": "13",
+              "LANG": "en_US.UTF-8",
+              "LC_ALL": "en_US.UTF-8",
+              "PATH": "/home/guy/.local/kitty.app/bin:/home/guy/.local/bin:/home/guy/.local/bin:/home/guy/.local/bin:/home/guy/.local/bin:/home/guy/.local/bin:/home/guy/.local/bin:/home/guy/.local/bin:/home/guy/.local/bin:/home/guy/.local/bin:/home/guy/.local/bin:/home/guy/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/snap/bin",
+              "PWD": "/home/guy",
+              "XDG_RUNTIME_DIR": "/run/user/1000"
+            },
+            "foreground_processes": [
+              {
+                "cmdline": [
+                  "nvim",
+                  "."
+                ],
+                "cwd": "/home/guy/source/kittymux",
+                "pid": 338772
+              }
+            ],
+            "id": 13,
+            "is_focused": false,
+            "is_self": false,
+            "lines": 47,
+            "pid": 333836,
+            "title": "nvim ."
+          },
+          {
+            "cmdline": [
+              "/usr/bin/zsh"
+            ],
+            "columns": 80,
+            "cwd": "/home/guy/source/kittymux",
+            "env": {
+              "HOME": "/home/guy",
+              "KITTY_WINDOW_ID": "17",
+              "LANG": "en_US.UTF-8",
+              "LC_ALL": "en_US.UTF-8",
+              "PATH": "/home/guy/.local/kitty.app/bin:/home/guy/.local/bin:/home/guy/.local/bin:/home/guy/.local/bin:/home/guy/.local/bin:/home/guy/.local/bin:/home/guy/.local/bin:/home/guy/.local/bin:/home/guy/.local/bin:/home/guy/.local/bin:/home/guy/.local/bin:/home/guy/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/snap/bin",
+              "PWD": "/home/guy/source/kittymux",
+              "XDG_RUNTIME_DIR": "/run/user/1000"
+            },
+            "foreground_processes": [
+              {
+                "cmdline": [
+                  "kitty",
+                  "@",
+                  "ls"
+                ],
+                "cwd": "/home/guy/source/kittymux",
+                "pid": 370581
+              }
+            ],
+            "id": 17,
+            "is_focused": true,
+            "is_self": false,
+            "lines": 47,
+            "pid": 340771,
+            "title": "kitty @ ls > test.json"
+          }
+        ]
+      },
+      {
+        "active_window_history": [
+          23
+        ],
+        "id": 8,
+        "is_focused": false,
+        "layout": "tall",
+        "layout_state": {
+          "biased_map": {},
+          "main_bias": [
+            0.75,
+            0.25
+          ],
+          "num_full_size_windows": 1
+        },
+        "title": "nvim .",
+        "windows": [
+          {
+            "cmdline": [
+              "/usr/bin/zsh"
+            ],
+            "columns": 319,
+            "cwd": "/home/guy/source/treecat",
+            "env": {
+              "HOME": "/home/guy",
+              "KITTY_WINDOW_ID": "23",
+              "LANG": "en_US.UTF-8",
+              "LC_ALL": "en_US.UTF-8",
+              "PATH": "/home/guy/.local/kitty.app/bin:/home/guy/.local/bin:/home/guy/.local/bin:/home/guy/.local/bin:/home/guy/.local/bin:/home/guy/.local/bin:/home/guy/.local/bin:/home/guy/.local/bin:/home/guy/.local/bin:/home/guy/.local/bin:/home/guy/.local/bin:/home/guy/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/snap/bin",
+              "PWD": "/home/guy",
+              "XDG_RUNTIME_DIR": "/run/user/1000"
+            },
+            "foreground_processes": [
+              {
+                "cmdline": [
+                  "nvim",
+                  "."
+                ],
+                "cwd": "/home/guy/source/treecat",
+                "pid": 364471
+              }
+            ],
+            "id": 23,
+            "is_focused": false,
+            "is_self": false,
+            "lines": 48,
+            "pid": 363962,
+            "title": "nvim ."
+          }
+        ]
+      },
+      {
+        "active_window_history": [
+          24
+        ],
+        "id": 9,
+        "is_focused": false,
+        "layout": "tall",
+        "layout_state": {
+          "biased_map": {},
+          "main_bias": [
+            0.75,
+            0.25
+          ],
+          "num_full_size_windows": 1
+        },
+        "title": "guy@skynet:~",
+        "windows": [
+          {
+            "cmdline": [
+              "/usr/bin/zsh"
+            ],
+            "columns": 319,
+            "cwd": "/home/guy",
+            "env": {
+              "HOME": "/home/guy",
+              "KITTY_WINDOW_ID": "24",
+              "LANG": "en_US.UTF-8",
+              "LC_ALL": "en_US.UTF-8",
+              "PATH": "/home/guy/.local/kitty.app/bin:/home/guy/.local/bin:/home/guy/.local/bin:/home/guy/.local/bin:/home/guy/.local/bin:/home/guy/.local/bin:/home/guy/.local/bin:/home/guy/.local/bin:/home/guy/.local/bin:/home/guy/.local/bin:/home/guy/.local/bin:/home/guy/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/snap/bin",
+              "PWD": "/home/guy",
+              "XDG_RUNTIME_DIR": "/run/user/1000"
+            },
+            "foreground_processes": [
+              {
+                "cmdline": [
+                  "/usr/bin/zsh"
+                ],
+                "cwd": "/home/guy",
+                "pid": 369997
+              }
+            ],
+            "id": 24,
+            "is_focused": false,
+            "is_self": false,
+            "lines": 48,
+            "pid": 369997,
+            "title": "guy@skynet:~"
+          }
+        ]
+      }
+    ],
+    "wm_class": "kitty",
+    "wm_name": "kitty"
+  }
+]
