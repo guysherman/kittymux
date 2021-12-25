@@ -1,9 +1,9 @@
 {
-  "name": "codebase-histogram",
+  "name": "@guysherman/kittymux",
   "version": "0.0.1",
-  "description": "A tool to generate histograms over the text of a codebase, eg by character, word, etc",
+  "description": "A helper for kitty, to give it a tmux-like window navigator",
   "main": "src/index.ts",
-  "repository": "https://github.com/guysherman/codebase-histogram",
+  "repository": "https://github.com/guysherman/kittymux",
   "author": "Guy Sherman",
   "license": "MIT",
   "private": false,
@@ -31,7 +31,8 @@
     "ts-jest": "^27.1.1",
     "ts-node": "^10.4.0",
     "tslib": "^2.3.1",
-    "typescript": "^4.5.3"
+    "typescript": "^4.5.3",
+    "@types/blessed": "^0.1.19"
   },
   "scripts": {
     "start": "ts-node src/index.tsx",
@@ -39,9 +40,6 @@
   },
   "dependencies": {
     "@guysherman/treecat": "^0.0.1",
-    "@types/blessed": "^0.1.19",
-    "@types/minimist": "^1.2.2",
-    "blessed": "^0.1.81",
-    "minimist": "^1.2.5"
+    "blessed": "^0.1.81"
   }
 }
