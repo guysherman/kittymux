@@ -336,10 +336,10 @@
     minimatch "^3.0.4"
     strip-json-comments "^3.1.1"
 
-"@guysherman/treecat@^0.0.1":
-  version "0.0.1"
-  resolved "https://registry.yarnpkg.com/@guysherman/treecat/-/treecat-0.0.1.tgz#8d67f2d3c15d30fa00ddca4531c4d9652e79f560"
-  integrity sha512-Q517y9FgQJcbCHImH/5fs7P93oxAdWITY39siEDK5EO4lsH2+JiW9N+wc/cFa4wZmHTLxJ8k4DZXE8PlHBXkLw==
+"@guysherman/treecat@^0.0.2":
+  version "0.0.2"
+  resolved "https://registry.yarnpkg.com/@guysherman/treecat/-/treecat-0.0.2.tgz#3ad0168f4ca4edbdd0f6193b6a7c6b1fdb2279a7"
+  integrity sha512-bwnMFm75P/mCJ9iOOvj2uQbQblaL/Svfo0My+Zslavykkacqb5O6oXyCO2aBdP84ExzpE4WvO/2IUWrxGWvw4g==
   dependencies:
     "@types/blessed" "^0.1.17"
     blessed "^0.1.81"
