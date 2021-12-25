@@ -46,3 +46,16 @@ export class ExecError extends Error {
     Object.setPrototypeOf(this, ExecError.prototype);
   }
 }
+
+export enum WindowListEntryType {
+  None = 'KITTY_NONE',
+  OsWindow = 'KITTY_OS_WINDOW',
+  Tab = 'KITTY_TAB',
+  Window = 'KITTY_WINDOW',
+}
+
+export interface WindowListEntry {
+  id: number;
+  text: string;
+  type: WindowListEntryType;
+}

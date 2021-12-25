@@ -3,61 +3,63 @@ import * as blessed from 'blessed';
 // eslint-disable-next-line no-unused-vars
 import * as TreeCat from 'treecat';
 import { useState, useEffect } from 'treecat';
-import { listWindows, KittyOsWindow, KittyTab, KittyWindow } from '../../connectors/kitty';
+import {
+  listWindows,
+  KittyOsWindow,
+  WindowListEntry,
+  WindowListEntryType,
+  processWindowList,
+  focusEntry,
+} from '../../connectors/kitty';
 //└─
 //
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const createKeypress = (selectedIndex: number, setSelectedIndex: any, entries: WindowListEntry[]) => {
+  return (ch: string, _key: blessed.Widgets.Events.IKeyEventArg) => {
+    if (ch === 'j') {
+      const newIndex = Math.min(entries.length, selectedIndex + 1);
+      setSelectedIndex(newIndex);
+    } else if (ch === 'k') {
+      const newIndex = Math.max(0, selectedIndex - 1);
+      setSelectedIndex(newIndex);
+    } else if (ch === 'J') {
+      const followingEntries = entries.slice(selectedIndex + 1);
+      const nextTab: number = followingEntries.findIndex(
+        (entry: WindowListEntry) => entry.type === WindowListEntryType.Tab,
+      );
+      console.error('nextTab', { selectedIndex, nextTab });
+      const nextIndex = selectedIndex + 1 + nextTab;
+      setSelectedIndex(nextIndex >= entries.length ? selectedIndex : nextIndex);
+    } else if (ch === 'K') {
+      const precedingEntries = entries.slice(0, selectedIndex);
+      const nextTab: number = precedingEntries
+        .reverse()
+        .findIndex((entry: WindowListEntry) => entry.type === WindowListEntryType.Tab);
+      console.error('nextTab', { selectedIndex, nextTab });
+      const nextIndex = selectedIndex - 1 - nextTab;
+      setSelectedIndex(nextIndex <= 0 ? selectedIndex : nextIndex);
+    } else if (ch === '\r') {
+      const entry = entries[selectedIndex];
 
-interface WindowListEntry {
-  id: number;
-  text: string;
-  type: string;
-}
-
-const PRE_INDENT = '    ';
-const INDENT = ' └─ ';
-
-const processWindow = (window: KittyWindow): WindowListEntry => {
-  const entry: WindowListEntry = {
-    id: window.id,
-    text: `${PRE_INDENT}${INDENT}${window.title} (id:${window.id}; pid:${window.pid}) ${window.is_focused ? '*' : ''}`,
-    type: 'Window',
+      focusEntry(entry);
+    }
   };
-
-  return entry;
 };
 
-const processTab = (tab: KittyTab): WindowListEntry[] => {
-  const entry: WindowListEntry = {
-    id: tab.id,
-    text: `${INDENT}${tab.title} (tab:${tab.id}) ${tab.is_focused ? '*' : ''}`,
-    type: 'Tab',
-  };
-
-  const windows = tab.windows.map((window) => processWindow(window));
-  return [entry, ...windows];
-};
-
-const processOsWindow = (window: KittyOsWindow): WindowListEntry[] => {
-  const entry: WindowListEntry = {
-    id: window.id,
-    text: `kitty:${window.id}`,
-    type: 'OsWindow',
-  };
-
-  const tabs = window.tabs.flatMap((tab) => processTab(tab));
-  return [entry, ...tabs];
-};
-
-export function MainScreen() {
+export const MainScreen = () => {
   const [entries, setEntries] = useState([]);
-  const items = entries.length ? entries.map((entry: WindowListEntry) => entry.text) : ['No windows found'];
+  const [selectedIndex, setSelectedIndex] = useState(0);
+  const items = entries.map((entry: WindowListEntry) => entry.text);
 
+  console.error('MainScreen', { selectedIndex });
   useEffect(() => {
     listWindows().then((windowList: KittyOsWindow[]) => {
-      const entries = windowList.flatMap((osWindow) => processOsWindow(osWindow));
+      const entries = processWindowList(windowList);
       setEntries(entries);
     });
   }, []);
+
+  const listKeyPress = createKeypress(selectedIndex, setSelectedIndex, entries);
 
   const listOpts = {
     top: 0,
@@ -81,15 +83,16 @@ export function MainScreen() {
         bg: 'black',
       },
     },
-    keys: true,
-    vi: true,
     items,
     label: 'Windows',
-    //'onselect item': handleSelectItem,
+    focused: true,
+    onkeypress: listKeyPress,
+    selected: selectedIndex,
   };
+
   return (
     <box>
       <list {...listOpts} />
     </box>
   );
-}
+};
