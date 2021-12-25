@@ -1,5 +1,5 @@
 /** @jsx TreeCat.createElement **/
-import * as TreeCat from 'treecat';
+import * as TreeCat from '@guysherman/treecat';
 import { MainScreen } from './screens/MainScreen';
 
 const main = async () => {

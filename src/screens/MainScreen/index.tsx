@@ -1,8 +1,8 @@
 /** @jsx TreeCat.createElement **/
 import * as blessed from 'blessed';
 // eslint-disable-next-line no-unused-vars
-import * as TreeCat from 'treecat';
-import { useState, useEffect } from 'treecat';
+import * as TreeCat from '@guysherman/treecat';
+import { useState, useEffect } from '@guysherman/treecat';
 import {
   listWindows,
   KittyOsWindow,
