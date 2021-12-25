@@ -27,7 +27,6 @@ const createKeypress = (selectedIndex: number, setSelectedIndex: any, entries: W
       const nextTab: number = followingEntries.findIndex(
         (entry: WindowListEntry) => entry.type === WindowListEntryType.Tab,
       );
-      console.error('nextTab', { selectedIndex, nextTab });
       const nextIndex = selectedIndex + 1 + nextTab;
       setSelectedIndex(nextIndex >= entries.length ? selectedIndex : nextIndex);
     } else if (ch === 'K') {
@@ -35,7 +34,6 @@ const createKeypress = (selectedIndex: number, setSelectedIndex: any, entries: W
       const nextTab: number = precedingEntries
         .reverse()
         .findIndex((entry: WindowListEntry) => entry.type === WindowListEntryType.Tab);
-      console.error('nextTab', { selectedIndex, nextTab });
       const nextIndex = selectedIndex - 1 - nextTab;
       setSelectedIndex(nextIndex <= 0 ? selectedIndex : nextIndex);
     } else if (ch === '\r') {
@@ -51,7 +49,6 @@ export const MainScreen = () => {
   const [selectedIndex, setSelectedIndex] = useState(0);
   const items = entries.map((entry: WindowListEntry) => entry.text);
 
-  console.error('MainScreen', { selectedIndex });
   useEffect(() => {
     listWindows().then((windowList: KittyOsWindow[]) => {
       const entries = processWindowList(windowList);
