@@ -1,5 +1,4 @@
 /** @jsx TreeCat.createElement **/
-import * as blessed from 'blessed';
 // eslint-disable-next-line no-unused-vars
 import * as TreeCat from '@guysherman/treecat';
 import { useState, useEffect } from '@guysherman/treecat';
@@ -10,12 +9,13 @@ import {
   WindowListEntryType,
   processWindowList,
   focusEntry,
+  closeEntry,
 } from '../../connectors/kitty';
 //└─
 //
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-const createKeypress = (selectedIndex: number, setSelectedIndex: any, entries: WindowListEntry[]) => {
-  return (ch: string, _key: blessed.Widgets.Events.IKeyEventArg) => {
+const createKeypress = (selectedIndex: number, setSelectedIndex: any, entries: WindowListEntry[], setEntries: any) => {
+  return (ch: string) => {
     if (ch === 'j') {
       const newIndex = Math.min(entries.length, selectedIndex + 1);
       setSelectedIndex(newIndex);
@@ -38,8 +38,13 @@ const createKeypress = (selectedIndex: number, setSelectedIndex: any, entries: W
       setSelectedIndex(nextIndex <= 0 ? selectedIndex : nextIndex);
     } else if (ch === '\r') {
       const entry = entries[selectedIndex];
-
       focusEntry(entry);
+    } else if (ch === 'x') {
+      const entry = entries[selectedIndex];
+      closeEntry(entry).then((windowList: WindowListEntry[]) => {
+        setEntries(windowList);
+        setSelectedIndex(Math.max(0, Math.min(selectedIndex - 1, windowList.length - 1)));
+      });
     }
   };
 };
@@ -56,7 +61,7 @@ export const MainScreen = () => {
     });
   }, []);
 
-  const listKeyPress = createKeypress(selectedIndex, setSelectedIndex, entries);
+  const listKeyPress = createKeypress(selectedIndex, setSelectedIndex, entries, setEntries);
 
   const listOpts = {
     top: 0,

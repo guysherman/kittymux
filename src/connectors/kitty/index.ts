@@ -10,3 +10,4 @@ export {
 export { listWindows } from './listWindows';
 export { processWindowList } from './processWindowList';
 export { focusEntry } from './focusEntry';
+export { closeEntry } from './closeEntry';
