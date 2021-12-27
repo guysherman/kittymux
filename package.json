@@ -39,7 +39,7 @@
     "build": "tsc --project ./tsconfig.json"
   },
   "dependencies": {
-    "@guysherman/treecat": "^0.0.2",
+    "@guysherman/treecat": "^0.0.3",
     "blessed": "^0.1.81"
   }
 }

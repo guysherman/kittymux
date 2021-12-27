@@ -69,9 +69,7 @@ export const MainScreen = () => {
     width: '100%',
     height: '50%',
     tags: true,
-    border: {
-      type: 'line' as const,
-    },
+    border: 'line',
     style: {
       border: {
         fg: '#f0f0f0',
