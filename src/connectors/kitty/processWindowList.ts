@@ -22,6 +22,10 @@ const processWindow = (window: KittyWindow, isLast: boolean, parentIsLast: boole
     id: window.id,
     text: `${indent}${window.title} (id:${window.id}; pid:${window.pid}) ${window.is_focused ? '*' : ''}`,
     type: WindowListEntryType.Window,
+    title: window.title,
+    pid: window.pid,
+    cwd: window.cwd,
+    cmdline: window.cmdline.join(' '),
   };
 
   return entry;
@@ -32,6 +36,7 @@ const processTab = (tab: KittyTab, isLast: boolean): WindowListEntry[] => {
     id: tab.id,
     text: `${isLast ? LAST_TAB_INDENT : TAB_INDENT}${tab.title} (tab:${tab.id}) ${tab.is_focused ? '*' : ''}`,
     type: WindowListEntryType.Tab,
+    title: tab.title,
   };
 
   const windows = tab.windows.map((window, index, array) => processWindow(window, index === array.length - 1, isLast));

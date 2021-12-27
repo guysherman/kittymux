@@ -11,6 +11,7 @@ import {
   focusEntry,
   closeEntry,
 } from '../../connectors/kitty';
+import { getInstructions } from './getInstructions';
 //└─
 //
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -53,6 +54,8 @@ export const MainScreen = () => {
   const [entries, setEntries] = useState([]);
   const [selectedIndex, setSelectedIndex] = useState(0);
   const items = entries.map((entry: WindowListEntry) => entry.text);
+  const selectedEntry = entries[selectedIndex] ?? { type: WindowListEntryType.None };
+  const instructions = getInstructions(selectedEntry.type);
 
   useEffect(() => {
     listWindows().then((windowList: KittyOsWindow[]) => {
@@ -93,6 +96,19 @@ export const MainScreen = () => {
   return (
     <box>
       <list {...listOpts} />
+      <box bottom={0} left={0} width={'100%'} height={3} border={'line'}>
+        <box left={0} width={'33%-1'}>
+          {`${selectedEntry.title ?? ''}`}
+        </box>
+        <box left={'33%-1'} width={'34%'}>
+          {`${selectedEntry.cmdline ?? ''}${selectedEntry.cmdline ? '|' : ''}${selectedEntry.cwd ?? ''}${
+            selectedEntry.cwd ? '|' : ''
+          }${selectedEntry.pid ?? ''}`}
+        </box>
+        <box left={'67%-1'} width={'33%-2'}>
+          {instructions}
+        </box>
+      </box>
     </box>
   );
 };

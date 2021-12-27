@@ -58,4 +58,8 @@ export interface WindowListEntry {
   id: number;
   text: string;
   type: WindowListEntryType;
+  pid?: number;
+  cwd?: string;
+  cmdline?: string;
+  title?: string;
 }
