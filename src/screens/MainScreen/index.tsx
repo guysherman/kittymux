@@ -10,12 +10,19 @@ import {
   processWindowList,
   focusEntry,
   closeEntry,
+  renameEntry,
 } from '../../connectors/kitty';
 import { getInstructions } from './getInstructions';
 //└─
 //
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-const createKeypress = (selectedIndex: number, setSelectedIndex: any, entries: WindowListEntry[], setEntries: any) => {
+const createKeypress = (
+  selectedIndex: number,
+  setSelectedIndex: any,
+  entries: WindowListEntry[],
+  setEntries: any,
+  setIsEditingName: any,
+) => {
   return (ch: string) => {
     if (ch === 'j') {
       const newIndex = Math.min(entries.length, selectedIndex + 1);
@@ -46,6 +53,8 @@ const createKeypress = (selectedIndex: number, setSelectedIndex: any, entries: W
         setEntries(windowList);
         setSelectedIndex(Math.max(0, Math.min(selectedIndex - 1, windowList.length - 1)));
       });
+    } else if (ch === 'a') {
+      setIsEditingName(true);
     }
   };
 };
@@ -53,6 +62,7 @@ const createKeypress = (selectedIndex: number, setSelectedIndex: any, entries: W
 export const MainScreen = () => {
   const [entries, setEntries] = useState([]);
   const [selectedIndex, setSelectedIndex] = useState(0);
+  const [isEditingName, setIsEditingName] = useState(false);
   const items = entries.map((entry: WindowListEntry) => entry.text);
   const selectedEntry = entries[selectedIndex] ?? { type: WindowListEntryType.None };
   const instructions = getInstructions(selectedEntry.type);
@@ -64,7 +74,17 @@ export const MainScreen = () => {
     });
   }, []);
 
-  const listKeyPress = createKeypress(selectedIndex, setSelectedIndex, entries, setEntries);
+  const listKeyPress = createKeypress(selectedIndex, setSelectedIndex, entries, setEntries, setIsEditingName);
+
+  const inputSubmitted = (value: string) => {
+    console.error('nameSubmitted', { value });
+    renameEntry(selectedEntry, value).then((windowList: WindowListEntry[]) => {
+      console.error('renameEntry', { windowList });
+      setEntries(windowList);
+      setSelectedIndex(selectedIndex);
+      setIsEditingName(false);
+    });
+  };
 
   const listOpts = {
     top: 0,
@@ -88,7 +108,7 @@ export const MainScreen = () => {
     },
     items,
     label: 'Windows',
-    focused: true,
+    focused: !isEditingName,
     onkeypress: listKeyPress,
     selected: selectedIndex,
   };
@@ -97,9 +117,19 @@ export const MainScreen = () => {
     <box>
       <list {...listOpts} />
       <box bottom={0} left={0} width={'100%'} height={3} border={'line'}>
-        <box left={0} width={'33%-1'}>
-          {`${selectedEntry.title ?? ''}`}
-        </box>
+        {isEditingName ? (
+          <textbox
+            left={0}
+            width={'33%-1'}
+            focused={isEditingName}
+            inputOnFocus={true}
+            onsubmit={inputSubmitted}
+          ></textbox>
+        ) : (
+          <box left={0} width={'33%-1'}>
+            {`${selectedEntry.title ?? ''}`}
+          </box>
+        )}
         <box left={'33%-1'} width={'34%'}>
           {`${selectedEntry.cmdline ?? ''}${selectedEntry.cmdline ? '|' : ''}${selectedEntry.cwd ?? ''}${
             selectedEntry.cwd ? '|' : ''
