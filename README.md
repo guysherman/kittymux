@@ -4,7 +4,7 @@ One of the useful things about tmux is its session/window browser. This is a too
 kitty that same superpower. The idea is to bind a hotkey to run it in a new window in kitty 
 so that you can jump to known windows whenever you want. 
 
-![A screenshot of kittymux](docs/kittymux.png)
+![A screenshot of kittymux](doc/kittymux.png)
 
 Still working on things like useful hotkeys, keybinding, etc to make it easy to manage windows without using a mouse etc.
 
