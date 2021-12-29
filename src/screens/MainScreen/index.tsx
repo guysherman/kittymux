@@ -1,7 +1,7 @@
 /** @jsx TreeCat.createElement **/
 // eslint-disable-next-line no-unused-vars
 import * as TreeCat from '@guysherman/treecat';
-import { useState, useEffect } from '@guysherman/treecat';
+import { useEffect, useReducer } from '@guysherman/treecat';
 import {
   listWindows,
   KittyOsWindow,
@@ -13,56 +13,62 @@ import {
   renameEntry,
 } from '../../connectors/kitty';
 import { getInstructions } from './getInstructions';
+import { MainScreenActions, mainScreenReducer, MainScreenState } from './model';
 //└─
 //
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-const createKeypress = (
-  selectedIndex: number,
-  setSelectedIndex: any,
-  entries: WindowListEntry[],
-  setEntries: any,
-  setIsEditingName: any,
-) => {
+const createKeypress = (state: MainScreenState, dispatch: (action: any) => void) => {
+  const { entries, selectedIndex } = state;
   return (ch: string) => {
     if (ch === 'j') {
       const newIndex = Math.min(entries.length, selectedIndex + 1);
-      setSelectedIndex(newIndex);
+      dispatch({ type: MainScreenActions.SetSelectedIndex, payload: newIndex });
     } else if (ch === 'k') {
       const newIndex = Math.max(0, selectedIndex - 1);
-      setSelectedIndex(newIndex);
+      dispatch({ type: MainScreenActions.SetSelectedIndex, payload: newIndex });
     } else if (ch === 'J') {
       const followingEntries = entries.slice(selectedIndex + 1);
       const nextTab: number = followingEntries.findIndex(
         (entry: WindowListEntry) => entry.type === WindowListEntryType.Tab,
       );
       const nextIndex = selectedIndex + 1 + nextTab;
-      setSelectedIndex(nextIndex >= entries.length ? selectedIndex : nextIndex);
+      dispatch({
+        type: MainScreenActions.SetSelectedIndex,
+        paylod: nextIndex >= entries.length ? selectedIndex : nextIndex,
+      });
     } else if (ch === 'K') {
       const precedingEntries = entries.slice(0, selectedIndex);
       const nextTab: number = precedingEntries
         .reverse()
         .findIndex((entry: WindowListEntry) => entry.type === WindowListEntryType.Tab);
       const nextIndex = selectedIndex - 1 - nextTab;
-      setSelectedIndex(nextIndex <= 0 ? selectedIndex : nextIndex);
+      dispatch({ type: MainScreenActions.SetSelectedIndex, payload: nextIndex <= 0 ? selectedIndex : nextIndex });
     } else if (ch === '\r') {
       const entry = entries[selectedIndex];
       focusEntry(entry);
     } else if (ch === 'x') {
       const entry = entries[selectedIndex];
       closeEntry(entry).then((windowList: WindowListEntry[]) => {
-        setEntries(windowList);
-        setSelectedIndex(Math.max(0, Math.min(selectedIndex - 1, windowList.length - 1)));
+        dispatch({ type: MainScreenActions.SetEntries, payload: windowList });
+        dispatch({
+          type: MainScreenActions.SetSelectedIndex,
+          payload: Math.max(0, Math.min(selectedIndex - 1, windowList.length - 1)),
+        });
       });
     } else if (ch === 'a') {
-      setIsEditingName(true);
+      dispatch({ type: MainScreenActions.SetIsEditingName, payload: true });
     }
   };
 };
 
 export const MainScreen = () => {
-  const [entries, setEntries] = useState([]);
-  const [selectedIndex, setSelectedIndex] = useState(0);
-  const [isEditingName, setIsEditingName] = useState(false);
+  const [state, dispatch] = useReducer(mainScreenReducer, {
+    entries: [] as WindowListEntry[],
+    selectedIndex: 0,
+    isEditingName: false,
+  });
+
+  const { entries, selectedIndex, isEditingName } = state;
   const items = entries.map((entry: WindowListEntry) => entry.text);
   const selectedEntry = entries[selectedIndex] ?? { type: WindowListEntryType.None };
   const instructions = getInstructions(selectedEntry.type);
@@ -70,19 +76,19 @@ export const MainScreen = () => {
   useEffect(() => {
     listWindows().then((windowList: KittyOsWindow[]) => {
       const entries = processWindowList(windowList);
-      setEntries(entries);
+      dispatch({ type: MainScreenActions.SetEntries, payload: entries });
     });
   }, []);
 
-  const listKeyPress = createKeypress(selectedIndex, setSelectedIndex, entries, setEntries, setIsEditingName);
+  const listKeyPress = createKeypress(state, dispatch);
 
   const inputSubmitted = (value: string) => {
     console.error('nameSubmitted', { value });
     renameEntry(selectedEntry, value).then((windowList: WindowListEntry[]) => {
       console.error('renameEntry', { windowList });
-      setEntries(windowList);
-      setSelectedIndex(selectedIndex);
-      setIsEditingName(false);
+      dispatch({ type: MainScreenActions.SetEntries, payload: windowList });
+      dispatch({ type: MainScreenActions.SetSelectedIndex, payload: selectedIndex });
+      dispatch({ type: MainScreenActions.SetIsEditingName, payload: false });
     });
   };
 
