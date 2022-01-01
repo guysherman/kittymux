@@ -43,6 +43,6 @@
   },
   "dependencies": {
     "@guysherman/treecat": "^0.0.3",
-    "blessed": "^0.1.81",
+    "blessed": "^0.1.81"
   }
 }
