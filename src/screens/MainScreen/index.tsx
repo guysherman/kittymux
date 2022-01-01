@@ -1,6 +1,7 @@
 /** @jsx TreeCat.createElement **/
 // eslint-disable-next-line no-unused-vars
 import * as TreeCat from '@guysherman/treecat';
+import * as blessed from 'blessed';
 import { useEffect, useReducer } from '@guysherman/treecat';
 import {
   listWindows,
@@ -13,13 +14,14 @@ import {
   renameEntry,
 } from '../../connectors/kitty';
 import { getInstructions } from './getInstructions';
-import { MainScreenActions, mainScreenReducer, MainScreenState } from './model';
+import { MainScreenState, mainScreenContext } from './model';
+import { MainScreenActions, mainScreenReducer } from './reducer';
 //└─
 //
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const createKeypress = (state: MainScreenState, dispatch: (action: any) => void) => {
   const { entries, selectedIndex } = state;
-  return (ch: string) => {
+  return (ch: string /*, key: blessed.Widgets.Events.IKeyEventArg*/) => {
     if (ch === 'j') {
       const newIndex = Math.min(entries.length, selectedIndex + 1);
       dispatch({ type: MainScreenActions.SetSelectedIndex, payload: newIndex });
@@ -34,7 +36,7 @@ const createKeypress = (state: MainScreenState, dispatch: (action: any) => void)
       const nextIndex = selectedIndex + 1 + nextTab;
       dispatch({
         type: MainScreenActions.SetSelectedIndex,
-        paylod: nextIndex >= entries.length ? selectedIndex : nextIndex,
+        payload: nextIndex >= entries.length ? selectedIndex : nextIndex,
       });
     } else if (ch === 'K') {
       const precedingEntries = entries.slice(0, selectedIndex);
@@ -121,30 +123,32 @@ export const MainScreen = () => {
 
   return (
     <box>
-      <list {...listOpts} />
-      <box bottom={0} left={0} width={'100%'} height={3} border={'line'}>
-        {isEditingName ? (
-          <textbox
-            left={0}
-            width={'33%-1'}
-            focused={isEditingName}
-            inputOnFocus={true}
-            onsubmit={inputSubmitted}
-          ></textbox>
-        ) : (
-          <box left={0} width={'33%-1'}>
-            {`${selectedEntry.title ?? ''}`}
+      <mainScreenContext.Provider value={{ state, dispatch }}>
+        <list {...listOpts} />
+        <box bottom={0} left={0} width={'100%'} height={3} border={'line'}>
+          {isEditingName ? (
+            <textbox
+              left={0}
+              width={'33%-1'}
+              focused={isEditingName}
+              inputOnFocus={true}
+              onsubmit={inputSubmitted}
+            ></textbox>
+          ) : (
+            <box left={0} width={'33%-1'}>
+              {`${selectedEntry.title ?? ''}`}
+            </box>
+          )}
+          <box left={'33%-1'} width={'34%'}>
+            {`${selectedEntry.cmdline ?? ''}${selectedEntry.cmdline ? '|' : ''}${selectedEntry.cwd ?? ''}${
+              selectedEntry.cwd ? '|' : ''
+            }${selectedEntry.pid ?? ''}`}
           </box>
-        )}
-        <box left={'33%-1'} width={'34%'}>
-          {`${selectedEntry.cmdline ?? ''}${selectedEntry.cmdline ? '|' : ''}${selectedEntry.cwd ?? ''}${
-            selectedEntry.cwd ? '|' : ''
-          }${selectedEntry.pid ?? ''}`}
+          <box left={'67%-1'} width={'33%-2'}>
+            {instructions}
+          </box>
         </box>
-        <box left={'67%-1'} width={'33%-2'}>
-          {instructions}
-        </box>
-      </box>
+      </mainScreenContext.Provider>
     </box>
   );
 };
