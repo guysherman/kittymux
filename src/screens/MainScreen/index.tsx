@@ -1,28 +1,22 @@
 /** @jsx TreeCat.createElement **/
 // eslint-disable-next-line no-unused-vars
 import * as TreeCat from '@guysherman/treecat';
-import * as blessed from 'blessed';
 import { useEffect, useReducer } from '@guysherman/treecat';
-import {
-  listWindows,
-  KittyOsWindow,
-  WindowListEntry,
-  WindowListEntryType,
-  processWindowList,
-  focusEntry,
-  closeEntry,
-  renameEntry,
-} from '../../connectors/kitty';
+import { WindowListEntry, WindowListEntryType, focusEntry, closeEntry, renameEntry } from '../../connectors/kitty';
 import { getInstructions } from './getInstructions';
-import { MainScreenState, mainScreenContext } from './model';
+import { MainScreenState, mainScreenContext, MainScreenMode, DefaultMainScreenMode } from './model';
+import { processCommand } from './processCommand';
 import { MainScreenActions, mainScreenReducer } from './reducer';
+import { refreshWindowList } from './refreshWindowList';
 //└─
 //
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const createKeypress = (state: MainScreenState, dispatch: (action: any) => void) => {
   const { entries, selectedIndex } = state;
   return (ch: string /*, key: blessed.Widgets.Events.IKeyEventArg*/) => {
-    if (ch === 'j') {
+    if (ch === ':') {
+      dispatch({ type: MainScreenActions.SetMode, payload: MainScreenMode.Command });
+    } else if (ch === 'j') {
       const newIndex = Math.min(entries.length - 1, selectedIndex + 1);
       dispatch({ type: MainScreenActions.SetSelectedIndex, payload: newIndex });
     } else if (ch === 'k') {
@@ -58,7 +52,7 @@ const createKeypress = (state: MainScreenState, dispatch: (action: any) => void)
         });
       });
     } else if (ch === 'a') {
-      dispatch({ type: MainScreenActions.SetIsEditingName, payload: true });
+      dispatch({ type: MainScreenActions.SetMode, payload: MainScreenMode.Rename });
     }
   };
 };
@@ -67,31 +61,30 @@ export const MainScreen = () => {
   const [state, dispatch] = useReducer(mainScreenReducer, {
     entries: [] as WindowListEntry[],
     selectedIndex: 0,
-    isEditingName: false,
+    mode: MainScreenMode.Navigate,
   });
 
-  const { entries, selectedIndex, isEditingName } = state;
+  const { entries, selectedIndex, mode } = state;
   const items = entries.map((entry: WindowListEntry) => entry.text);
   const selectedEntry = entries[selectedIndex] ?? { type: WindowListEntryType.None };
   const instructions = getInstructions(selectedEntry.type);
 
   useEffect(() => {
-    listWindows().then((windowList: KittyOsWindow[]) => {
-      const entries = processWindowList(windowList);
-      dispatch({ type: MainScreenActions.SetEntries, payload: entries });
-    });
+    refreshWindowList(dispatch);
   }, []);
 
   const listKeyPress = createKeypress(state, dispatch);
 
-  const inputSubmitted = (value: string) => {
-    console.error('nameSubmitted', { value });
+  const onRename = (value: string) => {
     renameEntry(selectedEntry, value).then((windowList: WindowListEntry[]) => {
-      console.error('renameEntry', { windowList });
       dispatch({ type: MainScreenActions.SetEntries, payload: windowList });
       dispatch({ type: MainScreenActions.SetSelectedIndex, payload: selectedIndex });
-      dispatch({ type: MainScreenActions.SetIsEditingName, payload: false });
+      dispatch({ type: MainScreenActions.SetMode, payload: DefaultMainScreenMode });
     });
+  };
+
+  const onCommand = (value: string) => {
+    processCommand(value, dispatch);
   };
 
   const listOpts = {
@@ -116,23 +109,39 @@ export const MainScreen = () => {
     },
     items,
     label: 'Windows',
-    focused: !isEditingName,
+    focused: mode === MainScreenMode.Navigate,
     onkeypress: listKeyPress,
     selected: selectedIndex,
   };
+
+  const getInputHandler = (): ((value: string) => void) => {
+    switch (mode) {
+      case MainScreenMode.Rename:
+        return onRename;
+      case MainScreenMode.Command:
+        return onCommand;
+      default:
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        return (_value: string) => {
+          return;
+        };
+    }
+  };
+
+  const showInputBox = mode === MainScreenMode.Command || mode === MainScreenMode.Rename;
 
   return (
     <box>
       <mainScreenContext.Provider value={{ state, dispatch }}>
         <list {...listOpts} />
         <box bottom={0} left={0} width={'100%'} height={3} border={'line'}>
-          {isEditingName ? (
+          {showInputBox ? (
             <textbox
               left={0}
               width={'33%-1'}
-              focused={isEditingName}
+              focused={showInputBox}
               inputOnFocus={true}
-              onsubmit={inputSubmitted}
+              onsubmit={getInputHandler()}
             ></textbox>
           ) : (
             <box left={0} width={'33%-1'}>

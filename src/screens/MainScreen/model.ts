@@ -1,10 +1,19 @@
 import { createContext } from '@guysherman/treecat';
 import { WindowListEntry } from '../../connectors/kitty';
 
+export enum MainScreenMode {
+  Navigate = 'NAVIGATE',
+  Rename = 'RENAME',
+  Command = 'COMMAND',
+  QuickNav = 'QUICK_NAV',
+}
+
+export const DefaultMainScreenMode = MainScreenMode.Navigate;
+
 export interface MainScreenState {
   entries: WindowListEntry[];
-  isEditingName: boolean;
   selectedIndex: number;
+  mode: MainScreenMode;
 }
 
 export interface MainScreenContext {
@@ -17,7 +26,7 @@ export const mainScreenContext = createContext({
   state: {
     entries: [] as WindowListEntry[],
     selectedIndex: 0,
-    isEditingName: false,
+    mode: MainScreenMode.Navigate,
   },
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   dispatch: (action: any): void => {},
