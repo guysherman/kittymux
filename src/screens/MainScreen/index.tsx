@@ -23,7 +23,7 @@ const createKeypress = (state: MainScreenState, dispatch: (action: any) => void)
   const { entries, selectedIndex } = state;
   return (ch: string /*, key: blessed.Widgets.Events.IKeyEventArg*/) => {
     if (ch === 'j') {
-      const newIndex = Math.min(entries.length, selectedIndex + 1);
+      const newIndex = Math.min(entries.length - 1, selectedIndex + 1);
       dispatch({ type: MainScreenActions.SetSelectedIndex, payload: newIndex });
     } else if (ch === 'k') {
       const newIndex = Math.max(0, selectedIndex - 1);
@@ -36,7 +36,7 @@ const createKeypress = (state: MainScreenState, dispatch: (action: any) => void)
       const nextIndex = selectedIndex + 1 + nextTab;
       dispatch({
         type: MainScreenActions.SetSelectedIndex,
-        payload: nextIndex >= entries.length ? selectedIndex : nextIndex,
+        payload: nextIndex > entries.length - 1 ? selectedIndex : nextIndex,
       });
     } else if (ch === 'K') {
       const precedingEntries = entries.slice(0, selectedIndex);
@@ -54,7 +54,7 @@ const createKeypress = (state: MainScreenState, dispatch: (action: any) => void)
         dispatch({ type: MainScreenActions.SetEntries, payload: windowList });
         dispatch({
           type: MainScreenActions.SetSelectedIndex,
-          payload: Math.max(0, Math.min(selectedIndex - 1, windowList.length - 1)),
+          payload: Math.max(0, Math.min(selectedIndex, windowList.length - 1)),
         });
       });
     } else if (ch === 'a') {

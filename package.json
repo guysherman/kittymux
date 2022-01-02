@@ -42,7 +42,7 @@
     "test": "jest --config jest.config.js --passWithNoTests"
   },
   "dependencies": {
-    "@guysherman/treecat": "^0.0.3",
+    "@guysherman/treecat": "^0.1.2",
     "blessed": "^0.1.81"
   }
 }
