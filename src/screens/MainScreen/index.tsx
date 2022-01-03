@@ -1,6 +1,7 @@
 /** @jsx TreeCat.createElement **/
 // eslint-disable-next-line no-unused-vars
 import * as TreeCat from '@guysherman/treecat';
+import * as blessed from 'blessed';
 import { useEffect, useReducer } from '@guysherman/treecat';
 import { WindowListEntry, WindowListEntryType, renameEntry } from '../../connectors/kitty';
 import { getInstructions } from './getInstructions';
@@ -28,8 +29,8 @@ export const MainScreen = () => {
     refreshWindowList(dispatch);
   }, []);
 
-  const listKeyPress = (ch: string /*, key: blessed.Widgets.Events.IKeyEventArg*/): void => {
-    processListKeyPress(state, dispatch, ch);
+  const listKeyPress = (ch: string, key: blessed.Widgets.Events.IKeyEventArg): void => {
+    processListKeyPress(state, dispatch, ch, key);
   };
 
   const onRename = (value: string) => {

@@ -3,9 +3,10 @@
 import * as TreeCat from '@guysherman/treecat';
 import * as blessed from 'blessed';
 import * as fs from 'fs';
+import EventEmitter from 'node:events';
 import { MainScreen } from '.';
 
-import { KittyOsWindow, listWindows } from '../../connectors/kitty';
+import { KittyOsWindow, listWindows, renameEntry, WindowListEntry } from '../../connectors/kitty';
 jest.mock('../../connectors/kitty', () => {
   const original = jest.requireActual('../../connectors/kitty');
 
@@ -13,10 +14,12 @@ jest.mock('../../connectors/kitty', () => {
     __esModule: true,
     ...original,
     listWindows: jest.fn(),
+    renameEntry: jest.fn(),
   };
 });
 
 const mockedListWindows = listWindows as jest.MockedFunction<typeof listWindows>;
+const mockedRenameEntry = renameEntry as jest.MockedFunction<typeof renameEntry>;
 
 describe('MainScreen', () => {
   let rootScreen: blessed.Widgets.Screen;
@@ -161,5 +164,43 @@ describe('MainScreen', () => {
     } = box;
 
     expect((title as blessed.Widgets.BoxElement).content).toEqual('test tab');
+  });
+
+  it('should call renameEntry with entered name', async () => {
+    let res: (value: void | PromiseLike<void>) => void;
+    const p = new Promise<void>((resolve) => {
+      res = resolve;
+    });
+
+    mockedListWindows.mockImplementation(() => {
+      res();
+      return Promise.resolve(windowList);
+    });
+
+    mockedRenameEntry.mockResolvedValue([] as WindowListEntry[]);
+
+    const tree = <MainScreen />;
+    TreeCat.render(tree, rootScreen);
+    jest.runOnlyPendingTimers();
+    await p;
+    jest.runOnlyPendingTimers();
+
+    const list = rootScreen.children[0].children[0] as blessed.Widgets.ListElement;
+    list?.emit('keypress', 'j', { sequence: 'j', name: 'j', ctrl: false, meta: false, shift: true, full: 'j' });
+    jest.runOnlyPendingTimers();
+
+    list?.emit('keypress', 'a', { sequence: 'a', name: 'a', ctrl: false, meta: false, shift: true, full: 'a' });
+    jest.runOnlyPendingTimers();
+
+    const box = rootScreen.children[0].children[1] as blessed.Widgets.BoxElement;
+    const {
+      children: [, , textInput],
+    } = box;
+
+    expect(textInput as blessed.Widgets.TextboxElement).toBeTruthy();
+    (textInput as blessed.Widgets.TextboxElement)?.emit('submit', 'test2');
+    jest.runOnlyPendingTimers();
+
+    expect(mockedRenameEntry.mock.calls[0][1]).toEqual('test2');
   });
 });
