@@ -6,6 +6,7 @@ export enum MainScreenActions {
   SetEntries = 'SET_ENTRIES',
   SetMode = 'SET_MODE',
   SetQuickNav = 'SET_QUICK_NAV',
+  PruneQuickNav = 'PRUNE_QUICK_NAV',
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -32,13 +33,24 @@ export const mainScreenReducer = (state: MainScreenState, action: { type: string
         ...state,
         quickNavKeys: action.payload as Record<string, QuickNavHandle>,
       };
+    case MainScreenActions.PruneQuickNav:
+      return pruneQuickNav(state);
     default:
       return state;
   }
 };
 
-export const moveUp = (state: MainScreenState, dispatch: (action: any) => void) => {
-  const { entries, selectedIndex } = state;
-  const newIndex = Math.min(entries.length, selectedIndex + 1);
-  dispatch({ type: MainScreenActions.SetSelectedIndex, payload: newIndex });
+const pruneQuickNav = (state: MainScreenState): MainScreenState => {
+  const { entries, quickNavKeys } = state;
+  const newQuickNavKeys = { ...quickNavKeys };
+  const staleQuickNavKeys = Object.entries(quickNavKeys)
+    .filter(
+      ([, quickNavHandle]) =>
+        !entries.find((entry) => entry.id === quickNavHandle.id && entry.type === quickNavHandle.type),
+    )
+    .forEach(([key]) => {
+      delete newQuickNavKeys[key];
+    });
+
+  return { ...state, quickNavKeys: newQuickNavKeys };
 };

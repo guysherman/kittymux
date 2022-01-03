@@ -36,11 +36,12 @@ export const MainScreen = () => {
   };
 
   const onRename = (value: string) => {
-    renameEntry(selectedEntry, value).then((windowList: WindowListEntry[]) => {
-      dispatch({ type: MainScreenActions.SetEntries, payload: windowList });
-      dispatch({ type: MainScreenActions.SetSelectedIndex, payload: selectedIndex });
-      dispatch({ type: MainScreenActions.SetMode, payload: DefaultMainScreenMode });
-    });
+    renameEntry(selectedEntry, value)
+      .then(() => refreshWindowList(dispatch))
+      .then(() => {
+        dispatch({ type: MainScreenActions.SetSelectedIndex, payload: selectedIndex });
+        dispatch({ type: MainScreenActions.SetMode, payload: DefaultMainScreenMode });
+      });
   };
 
   const onCommand = (value: string) => {

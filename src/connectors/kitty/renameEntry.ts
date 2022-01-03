@@ -1,23 +1,21 @@
 import { exec } from 'child_process';
-import { listWindows } from './listWindows';
 import { ExecError, WindowListEntry, WindowListEntryType } from './model';
-import { processWindowList } from './processWindowList';
 
-export const renameEntry = (entry: WindowListEntry, newName: string): Promise<WindowListEntry[]> => {
+export const renameEntry = (entry: WindowListEntry, newName: string): Promise<void> => {
   switch (entry.type) {
     case WindowListEntryType.Tab:
       return renameTab(entry.id, newName);
     case WindowListEntryType.Window:
       return renameWindow(entry.id, newName);
     case WindowListEntryType.OsWindow:
-      return listWindows().then(processWindowList);
+      return Promise.resolve(undefined);
     case WindowListEntryType.None:
     default:
       throw new Error(`Can't rename entry with id: ${entry.id}`);
   }
 };
 
-const renameTab = (id: number, newName: string): Promise<WindowListEntry[]> => {
+const renameTab = (id: number, newName: string): Promise<void> => {
   return new Promise<void>((resolve, reject) => {
     exec(`kitty @ set-tab-title -m id:${id} ${newName}`, (error, _stdout, stderror) => {
       if (error) {
@@ -27,12 +25,10 @@ const renameTab = (id: number, newName: string): Promise<WindowListEntry[]> => {
         resolve();
       }
     });
-  })
-    .then(listWindows)
-    .then(processWindowList);
+  });
 };
 
-const renameWindow = (id: number, newName: string): Promise<WindowListEntry[]> => {
+const renameWindow = (id: number, newName: string): Promise<void> => {
   return new Promise<void>((resolve, reject) => {
     exec(`kitty @ set-window-title -m id:${id} ${newName}`, (error, _stdout, stderror) => {
       if (error) {
@@ -42,7 +38,5 @@ const renameWindow = (id: number, newName: string): Promise<WindowListEntry[]> =
         resolve();
       }
     });
-  })
-    .then(listWindows)
-    .then(processWindowList);
+  });
 };

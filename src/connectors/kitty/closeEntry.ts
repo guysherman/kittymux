@@ -1,12 +1,10 @@
 import { exec } from 'child_process';
-import { listWindows } from './listWindows';
 import { ExecError, WindowListEntry, WindowListEntryType } from './model';
-import { processWindowList } from './processWindowList';
 
-export const closeEntry = (entry: WindowListEntry): Promise<WindowListEntry[]> => {
+export const closeEntry = (entry: WindowListEntry): Promise<void> => {
   switch (entry.type) {
     case WindowListEntryType.OsWindow:
-      return listWindows().then(processWindowList);
+      return Promise.resolve(undefined);
     case WindowListEntryType.Tab:
       return closeTab(entry.id);
     case WindowListEntryType.Window:
@@ -16,7 +14,7 @@ export const closeEntry = (entry: WindowListEntry): Promise<WindowListEntry[]> =
   }
 };
 
-const closeWindow = (id: number): Promise<WindowListEntry[]> => {
+const closeWindow = (id: number): Promise<void> => {
   return new Promise<void>((resolve, reject) => {
     exec(`kitty @ close-window -m id:${id}`, (error, _stdout, stderror) => {
       if (error) {
@@ -26,12 +24,10 @@ const closeWindow = (id: number): Promise<WindowListEntry[]> => {
         resolve();
       }
     });
-  })
-    .then(listWindows)
-    .then(processWindowList);
+  });
 };
 
-const closeTab = (id: number): Promise<WindowListEntry[]> => {
+const closeTab = (id: number): Promise<void> => {
   return new Promise<void>((resolve, reject) => {
     exec(`kitty @ close-tab -m id:${id}`, (error, _stdout, stderror) => {
       if (error) {
@@ -41,7 +37,5 @@ const closeTab = (id: number): Promise<WindowListEntry[]> => {
         resolve();
       }
     });
-  })
-    .then(listWindows)
-    .then(processWindowList);
+  });
 };

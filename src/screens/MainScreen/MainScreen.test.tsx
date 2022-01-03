@@ -185,7 +185,7 @@ describe('MainScreen', () => {
       return Promise.resolve(windowList);
     });
 
-    mockedRenameEntry.mockResolvedValue([] as WindowListEntry[]);
+    mockedRenameEntry.mockResolvedValue(undefined);
 
     const tree = <MainScreen />;
     TreeCat.render(tree, rootScreen);
