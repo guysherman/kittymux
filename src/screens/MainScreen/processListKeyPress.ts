@@ -79,6 +79,16 @@ const renameSelected = (dispatch: (action: any) => void, _state: MainScreenState
   dispatch({ type: MainScreenActions.SetMode, payload: MainScreenMode.Rename });
 };
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const enterSetQuickNavMode = (dispatch: (action: any) => void, _state: MainScreenState) => {
+  dispatch({ type: MainScreenActions.SetMode, payload: MainScreenMode.SetQuickNav });
+};
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const enterQuickNavMode = (dispatch: (action: any) => void, _state: MainScreenState) => {
+  dispatch({ type: MainScreenActions.SetMode, payload: MainScreenMode.QuickNav });
+};
+
 const commandMap: Record<string, KeyHandler> = {
   j: nextEntry,
   k: previousEntry,
@@ -88,6 +98,8 @@ const commandMap: Record<string, KeyHandler> = {
   x: closeSelected,
   a: renameSelected,
   ':': enterCommandMode,
+  m: enterSetQuickNavMode,
+  "'": enterQuickNavMode,
 };
 
 export const processListKeyPress = (

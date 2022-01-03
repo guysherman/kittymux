@@ -3,10 +3,16 @@
 import * as TreeCat from '@guysherman/treecat';
 import * as blessed from 'blessed';
 import * as fs from 'fs';
-import EventEmitter from 'node:events';
 import { MainScreen } from '.';
 
-import { KittyOsWindow, listWindows, renameEntry, WindowListEntry } from '../../connectors/kitty';
+import {
+  KittyOsWindow,
+  listWindows,
+  renameEntry,
+  focusEntry,
+  WindowListEntry,
+  WindowListEntryType,
+} from '../../connectors/kitty';
 jest.mock('../../connectors/kitty', () => {
   const original = jest.requireActual('../../connectors/kitty');
 
@@ -15,11 +21,13 @@ jest.mock('../../connectors/kitty', () => {
     ...original,
     listWindows: jest.fn(),
     renameEntry: jest.fn(),
+    focusEntry: jest.fn(),
   };
 });
 
 const mockedListWindows = listWindows as jest.MockedFunction<typeof listWindows>;
 const mockedRenameEntry = renameEntry as jest.MockedFunction<typeof renameEntry>;
+const mockedFocusEntry = focusEntry as jest.MockedFunction<typeof focusEntry>;
 
 describe('MainScreen', () => {
   let rootScreen: blessed.Widgets.Screen;
@@ -202,5 +210,46 @@ describe('MainScreen', () => {
     jest.runOnlyPendingTimers();
 
     expect(mockedRenameEntry.mock.calls[0][1]).toEqual('test2');
+  });
+
+  it('should store and action quick key', async () => {
+    let res: (value: void | PromiseLike<void>) => void;
+    const p = new Promise<void>((resolve) => {
+      res = resolve;
+    });
+
+    mockedListWindows.mockImplementation(() => {
+      res();
+      return Promise.resolve(windowList);
+    });
+
+    const tree = <MainScreen />;
+    TreeCat.render(tree, rootScreen);
+    jest.runOnlyPendingTimers();
+    await p;
+    jest.runOnlyPendingTimers();
+
+    const list = rootScreen.children[0].children[0] as blessed.Widgets.ListElement;
+    const box = rootScreen.children[0] as blessed.Widgets.BoxElement;
+    list?.emit('keypress', 'j', { sequence: 'j', name: 'j', ctrl: false, meta: false, shift: true, full: 'j' });
+    jest.runOnlyPendingTimers();
+
+    list?.emit('keypress', 'm', { sequence: 'm', name: 'm', ctrl: false, meta: false, shift: true, full: 'm' });
+    jest.runOnlyPendingTimers();
+
+    box?.emit('keypress', 'a', { sequence: 'a', name: 'a', ctrl: false, meta: false, shift: true, full: 'a' });
+    jest.runOnlyPendingTimers();
+
+    list?.emit('keypress', 'k', { sequence: 'k', name: 'k', ctrl: false, meta: false, shift: true, full: 'k' });
+    jest.runOnlyPendingTimers();
+
+    list?.emit('keypress', "'", { sequence: "'", name: "'", ctrl: false, meta: false, shift: true, full: "'" });
+    jest.runOnlyPendingTimers();
+
+    box?.emit('keypress', 'a', { sequence: 'a', name: 'a', ctrl: false, meta: false, shift: true, full: 'a' });
+    jest.runOnlyPendingTimers();
+
+    expect(mockedFocusEntry.mock.calls[0][0].id).toEqual(windowList[0].tabs[0].id);
+    expect(mockedFocusEntry.mock.calls[0][0].type).toEqual(WindowListEntryType.Tab);
   });
 });

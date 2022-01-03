@@ -5,11 +5,12 @@ import * as blessed from 'blessed';
 import { useEffect, useReducer } from '@guysherman/treecat';
 import { WindowListEntry, WindowListEntryType, renameEntry } from '../../connectors/kitty';
 import { getInstructions } from './getInstructions';
-import { mainScreenContext, MainScreenMode, DefaultMainScreenMode } from './model';
+import { mainScreenContext, MainScreenMode, DefaultMainScreenMode, QuickNavHandle } from './model';
 import { processCommand } from './processCommand';
 import { processListKeyPress } from './processListKeyPress';
 import { MainScreenActions, mainScreenReducer } from './reducer';
 import { refreshWindowList } from './refreshWindowList';
+import { processQuickNavKeypress } from './processQuickNavKeypress';
 //└─
 //
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -18,6 +19,7 @@ export const MainScreen = () => {
     entries: [] as WindowListEntry[],
     selectedIndex: 0,
     mode: DefaultMainScreenMode,
+    quickNavKeys: {} as Record<string, QuickNavHandle>,
   });
 
   const { entries, selectedIndex, mode } = state;
@@ -43,6 +45,10 @@ export const MainScreen = () => {
 
   const onCommand = (value: string) => {
     processCommand(value, dispatch);
+  };
+
+  const quickNavKeyPress = (_ch: string, key: blessed.Widgets.Events.IKeyEventArg) => {
+    processQuickNavKeypress(state, dispatch, key);
   };
 
   const listOpts = {
@@ -87,9 +93,10 @@ export const MainScreen = () => {
   };
 
   const showInputBox = mode === MainScreenMode.Command || mode === MainScreenMode.Rename;
+  const quickNavMode = mode === MainScreenMode.QuickNav || mode === MainScreenMode.SetQuickNav;
 
   return (
-    <box>
+    <box onkeypress={quickNavKeyPress} focused={quickNavMode}>
       <mainScreenContext.Provider value={{ state, dispatch }}>
         <list {...listOpts} />
         <box bottom={0} left={0} width={'100%'} height={3} border={'line'}>

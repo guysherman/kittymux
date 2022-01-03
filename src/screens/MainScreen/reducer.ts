@@ -1,10 +1,11 @@
 import { WindowListEntry } from '../../connectors/kitty';
-import { MainScreenMode, MainScreenState } from './model';
+import { MainScreenMode, MainScreenState, QuickNavHandle } from './model';
 
 export enum MainScreenActions {
   SetSelectedIndex = 'SET_SELECTED_INDEX',
   SetEntries = 'SET_ENTRIES',
   SetMode = 'SET_MODE',
+  SetQuickNav = 'SET_QUICK_NAV',
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -25,6 +26,11 @@ export const mainScreenReducer = (state: MainScreenState, action: { type: string
       return {
         ...state,
         mode: action.payload as MainScreenMode,
+      };
+    case MainScreenActions.SetQuickNav:
+      return {
+        ...state,
+        quickNavKeys: action.payload as Record<string, QuickNavHandle>,
       };
     default:
       return state;
