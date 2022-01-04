@@ -1,6 +1,6 @@
 {
   "name": "@guysherman/kittymux",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "A helper for kitty, to give it a tmux-like window navigator",
   "main": "src/index.ts",
   "repository": "https://github.com/guysherman/kittymux",
