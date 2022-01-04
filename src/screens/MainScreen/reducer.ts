@@ -1,5 +1,6 @@
 import { WindowListEntry } from '../../connectors/kitty';
-import { MainScreenMode, MainScreenState, QuickNavHandle } from './model';
+import { persistedReducer, restoreState } from '../../connectors/settings';
+import { DefaultMainScreenMode, MainScreenMode, MainScreenState, QuickNavHandle } from './model';
 
 export enum MainScreenActions {
   SetSelectedIndex = 'SET_SELECTED_INDEX',
@@ -10,7 +11,7 @@ export enum MainScreenActions {
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const mainScreenReducer = (state: MainScreenState, action: { type: string; payload: any }): MainScreenState => {
+const innerMainScreenReducer = (state: MainScreenState, action: { type: string; payload: any }): MainScreenState => {
   const { type } = action;
   switch (type) {
     case MainScreenActions.SetSelectedIndex:
@@ -40,10 +41,25 @@ export const mainScreenReducer = (state: MainScreenState, action: { type: string
   }
 };
 
+const stateDir = process.env.KITTYMUX_STATE_DIR ?? process.env.XDG_STATE_HOME ?? '.';
+export const QUICKNAVS_STORE_PATH = `${stateDir}/kittymux/quicknavs.json`;
+export const mainScreenReducer = persistedReducer(innerMainScreenReducer, QUICKNAVS_STORE_PATH, ['quickNavKeys']);
+export const getDefaultState = () =>
+  restoreState(
+    {
+      entries: [] as WindowListEntry[],
+      selectedIndex: 0,
+      mode: DefaultMainScreenMode,
+      quickNavKeys: {} as Record<string, QuickNavHandle>,
+    },
+    QUICKNAVS_STORE_PATH,
+    ['quickNavKeys'],
+  );
+
 const pruneQuickNav = (state: MainScreenState): MainScreenState => {
   const { entries, quickNavKeys } = state;
   const newQuickNavKeys = { ...quickNavKeys };
-  const staleQuickNavKeys = Object.entries(quickNavKeys)
+  Object.entries(quickNavKeys)
     .filter(
       ([, quickNavHandle]) =>
         !entries.find((entry) => entry.id === quickNavHandle.id && entry.type === quickNavHandle.type),

@@ -15,4 +15,7 @@ module.exports = {
     sourceType: 'module',
   },
   plugins: ['@typescript-eslint', 'jest'],
+  rules: {
+    '@typescript-eslint/no-explicit-any': 'off',
+  },
 };

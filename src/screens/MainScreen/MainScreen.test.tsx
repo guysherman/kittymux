@@ -3,7 +3,13 @@
 import * as TreeCat from '@guysherman/treecat';
 import * as blessed from 'blessed';
 import * as fs from 'fs';
+import { restoreState, persistedReducer } from '../../connectors/settings';
+//jest.mock('../../connectors/settings');
+
 import { MainScreen } from '.';
+
+//const mockedRestoreState = restoreState as jest.MockedFunction<typeof restoreState>;
+//const mockedPersistedReducer = persistedReducer as jest.MockedFunction<typeof persistedReducer>;
 
 import {
   KittyOsWindow,
@@ -13,6 +19,7 @@ import {
   WindowListEntry,
   WindowListEntryType,
 } from '../../connectors/kitty';
+import { QUICKNAVS_STORE_PATH } from './reducer';
 jest.mock('../../connectors/kitty', () => {
   const original = jest.requireActual('../../connectors/kitty');
 
@@ -107,11 +114,17 @@ describe('MainScreen', () => {
     },
   ];
 
-  beforeEach(() => {
+  beforeEach(async () => {
+    fs.rmSync(QUICKNAVS_STORE_PATH, { force: true });
     jest.useFakeTimers();
     outStream = fs.createWriteStream('./.scratch/out');
     inStream = fs.createReadStream('/dev/random');
     rootScreen = TreeCat.blessed.screen({ output: inStream, input: outStream });
+    //mockedPersistedReducer.mockImplementation((reducer) => {
+    //console.log('mockedPersistedReducer', { reducer });
+    //return reducer;
+    //});
+    //mockedRestoreState.mockImplementation((state) => state);
   });
 
   afterEach(() => {
@@ -213,6 +226,7 @@ describe('MainScreen', () => {
   });
 
   it('should store and action quick key', async () => {
+    process.env.KITTYMUX_STATE_DIR = './.scratch';
     let res: (value: void | PromiseLike<void>) => void;
     const p = new Promise<void>((resolve) => {
       res = resolve;

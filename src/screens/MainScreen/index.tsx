@@ -8,19 +8,14 @@ import { getInstructions } from './getInstructions';
 import { mainScreenContext, MainScreenMode, DefaultMainScreenMode, QuickNavHandle } from './model';
 import { processCommand } from './processCommand';
 import { processListKeyPress } from './processListKeyPress';
-import { MainScreenActions, mainScreenReducer } from './reducer';
+import { getDefaultState, MainScreenActions, mainScreenReducer } from './reducer';
 import { refreshWindowList } from './refreshWindowList';
 import { processQuickNavKeypress } from './processQuickNavKeypress';
 //└─
 //
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const MainScreen = () => {
-  const [state, dispatch] = useReducer(mainScreenReducer, {
-    entries: [] as WindowListEntry[],
-    selectedIndex: 0,
-    mode: DefaultMainScreenMode,
-    quickNavKeys: {} as Record<string, QuickNavHandle>,
-  });
+  const [state, dispatch] = useReducer(mainScreenReducer, getDefaultState());
 
   const { entries, selectedIndex, mode } = state;
   const items = entries.map((entry: WindowListEntry) => entry.text);

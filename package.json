@@ -39,7 +39,7 @@
   "scripts": {
     "start": "ts-node src/index.tsx",
     "build": "tsc --project ./tsconfig.json",
-    "test": "jest --config jest.config.js --passWithNoTests"
+    "test": "KITTYMUX_STATE_DIR=./.scratch jest --config jest.config.js --passWithNoTests"
   },
   "dependencies": {
     "@guysherman/treecat": "^0.1.2",
