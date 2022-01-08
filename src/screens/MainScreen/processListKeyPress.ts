@@ -95,6 +95,7 @@ const commandMap: Record<string, KeyHandler> = {
   'S-j': nextTab,
   'S-k': previousTab,
   enter: focusSelected,
+  return: focusSelected,
   x: closeSelected,
   a: renameSelected,
   ':': enterCommandMode,
