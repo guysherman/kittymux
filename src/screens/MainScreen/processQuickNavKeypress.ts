@@ -18,7 +18,7 @@ export const processQuickNavKeypress = (
 
   switch (mode) {
     case MainScreenMode.QuickNav:
-      actionQuickNavKey(state, key);
+      actionQuickNavKey(state, dispatch, key);
       break;
     case MainScreenMode.SetQuickNav:
       setQuickNavKey(state, dispatch, key);
@@ -28,7 +28,11 @@ export const processQuickNavKeypress = (
   }
 };
 
-const actionQuickNavKey = (state: MainScreenState, key: blessed.Widgets.Events.IKeyEventArg) => {
+const actionQuickNavKey = (
+  state: MainScreenState,
+  dispatch: (action: any) => void,
+  key: blessed.Widgets.Events.IKeyEventArg,
+) => {
   const { quickNavKeys, entries } = state;
 
   const entryHandle = quickNavKeys[key.full];
@@ -37,6 +41,8 @@ const actionQuickNavKey = (state: MainScreenState, key: blessed.Widgets.Events.I
     if (entry) {
       focusEntry(entry);
     }
+  } else {
+    dispatch({ type: MainScreenActions.SetMode, payload: DefaultMainScreenMode });
   }
 };
 
