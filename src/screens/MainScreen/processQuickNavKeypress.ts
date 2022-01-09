@@ -54,9 +54,23 @@ const setQuickNavKey = (
   const { quickNavKeys, entries, selectedIndex } = state;
   const selectedEntry = entries[selectedIndex];
 
+  const validateKey = /^[a-zA-Z1-9]$/;
+  if (key.full.match(validateKey)?.length !== 1) {
+    dispatch({ type: MainScreenActions.SetMode, payload: DefaultMainScreenMode });
+    return;
+  }
+
   if (selectedEntry) {
     const { id, type } = selectedEntry;
     const newQuickNavKeys = { ...quickNavKeys };
+
+    const existingEntry = Object.entries(newQuickNavKeys).find(
+      ([, handle]) => handle.id === id && handle.type === type,
+    );
+    if (existingEntry) {
+      delete newQuickNavKeys[existingEntry[0]];
+    }
+
     newQuickNavKeys[key.full] = { id, type };
     dispatch({ type: MainScreenActions.SetQuickNav, payload: newQuickNavKeys });
     dispatch({ type: MainScreenActions.SetMode, payload: DefaultMainScreenMode });
