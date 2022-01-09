@@ -18,7 +18,17 @@ export const MainScreen = () => {
   const [state, dispatch] = useReducer(mainScreenReducer, getDefaultState());
 
   const { entries, selectedIndex, mode } = state;
-  const items = entries.map((entry: WindowListEntry) => entry.text);
+  const items = entries.map((entry: WindowListEntry) => {
+    if (state.mode === MainScreenMode.QuickNav || state.mode === MainScreenMode.SetQuickNav) {
+      const entryQuickNav = Object.entries(state.quickNavKeys).find(
+        ([, handle]) => handle.id === entry.id && handle.type === entry.type,
+      );
+
+      return `{inverse}${entryQuickNav?.[0] ?? ' '}{/inverse}\t${entry.text}`;
+    } else {
+      return entry.text;
+    }
+  });
   const selectedEntry = entries[selectedIndex] ?? { type: WindowListEntryType.None };
   const instructions = getInstructions(state);
 
