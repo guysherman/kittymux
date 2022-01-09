@@ -20,7 +20,7 @@ export const MainScreen = () => {
   const { entries, selectedIndex, mode } = state;
   const items = entries.map((entry: WindowListEntry) => entry.text);
   const selectedEntry = entries[selectedIndex] ?? { type: WindowListEntryType.None };
-  const instructions = getInstructions(selectedEntry.type);
+  const instructions = getInstructions(state);
 
   useEffect(() => {
     refreshWindowList(dispatch);
