@@ -88,6 +88,23 @@ export const MainScreen = () => {
     }
   };
 
+  const getModeString = () => {
+    switch (mode) {
+      case MainScreenMode.Navigate:
+        return 'NAV';
+      case MainScreenMode.QuickNav:
+        return 'QNV';
+      case MainScreenMode.SetQuickNav:
+        return 'SQN';
+      case MainScreenMode.Command:
+        return 'CMD';
+      case MainScreenMode.Rename:
+        return 'RNE';
+      default:
+        return '???';
+    }
+  };
+
   const showInputBox = mode === MainScreenMode.Command || mode === MainScreenMode.Rename;
   const quickNavMode = mode === MainScreenMode.QuickNav || mode === MainScreenMode.SetQuickNav;
 
@@ -114,8 +131,11 @@ export const MainScreen = () => {
               selectedEntry.cwd ? '|' : ''
             }${selectedEntry.pid ?? ''}`}
           </box>
-          <box left={'67%-1'} width={'33%-2'}>
+          <box left={'67%-1'} width={'33%-7'}>
             {instructions}
+          </box>
+          <box left={'100%-7'} width={5} tags={true}>
+            {`{inverse} ${getModeString()} {/inverse}`}
           </box>
         </box>
       </mainScreenContext.Provider>
