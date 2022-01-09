@@ -42,7 +42,7 @@
     "test": "KITTYMUX_STATE_DIR=./.scratch jest --config jest.config.js --passWithNoTests"
   },
   "dependencies": {
-    "@guysherman/treecat": "^0.1.2",
+    "@guysherman/treecat": "^0.1.3",
     "blessed": "^0.1.81"
   }
 }
