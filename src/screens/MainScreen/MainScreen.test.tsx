@@ -215,7 +215,7 @@ describe('MainScreen', () => {
 
     const box = rootScreen.children[0].children[1] as blessed.Widgets.BoxElement;
     const {
-      children: [, , textInput],
+      children: [, , , textInput],
     } = box;
 
     expect(textInput as blessed.Widgets.TextboxElement).toBeTruthy();
