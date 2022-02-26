@@ -13,7 +13,7 @@ describe('persistedReducer', () => {
       entries: [],
       selectedIndex: 0,
       mode: MainScreenMode.Navigate,
-      quickNavKeys: { a: { id: 1, type: WindowListEntryType.Tab } },
+      quickNavKeys: { a: [{ id: 1, type: WindowListEntryType.Tab }] },
     };
 
     mainScreenReducer(state, { type: MainScreenActions.SetMode, payload: MainScreenMode.Command });
@@ -25,7 +25,7 @@ describe('persistedReducer', () => {
 describe('restoreState', () => {
   it('should populate only selectedFields', () => {
     const quickNav = {
-      quickNavKeys: { a: { id: 1, type: WindowListEntryType.Tab } },
+      quickNavKeys: { a: [{ id: 1, type: WindowListEntryType.Tab }] },
       someOtherKey: 'foo',
     };
     mockedFs.readFileSync.mockReturnValue(JSON.stringify(quickNav));

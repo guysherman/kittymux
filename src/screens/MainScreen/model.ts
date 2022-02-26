@@ -26,7 +26,7 @@ export interface MainScreenState {
   entries: WindowListEntry[];
   selectedIndex: number;
   mode: MainScreenMode;
-  quickNavKeys: Record<string, QuickNavHandle>;
+  quickNavKeys: Record<string, QuickNavHandle[]>;
 }
 
 export interface MainScreenContext {
@@ -40,7 +40,7 @@ export const mainScreenContext = createContext({
     entries: [] as WindowListEntry[],
     selectedIndex: 0,
     mode: MainScreenMode.Navigate,
-    quickNavKeys: {} as Record<string, QuickNavHandle>,
+    quickNavKeys: {} as Record<string, QuickNavHandle[]>,
   },
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   dispatch: (action: any): void => {},

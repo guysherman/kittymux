@@ -18,10 +18,10 @@ describe('MainScreenReducer', () => {
       selectedIndex: 0,
       mode: MainScreenMode.Navigate,
       quickNavKeys: {
-        a: { id: 2, type: WindowListEntryType.Window },
-        b: { id: 3, type: WindowListEntryType.Window },
-        c: { id: 1, type: WindowListEntryType.Window },
-        d: { id: 1, type: WindowListEntryType.Tab },
+        a: [{ id: 2, type: WindowListEntryType.Window }],
+        b: [{ id: 3, type: WindowListEntryType.Window }],
+        c: [{ id: 1, type: WindowListEntryType.Window }],
+        d: [{ id: 1, type: WindowListEntryType.Tab }],
       },
     };
 

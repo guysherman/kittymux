@@ -2,6 +2,7 @@ import * as blessed from 'blessed';
 import { focusEntry } from '../../connectors/kitty';
 import { MainScreenState, DefaultMainScreenMode, MainScreenMode } from './model';
 import { MainScreenActions } from './reducer';
+import { filterEntries } from './scopeFilter';
 
 export const processQuickNavKeypress = (
   state: MainScreenState,
@@ -35,15 +36,22 @@ const actionQuickNavKey = (
 ) => {
   const { quickNavKeys, entries } = state;
 
-  const entryHandle = quickNavKeys[key.full];
-  if (entryHandle) {
-    const entry = entries.find((entry) => entry.id === entryHandle.id && entry.type === entryHandle.type);
-    if (entry) {
-      focusEntry(entry);
+  const entryHandles = quickNavKeys[key.full];
+  if (entryHandles?.length) {
+    for (let i = 0; i < entryHandles.length; i++) {
+      const entryHandle = entryHandles[i];
+      const entry = filterEntries('tab', entries).find(
+        (entry) => entry.id === entryHandle.id && entry.type === entryHandle.type,
+      );
+
+      if (entry) {
+        focusEntry(entry);
+        return;
+      }
     }
-  } else {
-    dispatch({ type: MainScreenActions.SetMode, payload: DefaultMainScreenMode });
   }
+
+  dispatch({ type: MainScreenActions.SetMode, payload: DefaultMainScreenMode });
 };
 
 const setQuickNavKey = (
@@ -64,14 +72,19 @@ const setQuickNavKey = (
     const { id, type } = selectedEntry;
     const newQuickNavKeys = { ...quickNavKeys };
 
-    const existingEntry = Object.entries(newQuickNavKeys).find(
-      ([, handle]) => handle.id === id && handle.type === type,
+    const existingEntry = Object.entries(newQuickNavKeys).find(([, handles]) =>
+      handles.find((handle) => handle.id === id && handle.type === type),
     );
+
+    // remove the existing entry from the key it was found under
     if (existingEntry) {
-      delete newQuickNavKeys[existingEntry[0]];
+      newQuickNavKeys[existingEntry[0]] = newQuickNavKeys[existingEntry[0]].filter(
+        (handle) => handle.id !== id && handle.type !== type,
+      );
     }
 
-    newQuickNavKeys[key.full] = { id, type };
+    const entriesForKey = newQuickNavKeys[key.full] ?? [];
+    newQuickNavKeys[key.full] = [...entriesForKey, { id, type }];
     dispatch({ type: MainScreenActions.SetQuickNav, payload: newQuickNavKeys });
     dispatch({ type: MainScreenActions.SetMode, payload: DefaultMainScreenMode });
   }

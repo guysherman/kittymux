@@ -32,7 +32,7 @@ const innerMainScreenReducer = (state: MainScreenState, action: { type: string; 
     case MainScreenActions.SetQuickNav:
       return {
         ...state,
-        quickNavKeys: action.payload as Record<string, QuickNavHandle>,
+        quickNavKeys: action.payload as Record<string, QuickNavHandle[]>,
       };
     case MainScreenActions.PruneQuickNav:
       return pruneQuickNav(state);
@@ -50,7 +50,7 @@ export const getDefaultState = () =>
       entries: [] as WindowListEntry[],
       selectedIndex: 0,
       mode: DefaultMainScreenMode,
-      quickNavKeys: {} as Record<string, QuickNavHandle>,
+      quickNavKeys: {} as Record<string, QuickNavHandle[]>,
     },
     QUICKNAVS_STORE_PATH,
     ['quickNavKeys'],
@@ -58,15 +58,18 @@ export const getDefaultState = () =>
 
 const pruneQuickNav = (state: MainScreenState): MainScreenState => {
   const { entries, quickNavKeys } = state;
-  const newQuickNavKeys = { ...quickNavKeys };
-  Object.entries(quickNavKeys)
-    .filter(
-      ([, quickNavHandle]) =>
-        !entries.find((entry) => entry.id === quickNavHandle.id && entry.type === quickNavHandle.type),
-    )
-    .forEach(([key]) => {
-      delete newQuickNavKeys[key];
-    });
+  const entryHandles = entries.map((entry) => ({ id: entry.id, type: entry.type }));
+
+  const newQuickNavKeys = Object.fromEntries(
+    Object.entries(quickNavKeys)
+      .map(([key, handles]) => [
+        key,
+        handles.filter(
+          (oldHandle) => !!entryHandles.find((handle) => oldHandle.id === handle.id && oldHandle.type === handle.type),
+        ),
+      ])
+      .filter(([, handles]) => handles.length),
+  );
 
   return { ...state, quickNavKeys: newQuickNavKeys };
 };
