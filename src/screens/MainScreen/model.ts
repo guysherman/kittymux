@@ -9,6 +9,12 @@ export enum MainScreenMode {
   SetQuickNav = 'SET_QUICK_NAV',
 }
 
+export enum MainScreenScope {
+  All = 'ALL',
+  Window = 'WINDOW',
+  Tab = 'TAB',
+}
+
 export const DefaultMainScreenMode = MainScreenMode.Navigate;
 
 export interface QuickNavHandle {
