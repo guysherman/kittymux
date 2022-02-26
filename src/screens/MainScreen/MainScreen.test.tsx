@@ -146,7 +146,7 @@ describe('MainScreen', () => {
       return Promise.resolve(windowList);
     });
 
-    const tree = <MainScreen />;
+    const tree = <MainScreen scope={'all'} />;
     TreeCat.render(tree, rootScreen);
 
     jest.runOnlyPendingTimers();
@@ -168,7 +168,7 @@ describe('MainScreen', () => {
       return Promise.resolve(windowList);
     });
 
-    const tree = <MainScreen />;
+    const tree = <MainScreen scope={'all'} />;
     TreeCat.render(tree, rootScreen);
 
     jest.runOnlyPendingTimers();
@@ -200,7 +200,7 @@ describe('MainScreen', () => {
 
     mockedRenameEntry.mockResolvedValue(undefined);
 
-    const tree = <MainScreen />;
+    const tree = <MainScreen scope={'all'} />;
     TreeCat.render(tree, rootScreen);
     jest.runOnlyPendingTimers();
     await p;
@@ -237,7 +237,7 @@ describe('MainScreen', () => {
       return Promise.resolve(windowList);
     });
 
-    const tree = <MainScreen />;
+    const tree = <MainScreen scope={'all'} />;
     TreeCat.render(tree, rootScreen);
     jest.runOnlyPendingTimers();
     await p;

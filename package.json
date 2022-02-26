@@ -43,6 +43,8 @@
   },
   "dependencies": {
     "@guysherman/treecat": "^0.1.3",
-    "blessed": "^0.1.81"
+    "@types/minimist": "^1.2.2",
+    "blessed": "^0.1.81",
+    "minimist": "^1.2.5"
   }
 }

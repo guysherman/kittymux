@@ -11,14 +11,20 @@ import { processListKeyPress } from './processListKeyPress';
 import { getDefaultState, MainScreenActions, mainScreenReducer } from './reducer';
 import { refreshWindowList } from './refreshWindowList';
 import { processQuickNavKeypress } from './processQuickNavKeypress';
+import { filterEntries } from './scopeFilter';
 //└─
 //
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const MainScreen = () => {
+interface MainScreenProps {
+  scope: string;
+}
+
+export const MainScreen = (props: MainScreenProps) => {
+  const { scope } = props;
   const [state, dispatch] = useReducer(mainScreenReducer, getDefaultState());
 
   const { entries, selectedIndex, mode } = state;
-  const items = entries.map((entry: WindowListEntry) => {
+  const items = filterEntries(scope, entries).map((entry: WindowListEntry) => {
     if (state.mode === MainScreenMode.QuickNav || state.mode === MainScreenMode.SetQuickNav) {
       const entryQuickNav = Object.entries(state.quickNavKeys).find(
         ([, handle]) => handle.id === entry.id && handle.type === entry.type,
@@ -29,6 +35,7 @@ export const MainScreen = () => {
       return entry.text;
     }
   });
+
   const selectedEntry = entries[selectedIndex] ?? { type: WindowListEntryType.None };
   const instructions = getInstructions(state);
 
