@@ -62,4 +62,7 @@ export interface WindowListEntry {
   cwd?: string;
   cmdline?: string;
   title?: string;
+  isFocused: boolean;
+  tabIsFocused: boolean;
+  osWindowIsFocused: boolean;
 }

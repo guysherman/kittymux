@@ -11,7 +11,13 @@ const LAST_WINDOW_INDENT = ' │  └─ ';
 const LAST_TAB_WINDOW_INDENT = '    ├─ ';
 const LAST_TAB_LAST_WINDOW_INDENT = '    └─ ';
 
-const processWindow = (window: KittyWindow, isLast: boolean, parentIsLast: boolean): WindowListEntry => {
+const processWindow = (
+  window: KittyWindow,
+  isLast: boolean,
+  parentIsLast: boolean,
+  osWindowIsFocused: boolean,
+  tabIsFocused: boolean,
+): WindowListEntry => {
   let indent = '';
   if (parentIsLast) {
     indent = isLast ? LAST_TAB_LAST_WINDOW_INDENT : LAST_TAB_WINDOW_INDENT;
@@ -26,20 +32,28 @@ const processWindow = (window: KittyWindow, isLast: boolean, parentIsLast: boole
     pid: window.pid,
     cwd: window.cwd,
     cmdline: window.cmdline.join(' '),
+    isFocused: window.is_focused,
+    tabIsFocused,
+    osWindowIsFocused,
   };
 
   return entry;
 };
 
-const processTab = (tab: KittyTab, isLast: boolean): WindowListEntry[] => {
+const processTab = (tab: KittyTab, isLast: boolean, osWindowIsFocused: boolean): WindowListEntry[] => {
   const entry: WindowListEntry = {
     id: tab.id,
     text: `${isLast ? LAST_TAB_INDENT : TAB_INDENT}${tab.title} (tab:${tab.id}) ${tab.is_focused ? '*' : ''}`,
     type: WindowListEntryType.Tab,
     title: tab.title,
+    isFocused: tab.is_focused,
+    tabIsFocused: tab.is_focused,
+    osWindowIsFocused,
   };
 
-  const windows = tab.windows.map((window, index, array) => processWindow(window, index === array.length - 1, isLast));
+  const windows = tab.windows.map((window, index, array) =>
+    processWindow(window, index === array.length - 1, isLast, osWindowIsFocused, tab.is_focused),
+  );
   return [entry, ...windows];
 };
 
@@ -48,9 +62,14 @@ const processOsWindow = (window: KittyOsWindow): WindowListEntry[] => {
     id: window.id,
     text: `kitty:${window.id}`,
     type: WindowListEntryType.OsWindow,
+    isFocused: window.is_focused,
+    tabIsFocused: window.is_focused,
+    osWindowIsFocused: window.is_focused,
   };
 
-  const tabs = window.tabs.flatMap((tab, index, array) => processTab(tab, index === array.length - 1));
+  const tabs = window.tabs.flatMap((tab, index, array) =>
+    processTab(tab, index === array.length - 1, window.is_focused),
+  );
   return [entry, ...tabs];
 };
 
