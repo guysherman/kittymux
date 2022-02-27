@@ -1,5 +1,5 @@
-import { exec } from 'child_process';
-import { ExecError, WindowListEntry, WindowListEntryType } from './model';
+import kittyCommand from './kittyCommand';
+import { WindowListEntry, WindowListEntryType } from './model';
 
 export const focusEntry = (entry: WindowListEntry): void => {
   switch (entry.type) {
@@ -17,23 +17,11 @@ export const focusEntry = (entry: WindowListEntry): void => {
 };
 
 const focusTab = (id: number): void => {
-  exec(`kitty @ focus-tab -m id:${id}`, (error, _stdout, stderror) => {
-    if (error) {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      throw new ExecError((error as any).code, stderror);
-    } else {
-      process.exit(0);
-    }
-  });
+  const args = ['focus-tab', '-m', `id:${id}`];
+  kittyCommand(args).then(() => process.exit(0));
 };
 
 const focusWindow = (id: number): void => {
-  exec(`kitty @ focus-window -m id:${id}`, (error, _stdout, stderror) => {
-    if (error) {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      throw new ExecError((error as any).code, stderror);
-    } else {
-      process.exit(0);
-    }
-  });
+  const args = ['focus-window', '-m', `id:${id}`];
+  kittyCommand(args).then(() => process.exit(0));
 };

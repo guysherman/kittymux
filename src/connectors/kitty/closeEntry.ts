@@ -1,7 +1,7 @@
-import { exec } from 'child_process';
-import { ExecError, WindowListEntry, WindowListEntryType } from './model';
+import kittyCommand from './kittyCommand';
+import { WindowListEntry, WindowListEntryType } from './model';
 
-export const closeEntry = (entry: WindowListEntry): Promise<void> => {
+export const closeEntry = (entry: WindowListEntry): Promise<unknown> => {
   switch (entry.type) {
     case WindowListEntryType.OsWindow:
       return Promise.resolve(undefined);
@@ -14,28 +14,12 @@ export const closeEntry = (entry: WindowListEntry): Promise<void> => {
   }
 };
 
-const closeWindow = (id: number): Promise<void> => {
-  return new Promise<void>((resolve, reject) => {
-    exec(`kitty @ close-window -m id:${id}`, (error, _stdout, stderror) => {
-      if (error) {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        reject(new ExecError((error as any).code, stderror));
-      } else {
-        resolve();
-      }
-    });
-  });
+const closeWindow = (id: number): Promise<unknown> => {
+  const args = ['close-window', '-m', `id:${id}`];
+  return kittyCommand(args);
 };
 
-const closeTab = (id: number): Promise<void> => {
-  return new Promise<void>((resolve, reject) => {
-    exec(`kitty @ close-tab -m id:${id}`, (error, _stdout, stderror) => {
-      if (error) {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        reject(new ExecError((error as any).code, stderror));
-      } else {
-        resolve();
-      }
-    });
-  });
+const closeTab = (id: number): Promise<unknown> => {
+  const args = ['close-tab', '-m', `id:${id}`];
+  return kittyCommand(args);
 };
