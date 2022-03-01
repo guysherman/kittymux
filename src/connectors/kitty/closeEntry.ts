@@ -1,5 +1,5 @@
 import kittyCommand from './kittyCommand';
-import { WindowListEntry, WindowListEntryType } from './model';
+import { WindowListEntry, WindowListEntryType } from '../../models/Kitty';
 
 export const closeEntry = (entry: WindowListEntry): Promise<unknown> => {
   switch (entry.type) {

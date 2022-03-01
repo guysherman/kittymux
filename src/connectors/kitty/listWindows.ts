@@ -1,5 +1,5 @@
 import kittyCommand from './kittyCommand';
-import { KittyOsWindow } from './model';
+import { KittyOsWindow } from '../../models/Kitty';
 
 export const listWindows = (): Promise<KittyOsWindow[]> => {
   const args = ['ls'];

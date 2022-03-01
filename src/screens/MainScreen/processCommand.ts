@@ -1,4 +1,4 @@
-import { DefaultMainScreenMode } from './model';
+import { DefaultMainScreenMode } from '../../models/MainScreen';
 import { MainScreenActions } from './reducer';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any

@@ -1,5 +1,5 @@
 import { KittyOsWindow, KittyTab, KittyWindow } from '.';
-import { WindowListEntry, WindowListEntryType } from './model';
+import { WindowListEntry, WindowListEntryType } from '../../models/Kitty';
 
 const PRE_INDENT = '    ';
 const INDENT = ' └─ ';
@@ -49,6 +49,7 @@ const processTab = (tab: KittyTab, isLast: boolean, osWindowIsFocused: boolean):
     isFocused: tab.is_focused,
     tabIsFocused: tab.is_focused,
     osWindowIsFocused,
+    kittyTab: tab,
   };
 
   const windows = tab.windows.map((window, index, array) =>

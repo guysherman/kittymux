@@ -1,5 +1,5 @@
 import { exec } from 'child_process';
-import { ExecError, WindowListEntry, WindowListEntryType } from './model';
+import { ExecError, WindowListEntry, WindowListEntryType } from '../../models/Kitty';
 
 export const renameEntry = (entry: WindowListEntry, newName: string): Promise<void> => {
   switch (entry.type) {

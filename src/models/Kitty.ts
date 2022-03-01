@@ -65,4 +65,5 @@ export interface WindowListEntry {
   isFocused: boolean;
   tabIsFocused: boolean;
   osWindowIsFocused: boolean;
+  kittyTab?: KittyTab;
 }

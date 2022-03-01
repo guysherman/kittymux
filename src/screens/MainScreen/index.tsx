@@ -5,7 +5,7 @@ import * as blessed from 'blessed';
 import { useEffect, useReducer } from '@guysherman/treecat';
 import { WindowListEntry, WindowListEntryType, renameEntry } from '../../connectors/kitty';
 import { getInstructions } from './getInstructions';
-import { mainScreenContext, MainScreenMode, DefaultMainScreenMode, QuickNavHandle } from './model';
+import { mainScreenContext, MainScreenMode, DefaultMainScreenMode, QuickNavHandle } from '../../models/MainScreen';
 import { processCommand } from './processCommand';
 import { processListKeyPress } from './processListKeyPress';
 import { getDefaultState, MainScreenActions, mainScreenReducer } from './reducer';

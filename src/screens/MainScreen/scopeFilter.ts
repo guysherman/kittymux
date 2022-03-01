@@ -1,4 +1,4 @@
-import { MainScreenScope } from './model';
+import { MainScreenScope } from '../../models/MainScreen';
 import { WindowListEntry } from '../../connectors/kitty';
 
 const allScopeFilter = (entries: WindowListEntry[]) => entries;
