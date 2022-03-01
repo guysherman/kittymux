@@ -1,5 +1,6 @@
 import * as blessed from 'blessed';
 import { WindowListEntry, WindowListEntryType, focusEntry, closeEntry } from '../../connectors/kitty';
+import { serialiseSession } from '../../connectors/sessions/serialiseSession';
 import { MainScreenState, MainScreenMode } from '../../models/MainScreen';
 import { MainScreenActions } from './reducer';
 import { refreshWindowList } from './refreshWindowList';
@@ -89,6 +90,12 @@ const enterQuickNavMode = (dispatch: (action: any) => void, _state: MainScreenSt
   dispatch({ type: MainScreenActions.SetMode, payload: MainScreenMode.QuickNav });
 };
 
+const saveSession = (_dispatch: (action: any) => void, state: MainScreenState) => {
+  const { selectedIndex, entries, quickNavKeys } = state;
+  const entry = entries[selectedIndex];
+  serialiseSession(entry, quickNavKeys);
+};
+
 const commandMap: Record<string, KeyHandler> = {
   j: nextEntry,
   k: previousEntry,
@@ -101,6 +108,7 @@ const commandMap: Record<string, KeyHandler> = {
   ':': enterCommandMode,
   m: enterSetQuickNavMode,
   "'": enterQuickNavMode,
+  s: saveSession,
 };
 
 export const processListKeyPress = (

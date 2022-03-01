@@ -17,11 +17,19 @@ describe('createWindow', () => {
     expect(id).toEqual(99);
   });
 
-  it('should issue the correct command for a window in the specified tab', async () => {
+  it('should issue the correct command for a window in tab with given id', async () => {
     mockKittyCommand.mockResolvedValue('99');
     const id = await createWindow('test title', { tabId: 5 });
 
     expect(mockKittyCommand.mock.calls[0][0]).toEqual(['new-window', '--title', '"test title"', '-m', 'id:5']);
+    expect(id).toEqual(99);
+  });
+
+  it('should issue the correct command for a window in tab with given name', async () => {
+    mockKittyCommand.mockResolvedValue('99');
+    const id = await createWindow('test title', { tabTitle: 'ttt' });
+
+    expect(mockKittyCommand.mock.calls[0][0]).toEqual(['new-window', '--title', '"test title"', '-m', `title:'ttt'`]);
     expect(id).toEqual(99);
   });
 
