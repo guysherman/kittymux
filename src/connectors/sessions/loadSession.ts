@@ -37,7 +37,6 @@ const loadSession = async (sessionName: string): Promise<void> => {
   const storeText = readFileSync(storePath, 'utf8');
   const storeData = JSON.parse(storeText || '{}');
   const { quickNavKeys } = storeData;
-  console.log('quickNavKeys  -pre', { quickNavKeys });
 
   const { windows } = sessionData;
   let tab: KittyTab | undefined = undefined;
@@ -55,10 +54,8 @@ const loadSession = async (sessionName: string): Promise<void> => {
     // On the first window, we need to grab the tab, and use it's id.
     if (i === 0) {
       do {
-        console.log('findingTab...');
         tab = await findTab();
         if (!tab || tab.title !== sessionData.title || !tab.is_focused) {
-          console.log('Wrong/no tab', { tab });
           await delay(1000);
           continue;
         }
@@ -80,7 +77,6 @@ const loadSession = async (sessionName: string): Promise<void> => {
     }
   }
 
-  console.log('quickNavKeys', { quickNavKeys });
   writeFileSync(storePath, JSON.stringify({ quickNavKeys }));
 
   return;

@@ -120,11 +120,6 @@ describe('MainScreen', () => {
     outStream = fs.createWriteStream('./.scratch/out');
     inStream = fs.createReadStream('/dev/random');
     rootScreen = TreeCat.blessed.screen({ output: inStream, input: outStream });
-    //mockedPersistedReducer.mockImplementation((reducer) => {
-    //console.log('mockedPersistedReducer', { reducer });
-    //return reducer;
-    //});
-    //mockedRestoreState.mockImplementation((state) => state);
   });
 
   afterEach(() => {
