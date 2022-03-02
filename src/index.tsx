@@ -2,7 +2,7 @@
 import * as TreeCat from '@guysherman/treecat';
 import { MainScreen } from './screens/MainScreen';
 import minimist, { Opts } from 'minimist';
-import loadSession from './connectors/sessions/loadSession';
+import loadOrFindSession from './connectors/sessions/loadOrFindSession';
 
 const main = async () => {
   const cliArgs: Opts = {
@@ -14,7 +14,7 @@ const main = async () => {
   const parsedArgs = minimist(process.argv.slice(2), cliArgs);
 
   if (parsedArgs.session) {
-    await loadSession(parsedArgs.session);
+    await loadOrFindSession(parsedArgs.session);
     process.exit(0);
   }
 
