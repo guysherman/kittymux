@@ -52,8 +52,8 @@ describe('serialiseSession', () => {
         },
         {
           id: 3,
-          is_focused: true,
-          is_self: true,
+          is_focused: false,
+          is_self: false,
           lines: 41,
           pid: 404040,
           title: 'nvim .',
@@ -110,10 +110,6 @@ describe('serialiseSession', () => {
               title: 'nvim .',
               cwd: '/home/tester',
               shortcutKey: 't',
-              foregroundProcess: {
-                cwd: '/home/tester',
-                args: ['/usr/bin/sh'],
-              },
             },
             {
               title: 'nvim .',
