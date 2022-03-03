@@ -1,5 +1,5 @@
 import { KittyOsWindow, KittyTab, KittyWindow } from '.';
-import { WindowListEntry, WindowListEntryType } from '../../models/Kitty';
+import { WindowListEntry, WindowListEntryType } from './model';
 
 const PRE_INDENT = '    ';
 const INDENT = ' └─ ';

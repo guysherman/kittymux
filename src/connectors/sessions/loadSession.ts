@@ -8,7 +8,7 @@ import {
   WindowListEntryType,
 } from '../kitty';
 import { readFileSync, writeFileSync } from 'fs';
-import { Session } from '../../models/Sessions';
+import { Session } from './model';
 
 const findTab = async (): Promise<KittyTab | undefined> => {
   const windowList = await listWindows();

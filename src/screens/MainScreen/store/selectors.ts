@@ -1,4 +1,4 @@
-import { WindowListEntry } from '../../../models/Kitty';
+import { WindowListEntry } from '../../../connectors/kitty';
 import { MainScreenMode, MainScreenState } from './model';
 
 const getItems = (state: MainScreenState, entries: WindowListEntry[]): string[] => {

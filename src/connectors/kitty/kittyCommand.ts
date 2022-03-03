@@ -1,5 +1,5 @@
 import { exec } from 'child_process';
-import { ExecError } from '../../models/Kitty';
+import { ExecError } from './model';
 
 const kittyCommand = (args: string[]): Promise<string> => {
   const argString = args.join(' ');

@@ -6,7 +6,7 @@ export {
   ExecError,
   WindowListEntry,
   WindowListEntryType,
-} from '../../models/Kitty';
+} from './model';
 export { listWindows } from './listWindows';
 export { processWindowList } from './processWindowList';
 export { focusEntry } from './focusEntry';

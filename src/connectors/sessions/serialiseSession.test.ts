@@ -1,5 +1,5 @@
 import * as fs from 'fs';
-import { KittyTab, WindowListEntryType } from '../../models/Kitty';
+import { KittyTab, WindowListEntryType } from '../kitty';
 import { serialiseSession } from './serialiseSession';
 jest.mock('fs');
 
