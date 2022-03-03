@@ -1,6 +1,6 @@
-import { WindowListEntry, stateDir } from '../../connectors/kitty';
-import { persistedReducer, restoreState } from '../../connectors/settings';
-import { DefaultMainScreenMode, MainScreenMode, MainScreenState, QuickNavHandle } from '../../models/MainScreen';
+import { WindowListEntry, stateDir } from '../../../connectors/kitty';
+import { persistedReducer, restoreState } from '../../../connectors/settings';
+import { DefaultMainScreenMode, MainScreenMode, MainScreenState, QuickNavHandle } from '../../../models/MainScreen';
 
 export enum MainScreenActions {
   SetSelectedIndex = 'SET_SELECTED_INDEX',

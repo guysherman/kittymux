@@ -1,5 +1,5 @@
-import { listWindows, KittyOsWindow, processWindowList } from '../../connectors/kitty';
-import { MainScreenActions } from './reducer';
+import { listWindows, KittyOsWindow, processWindowList } from '../../../connectors/kitty';
+import { MainScreenActions } from '../store/reducer';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const refreshWindowList = (dispatch: (action: any) => void) => {

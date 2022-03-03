@@ -1,5 +1,5 @@
-import { KittyOsWindow, processWindowList } from '../../connectors/kitty';
-import { filterEntries } from './scopeFilter';
+import { KittyOsWindow, processWindowList } from '../../../connectors/kitty';
+import { filterEntries } from '../store/scopeFilter';
 
 describe('scopeFilter', () => {
   const windowList: KittyOsWindow[] = [

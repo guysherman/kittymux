@@ -1,8 +1,8 @@
 import * as blessed from 'blessed';
-import { WindowListEntry, WindowListEntryType, focusEntry, closeEntry } from '../../connectors/kitty';
-import { serialiseSession } from '../../connectors/sessions/serialiseSession';
-import { MainScreenState, MainScreenMode } from '../../models/MainScreen';
-import { MainScreenActions } from './reducer';
+import { WindowListEntry, WindowListEntryType, focusEntry, closeEntry } from '../../../connectors/kitty';
+import { serialiseSession } from '../../../connectors/sessions/serialiseSession';
+import { MainScreenState, MainScreenMode } from '../../../models/MainScreen';
+import { MainScreenActions } from '../store/reducer';
 import { refreshWindowList } from './refreshWindowList';
 
 interface KeyHandler {

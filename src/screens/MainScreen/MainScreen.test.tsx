@@ -19,7 +19,7 @@ import {
   WindowListEntry,
   WindowListEntryType,
 } from '../../connectors/kitty';
-import { QUICKNAVS_STORE_PATH } from './reducer';
+import { QUICKNAVS_STORE_PATH } from './store/reducer';
 jest.mock('../../connectors/kitty', () => {
   const original = jest.requireActual('../../connectors/kitty');
 

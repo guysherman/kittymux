@@ -4,14 +4,15 @@ import * as TreeCat from '@guysherman/treecat';
 import * as blessed from 'blessed';
 import { useEffect, useReducer } from '@guysherman/treecat';
 import { WindowListEntry, WindowListEntryType, renameEntry } from '../../connectors/kitty';
-import { getInstructions } from './getInstructions';
+import { getInstructions } from './store/getInstructions';
 import { mainScreenContext, MainScreenMode, DefaultMainScreenMode, QuickNavHandle } from '../../models/MainScreen';
-import { processCommand } from './processCommand';
-import { processListKeyPress } from './processListKeyPress';
-import { getDefaultState, MainScreenActions, mainScreenReducer } from './reducer';
-import { refreshWindowList } from './refreshWindowList';
-import { processQuickNavKeypress } from './processQuickNavKeypress';
-import { filterEntries } from './scopeFilter';
+import { processCommand } from './actions/processCommand';
+import { processListKeyPress } from './actions/processListKeyPress';
+import { getDefaultState, MainScreenActions, mainScreenReducer } from './store/reducer';
+import { refreshWindowList } from './actions/refreshWindowList';
+import { processQuickNavKeypress } from './actions/processQuickNavKeypress';
+import { filterEntries } from './store/scopeFilter';
+import getItems from './store/selectors';
 //└─
 //
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -24,18 +25,7 @@ export const MainScreen = (props: MainScreenProps) => {
   const [state, dispatch] = useReducer(mainScreenReducer, getDefaultState());
 
   const { entries, selectedIndex, mode } = state;
-  const items = filterEntries(scope, entries).map((entry: WindowListEntry) => {
-    if (state.mode === MainScreenMode.QuickNav || state.mode === MainScreenMode.SetQuickNav) {
-      const entryQuickNav = Object.entries(state.quickNavKeys).find(([, handles]) =>
-        handles.find((handle) => handle.id === entry.id && handle.type === entry.type),
-      );
-
-      return `{inverse}${entryQuickNav?.[0] ?? ' '}{/inverse}\t${entry.text}`;
-    } else {
-      return entry.text;
-    }
-  });
-
+  const items = getItems(state, filterEntries(scope, entries));
   const selectedEntry = entries[selectedIndex] ?? { type: WindowListEntryType.None };
   const instructions = getInstructions(state);
 
@@ -44,7 +34,9 @@ export const MainScreen = (props: MainScreenProps) => {
   }, []);
 
   const listKeyPress = (ch: string, key: blessed.Widgets.Events.IKeyEventArg): void => {
-    processListKeyPress(state, dispatch, ch, key);
+    if (entries.length) {
+      processListKeyPress(state, dispatch, ch, key);
+    }
   };
 
   const onRename = (value: string) => {
@@ -61,7 +53,9 @@ export const MainScreen = (props: MainScreenProps) => {
   };
 
   const quickNavKeyPress = (_ch: string, key: blessed.Widgets.Events.IKeyEventArg) => {
-    processQuickNavKeypress(state, dispatch, key);
+    if (entries.length) {
+      processQuickNavKeypress(state, dispatch, key);
+    }
   };
 
   const listOpts = {

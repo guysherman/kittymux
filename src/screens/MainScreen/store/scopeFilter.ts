@@ -1,5 +1,5 @@
-import { MainScreenScope } from '../../models/MainScreen';
-import { WindowListEntry } from '../../connectors/kitty';
+import { MainScreenScope } from '../../../models/MainScreen';
+import { WindowListEntry } from '../../../connectors/kitty';
 
 const allScopeFilter = (entries: WindowListEntry[]) => entries;
 const windowScopeFilter = (entries: WindowListEntry[]) => entries.filter((entry) => entry.osWindowIsFocused);

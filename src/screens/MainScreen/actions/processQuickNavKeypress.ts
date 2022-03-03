@@ -1,8 +1,8 @@
 import * as blessed from 'blessed';
-import { focusEntry } from '../../connectors/kitty';
-import { MainScreenState, DefaultMainScreenMode, MainScreenMode } from '../../models/MainScreen';
-import { MainScreenActions } from './reducer';
-import { filterEntries } from './scopeFilter';
+import { focusEntry } from '../../../connectors/kitty';
+import { MainScreenState, DefaultMainScreenMode, MainScreenMode } from '../../../models/MainScreen';
+import { MainScreenActions } from '../store/reducer';
+import { filterEntries } from '../store/scopeFilter';
 
 export const processQuickNavKeypress = (
   state: MainScreenState,

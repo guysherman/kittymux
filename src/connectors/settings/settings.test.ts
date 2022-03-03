@@ -1,7 +1,7 @@
 import * as fs from 'fs';
 import { restoreState } from '.';
 import { MainScreenMode, MainScreenState } from '../../models/MainScreen';
-import { MainScreenActions, mainScreenReducer } from '../../screens/MainScreen/reducer';
+import { MainScreenActions, mainScreenReducer } from '../../screens/MainScreen/store/reducer';
 import { WindowListEntryType } from '../kitty';
 jest.mock('fs');
 
