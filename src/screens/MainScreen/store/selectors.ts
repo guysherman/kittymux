@@ -1,5 +1,5 @@
 import { WindowListEntry } from '../../../models/Kitty';
-import { MainScreenMode, MainScreenState } from '../../../models/MainScreen';
+import { MainScreenMode, MainScreenState } from './model';
 
 const getItems = (state: MainScreenState, entries: WindowListEntry[]): string[] => {
   return entries.map((entry: WindowListEntry) => {

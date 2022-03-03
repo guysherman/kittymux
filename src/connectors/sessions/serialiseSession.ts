@@ -1,5 +1,5 @@
 import { writeFileSync } from 'fs';
-import { QuickNavHandle } from '../../models/MainScreen';
+import { QuickNavHandle } from '../../screens/MainScreen/store/model';
 import { WindowListEntry, WindowListEntryType, stateDir } from '../kitty';
 
 export const serialiseSession = (entry: WindowListEntry, quickNavKeys: Record<string, QuickNavHandle[]>): void => {

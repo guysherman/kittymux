@@ -1,5 +1,5 @@
 import { createContext } from '@guysherman/treecat';
-import { WindowListEntry, WindowListEntryType } from '../connectors/kitty';
+import { WindowListEntry, WindowListEntryType } from '../../../connectors/kitty';
 
 export enum MainScreenMode {
   Navigate = 'NAVIGATE',

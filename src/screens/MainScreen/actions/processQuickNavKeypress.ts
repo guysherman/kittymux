@@ -1,6 +1,6 @@
 import * as blessed from 'blessed';
 import { focusEntry } from '../../../connectors/kitty';
-import { MainScreenState, DefaultMainScreenMode, MainScreenMode } from '../../../models/MainScreen';
+import { MainScreenState, DefaultMainScreenMode, MainScreenMode } from '../store/model';
 import { MainScreenActions } from '../store/reducer';
 import { filterEntries } from '../store/scopeFilter';
 

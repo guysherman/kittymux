@@ -1,5 +1,5 @@
 import { WindowListEntryType } from '../../../connectors/kitty';
-import { MainScreenMode, MainScreenState } from '../../../models/MainScreen';
+import { MainScreenMode, MainScreenState } from './model';
 import { MainScreenActions, mainScreenReducer } from './reducer';
 
 describe('MainScreenReducer', () => {

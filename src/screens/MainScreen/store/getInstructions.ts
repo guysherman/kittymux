@@ -1,5 +1,5 @@
 import { WindowListEntryType } from '../../../connectors/kitty';
-import { MainScreenMode, MainScreenState } from '../../../models/MainScreen';
+import { MainScreenMode, MainScreenState } from './model';
 
 const getNavModeInstructions = (entryType: WindowListEntryType): string => {
   switch (entryType) {
