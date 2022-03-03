@@ -1,6 +1,6 @@
 import * as blessed from 'blessed';
 import { WindowListEntry, WindowListEntryType, focusEntry, closeEntry } from '../../../connectors/kitty';
-import { serialiseSession } from '../../../connectors/sessions/serialiseSession';
+import { serialiseSession } from '../../../connectors/sessions';
 import { MainScreenState, MainScreenMode } from '../store/model';
 import { MainScreenActions } from '../store/reducer';
 import { refreshWindowList } from './refreshWindowList';

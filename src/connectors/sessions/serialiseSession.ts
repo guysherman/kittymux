@@ -2,7 +2,7 @@ import { writeFileSync } from 'fs';
 import { QuickNavHandle } from '../../screens/MainScreen/store/model';
 import { WindowListEntry, WindowListEntryType, stateDir } from '../kitty';
 
-export const serialiseSession = (entry: WindowListEntry, quickNavKeys: Record<string, QuickNavHandle[]>): void => {
+const serialiseSession = (entry: WindowListEntry, quickNavKeys: Record<string, QuickNavHandle[]>): void => {
   const { kittyTab } = entry;
 
   const windows = kittyTab?.windows
@@ -42,3 +42,5 @@ export const serialiseSession = (entry: WindowListEntry, quickNavKeys: Record<st
 
   writeFileSync(sessionPath, JSON.stringify(session, null, 4));
 };
+
+export default serialiseSession;

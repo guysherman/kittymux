@@ -1,6 +1,6 @@
 import * as fs from 'fs';
 import { KittyTab, WindowListEntryType } from '../kitty';
-import { serialiseSession } from './serialiseSession';
+import serialiseSession from './serialiseSession';
 jest.mock('fs');
 
 const mockedFs = fs as jest.Mocked<typeof fs>;

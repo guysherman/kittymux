@@ -1,5 +1,5 @@
 import minimist, { Opts } from 'minimist';
-import loadOrFindSession from '../connectors/sessions/loadOrFindSession';
+import { loadOrFindSession } from '../connectors/sessions';
 
 const minimistOpts: Opts = {
   string: ['scope', 'session'],
