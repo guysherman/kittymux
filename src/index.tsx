@@ -1,31 +1,15 @@
 /** @jsx TreeCat.createElement **/
-import * as TreeCat from '@guysherman/treecat';
-import { MainScreen } from './screens/MainScreen';
-import minimist, { Opts } from 'minimist';
-import loadOrFindSession from './connectors/sessions/loadOrFindSession';
+import runCli from './cli';
+import runTextUi from './screens';
 
 const main = async () => {
-  const cliArgs: Opts = {
-    string: ['scope', 'session'],
-    default: {
-      scope: 'all',
-    },
-  };
-  const parsedArgs = minimist(process.argv.slice(2), cliArgs);
+  const [shouldExit, scope] = await runCli();
 
-  if (parsedArgs.session) {
-    await loadOrFindSession(parsedArgs.session);
+  if (shouldExit) {
     process.exit(0);
   }
 
-  const rootScreen: TreeCat.blessed.Widgets.Screen = TreeCat.createRootScreen();
-  rootScreen.program.on('keypress', (_ch: string, key: TreeCat.blessed.Widgets.Events.IKeyEventArg) => {
-    if (key.full === 'C-c') {
-      process.exit(0);
-    }
-  });
-
-  TreeCat.render(<MainScreen scope={parsedArgs.scope} />, rootScreen);
+  runTextUi(scope);
 };
 
 main().catch((e) => {
