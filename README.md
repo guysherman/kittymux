@@ -4,18 +4,31 @@ One of the useful things about tmux is its session/window browser. This is a too
 kitty that same superpower. The idea is to bind a hotkey to run it in a new window in kitty 
 so that you can jump to known windows whenever you want. 
 
-![A screenshot of kittymux](doc/kittymux.png)
+![A screenshot of kittymux](doc/kittymux.gif)
 
-Still working on things like useful hotkeys, keybinding, etc to make it easy to manage windows without using a mouse etc.
+## Features
 
-Very much a work in progress, but issues and comments welcome :)
+* Easily view a list of all OS Windows, Tabs, and Windows within Kitty
+* Easily navigate the aforementioned
+* Save/Restore tabs (treating them a little like tmux sessions)
 
 ## Just want to use it?
+
+### Installation Instructions
 
 Install as a global package with npm:
 ```
 npm install -g @guysherman/kittymux
 ```
+
+### Kitty setup instructions
+
+The main thing you need is to make sure kitty allows remote control. On linux you can do this by running kitty with the following commandline args:
+```
+kitty -o allow_remote_control=yes --single-instance --listen-on unix:@mykitty
+```
+
+You can see the [Kitty docs](https://sw.kovidgoyal.net/kitty/remote-control/) for more info on that.
 
 Then set up a keybind in your `kitty.config`:
 ```
@@ -24,8 +37,43 @@ map ctrl+shift+k launch --type=overlay zsh -c "PATH=/home/guy/.nvm/versions/node
 
 NB: I had to run it in my shell, and make sure my node installation was on my path in order to get it to work. This will depend on how you have node installed.
 
+### Usage instructions
+
+**Basic Usage**
+
+To run kittymux, simply run `km` at the terminal. This brings up the list of OS Windows, Tabs and Windows. You can navigate up and down the list with
+`j/k` (down/up respectively). Or you can jump to tabs with `J/K` (again down/up respectively). Press enter to focus a given entry in the list.
+
+**Name Tabs and Windows**
+
+You can rename a tab or window by highlighting, and then hitting `a`. You are then prompted to enter a new name for the tab.
+
+**Bookmarks**
+
+Kittymux also supports bookmarks (called quicknavs). To assign a bookmark to an entry in the list, hit `m`, followed by a character or number.
+To quickly access a bookmarked entry, hit `'` then the same character. You can only jump to bookmarks in the current tab, and multiple entries
+(in different tabs) can share the same bookmark. This is useful when we talk about saved sessions. To cancel jumping to a bookmark, just hit `Esc`.
+
+The image below shows kitty while it is waiting for the user to select a bookmark. The assigned bookmarks are highlighted in the first column.
+
+![Selecting a bookmark](doc/kittymux-bookmark.png)
+
+**Save/Load Tabs**
+
+You can save a tab by highlighting it in the list and hitting `s`. And if you later want to restore that tab, from the terminal you can
+run `km --session=<tab name>` to reload the tab. If you launch a session that is already loaded, it will just be focused instead. This way,
+you can bind a command to load a session to a shortcut key, and it will serve to load or focus the session. eg:
+
+```
+map ctrl+shift+9 launch --type=overlay zsh -c "PATH=/home/guy/.nvm/versions/node/v16.13.1/bin:$PATH km --session=kittymux"
+```
+
+*NB: You should name your tabs before saving them, otherwise weird stuff will happen*
+
+To quit you can hit `:` followed by `q`, or `ctrl+c`.
+
 ## Hacking on it:
-You might find you need to modify treecat as well, so what I would do is:
+You might find you need to modify treecat (a react-like wrapper around the underlying text-ui framework) as well, so what I would do is:
 
 ```
 git clone git@github.com:guysherman/treecat
