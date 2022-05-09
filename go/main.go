@@ -1,0 +1,4 @@
+package kittymux
+
+func main() {
+}
