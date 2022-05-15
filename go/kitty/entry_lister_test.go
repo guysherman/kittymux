@@ -2,34 +2,48 @@ package kitty
 
 import "testing"
 
-type MockCommandExecutorOsWindowOnly struct{}
+type MockCommandExecutor struct {
+	returnValue string
+	savedArgs   []string
+}
 
-func (c *MockCommandExecutorOsWindowOnly) ExecuteCommand(args []string) string {
-	return `
-    [
-      {
-        "id": 2,
-        "is_focused": true,
-        "platform_window_id": 77594671,
-        "tabs": [],
-        "wm_class": "kitty",
-        "wm_name": "kitty"
-      },
-      {
-        "id": 3,
-        "is_focused": false,
-        "platform_window_id": 77594672,
-        "tabs": [],
-        "wm_class": "kitty",
-        "wm_name": "kitty"
-      }
-    ]
-`
+func (c *MockCommandExecutor) SetReturnValue(returnValue string) {
+	c.returnValue = returnValue
+}
+
+func (c *MockCommandExecutor) GetSavedArgs() []string {
+	return c.savedArgs
+}
+
+func (c *MockCommandExecutor) ExecuteCommand(args []string) string {
+	c.savedArgs = args
+	return c.returnValue
 }
 
 func TestFlattenOsWindow(t *testing.T) {
-	ce := &MockCommandExecutorOsWindowOnly{}
+	ce := &MockCommandExecutor{}
 	wl := &WindowListerBase{}
+
+	ce.SetReturnValue(`
+      [
+        {
+          "id": 2,
+          "is_focused": true,
+          "platform_window_id": 77594671,
+          "tabs": [],
+          "wm_class": "kitty",
+          "wm_name": "kitty"
+        },
+        {
+          "id": 3,
+          "is_focused": false,
+          "platform_window_id": 77594672,
+          "tabs": [],
+          "wm_class": "kitty",
+          "wm_name": "kitty"
+        }
+      ]
+  `)
 
 	el := &EntryListerBase{}
 
@@ -60,10 +74,11 @@ func TestFlattenOsWindow(t *testing.T) {
 	}
 }
 
-type MockCommandExecutorTabs struct{}
+func TestFlattenTabs(t *testing.T) {
+	ce := &MockCommandExecutor{}
+	wl := &WindowListerBase{}
 
-func (c *MockCommandExecutorTabs) ExecuteCommand(args []string) string {
-	return `
+	ce.SetReturnValue(`
     [
       {
         "id": 2,
@@ -91,12 +106,7 @@ func (c *MockCommandExecutorTabs) ExecuteCommand(args []string) string {
         "wm_name": "kitty"
       }
     ]
-`
-}
-
-func TestFlattenTabs(t *testing.T) {
-	ce := &MockCommandExecutorTabs{}
-	wl := &WindowListerBase{}
+  `)
 
 	el := &EntryListerBase{}
 
@@ -140,10 +150,11 @@ func TestFlattenTabs(t *testing.T) {
 
 }
 
-type MockCommandExecutorWindows struct{}
+func TestFlattenWindows(t *testing.T) {
+	ce := &MockCommandExecutor{}
+	wl := &WindowListerBase{}
 
-func (c *MockCommandExecutorWindows) ExecuteCommand(args []string) string {
-	return `
+	ce.SetReturnValue(`
     [
       {
         "id": 2,
@@ -216,12 +227,7 @@ func (c *MockCommandExecutorWindows) ExecuteCommand(args []string) string {
         "wm_name": "kitty"
       }
     ]
-`
-}
-
-func TestFlattenWindows(t *testing.T) {
-	ce := &MockCommandExecutorWindows{}
-	wl := &WindowListerBase{}
+  `)
 
 	el := &EntryListerBase{}
 
