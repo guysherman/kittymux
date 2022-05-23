@@ -45,7 +45,7 @@ type WindowListEntry struct {
 	IsFocused         bool
 	TabIsFocused      bool
 	OsWindowIsFocused bool
-	Tab               KittyTab
+	Tab               *KittyTab
 }
 
 type WindowListEntryType int64

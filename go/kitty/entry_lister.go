@@ -65,7 +65,7 @@ func processTab(entryList []WindowListEntry, osWindow KittyOsWindow, tab KittyTa
 		IsFocused:         tab.Is_focused,
 		TabIsFocused:      tab.Is_focused,
 		OsWindowIsFocused: osWindow.Is_focused,
-		Tab:               tab,
+		Tab:               &tab,
 		Text:              fmt.Sprintf("%s%s (tab:%d) %s", indent, tab.Title, tab.Id, star),
 	}
 
@@ -102,7 +102,7 @@ func processWindow(entryList []WindowListEntry, osWindow KittyOsWindow, tab Kitt
 		Pid:               window.Pid,
 		Title:             window.Title,
 		EntryType:         Window,
-		Tab:               tab,
+		Tab:               &tab,
 		IsFocused:         window.Is_focused,
 		TabIsFocused:      tab.Is_focused,
 		OsWindowIsFocused: osWindow.Is_focused,
