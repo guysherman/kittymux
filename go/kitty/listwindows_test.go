@@ -4,9 +4,9 @@ import "testing"
 
 func TestCreatesOsWindowCorrectly(t *testing.T) {
 	ce := &MockCommandExecutorKittyLs{}
-	wl := WindowListerBase{}
+	kc := KittyConnector{}
 
-	windows := wl.WindowList(ce)
+	windows := kc.WindowList(ce)
 	if len(windows) < 1 {
 		t.Error("Not enough os windows returned")
 	}

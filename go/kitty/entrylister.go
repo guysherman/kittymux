@@ -13,13 +13,13 @@ const LAST_TAB_WINDOW_INDENT = "    ├─ "
 const LAST_TAB_LAST_WINDOW_INDENT = "    └─ "
 
 type EntryLister interface {
-	EntryList(windowLister *WindowLister, commandExecutor *CommandExecutor) []WindowListEntry
+	EntryList(windowLister *IKittyConnector, commandExecutor *CommandExecutor) []WindowListEntry
 }
 
 type EntryListerBase struct{}
 
-func (el *EntryListerBase) EntryList(windowLister WindowLister, commandExecutor CommandExecutor) []WindowListEntry {
-	windowList := windowLister.WindowList(commandExecutor)
+func (el *EntryListerBase) EntryList(kittyConnector *KittyConnector, commandExecutor CommandExecutor) []WindowListEntry {
+	windowList := kittyConnector.WindowList(commandExecutor)
 	entryList := make([]WindowListEntry, 0)
 	for i := 0; i < len(windowList); i++ {
 		entryList = processOsWindow(entryList, windowList[i])

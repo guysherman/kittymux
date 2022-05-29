@@ -22,7 +22,7 @@ func (c *MockCommandExecutor) ExecuteCommand(args []string) string {
 
 func TestFlattenOsWindow(t *testing.T) {
 	ce := &MockCommandExecutor{}
-	wl := &WindowListerBase{}
+	wl := &KittyConnector{}
 
 	ce.SetReturnValue(`
       [
@@ -76,7 +76,7 @@ func TestFlattenOsWindow(t *testing.T) {
 
 func TestFlattenTabs(t *testing.T) {
 	ce := &MockCommandExecutor{}
-	wl := &WindowListerBase{}
+	wl := &KittyConnector{}
 
 	ce.SetReturnValue(`
     [
@@ -152,7 +152,7 @@ func TestFlattenTabs(t *testing.T) {
 
 func TestFlattenWindows(t *testing.T) {
 	ce := &MockCommandExecutor{}
-	wl := &WindowListerBase{}
+	wl := &KittyConnector{}
 
 	ce.SetReturnValue(`
     [
