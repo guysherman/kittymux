@@ -8,7 +8,7 @@ import (
 func TestFocusEntry(t *testing.T) {
 	Convey("Entry is an OS Window", t, func() {
 		ce := &MockCommandExecutor{}
-		kc := KittyConnector{}
+		kc := NewKittyConnector(ce)
 		entry := WindowListEntry{
 			Id:                1,
 			Text:              "TestEntry",
@@ -24,13 +24,13 @@ func TestFocusEntry(t *testing.T) {
 
 		ce.SetReturnValue("")
 
-		kc.FocusEntry(ce, entry)
-		So(ce.GetSavedArgs(), ShouldResemble, []string(nil))
+		kc.FocusEntry(entry)
+		So(ce.GetSavedArgs(), ShouldResemble, [][]string(nil))
 	})
 
 	Convey("Entry is a tab", t, func() {
 		ce := &MockCommandExecutor{}
-		kc := KittyConnector{}
+		kc := NewKittyConnector(ce)
 		entry := WindowListEntry{
 			Id:                1,
 			Text:              "TestEntry",
@@ -46,13 +46,13 @@ func TestFocusEntry(t *testing.T) {
 
 		ce.SetReturnValue("0")
 
-		kc.FocusEntry(ce, entry)
-		So(ce.GetSavedArgs(), ShouldResemble, []string{"focus-tab", "-m", "id:1"})
+		kc.FocusEntry(entry)
+		So(ce.GetSavedArgs()[0], ShouldResemble, []string{"focus-tab", "-m", "id:1"})
 	})
 
 	Convey("Entry is window", t, func() {
 		ce := &MockCommandExecutor{}
-		kc := KittyConnector{}
+		kc := NewKittyConnector(ce)
 		entry := WindowListEntry{
 			Id:                1,
 			Text:              "TestEntry",
@@ -68,8 +68,8 @@ func TestFocusEntry(t *testing.T) {
 
 		ce.SetReturnValue("0")
 
-		kc.FocusEntry(ce, entry)
-		So(ce.GetSavedArgs(), ShouldResemble, []string{"focus-window", "-m", "id:1"})
+		kc.FocusEntry(entry)
+		So(ce.GetSavedArgs()[0], ShouldResemble, []string{"focus-window", "-m", "id:1"})
 	})
 
 }

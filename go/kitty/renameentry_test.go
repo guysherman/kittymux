@@ -9,7 +9,7 @@ import (
 func TestEntryRenamer(t *testing.T) {
 	Convey("Entry is an OS Window", t, func() {
 		ce := &MockCommandExecutor{}
-		kc := KittyConnector{}
+		kc := NewKittyConnector(ce)
 		entry := WindowListEntry{
 			Id:                1,
 			Text:              "TestEntry",
@@ -25,13 +25,13 @@ func TestEntryRenamer(t *testing.T) {
 
 		ce.SetReturnValue("")
 
-		kc.RenameEntry(ce, entry, "new name")
-		So(ce.GetSavedArgs(), ShouldResemble, []string(nil))
+		kc.RenameEntry(entry, "new name")
+		So(ce.GetSavedArgs(), ShouldResemble, [][]string(nil))
 	})
 
 	Convey("Entry is a tab", t, func() {
 		ce := &MockCommandExecutor{}
-		kc := KittyConnector{}
+		kc := NewKittyConnector(ce)
 		entry := WindowListEntry{
 			Id:                1,
 			Text:              "TestEntry",
@@ -47,13 +47,13 @@ func TestEntryRenamer(t *testing.T) {
 
 		ce.SetReturnValue("0")
 
-		kc.RenameEntry(ce, entry, "new name")
-		So(ce.GetSavedArgs(), ShouldResemble, []string{"set-tab-title", "-m", "id:1", "new name"})
+		kc.RenameEntry(entry, "new name")
+		So(ce.GetSavedArgs()[0], ShouldResemble, []string{"set-tab-title", "-m", "id:1", "new name"})
 	})
 
 	Convey("Entry is window", t, func() {
 		ce := &MockCommandExecutor{}
-		kc := KittyConnector{}
+		kc := NewKittyConnector(ce)
 		entry := WindowListEntry{
 			Id:                1,
 			Text:              "TestEntry",
@@ -69,8 +69,8 @@ func TestEntryRenamer(t *testing.T) {
 
 		ce.SetReturnValue("0")
 
-		kc.RenameEntry(ce, entry, "new name")
-		So(ce.GetSavedArgs(), ShouldResemble, []string{"set-window-title", "-m", "id:1", "new name"})
+		kc.RenameEntry(entry, "new name")
+		So(ce.GetSavedArgs()[0], ShouldResemble, []string{"set-window-title", "-m", "id:1", "new name"})
 	})
 
 }

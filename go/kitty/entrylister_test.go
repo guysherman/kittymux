@@ -2,27 +2,9 @@ package kitty
 
 import "testing"
 
-type MockCommandExecutor struct {
-	returnValue string
-	savedArgs   []string
-}
-
-func (c *MockCommandExecutor) SetReturnValue(returnValue string) {
-	c.returnValue = returnValue
-}
-
-func (c *MockCommandExecutor) GetSavedArgs() []string {
-	return c.savedArgs
-}
-
-func (c *MockCommandExecutor) ExecuteCommand(args []string) string {
-	c.savedArgs = args
-	return c.returnValue
-}
-
 func TestFlattenOsWindow(t *testing.T) {
 	ce := &MockCommandExecutor{}
-	wl := &KittyConnector{}
+	wl := NewKittyConnector(ce)
 
 	ce.SetReturnValue(`
       [
@@ -47,7 +29,7 @@ func TestFlattenOsWindow(t *testing.T) {
 
 	el := &EntryListerBase{}
 
-	entries := el.EntryList(wl, ce)
+	entries := el.EntryList(wl)
 
 	if len(entries) != 2 {
 		t.Error("Incorrect number of entries", len(entries))
@@ -76,7 +58,7 @@ func TestFlattenOsWindow(t *testing.T) {
 
 func TestFlattenTabs(t *testing.T) {
 	ce := &MockCommandExecutor{}
-	wl := &KittyConnector{}
+	wl := NewKittyConnector(ce)
 
 	ce.SetReturnValue(`
     [
@@ -110,7 +92,7 @@ func TestFlattenTabs(t *testing.T) {
 
 	el := &EntryListerBase{}
 
-	entries := el.EntryList(wl, ce)
+	entries := el.EntryList(wl)
 
 	if len(entries) != 3 {
 		t.Error("Incorrect number of entries", len(entries))
@@ -152,7 +134,7 @@ func TestFlattenTabs(t *testing.T) {
 
 func TestFlattenWindows(t *testing.T) {
 	ce := &MockCommandExecutor{}
-	wl := &KittyConnector{}
+	wl := NewKittyConnector(ce)
 
 	ce.SetReturnValue(`
     [
@@ -231,7 +213,7 @@ func TestFlattenWindows(t *testing.T) {
 
 	el := &EntryListerBase{}
 
-	entries := el.EntryList(wl, ce)
+	entries := el.EntryList(wl)
 
 	if len(entries) != 4 {
 		t.Error("Incorrect number of entries", len(entries))

@@ -1,22 +1,32 @@
 package kitty
 
-import "strconv"
-import "strings"
-import "fmt"
-import "encoding/json"
+import (
+	"encoding/json"
+	"fmt"
+	"strconv"
+	"strings"
+)
 
 type IKittyConnector interface {
-	SendCommand(commandExecutor CommandExecutor, argsToSend []string, windowId int)
-	CloseEntry(commandExecutor CommandExecutor, entry WindowListEntry)
-	FocusEntry(commandExecutor CommandExecutor, entry WindowListEntry)
-	CreateWindow(commandExecutor CommandExecutor, title string, tabId int, tabTitle string, newTab bool, cwd string)
-	WindowList(commandExecutor CommandExecutor) []KittyOsWindow
-	RenameEntry(commandExecutor CommandExecutor, entry WindowListEntry, newName string)
+	SendCommand(argsToSend []string, windowId int)
+	CloseEntry(entry WindowListEntry)
+	FocusEntry(entry WindowListEntry)
+	CreateWindow(title string, tabId int, tabTitle string, newTab bool, cwd string) int
+	WindowList() []KittyOsWindow
+	RenameEntry(entry WindowListEntry, newName string)
 }
 
-type KittyConnector struct{}
+type KittyConnector struct {
+	commandExecutor CommandExecutor
+}
 
-func (cs *KittyConnector) SendCommand(commandExecutor CommandExecutor, argsToSend []string, windowId int) {
+func NewKittyConnector(commandExecutor CommandExecutor) *KittyConnector {
+	k := &KittyConnector{commandExecutor: commandExecutor}
+
+	return k
+}
+
+func (kc *KittyConnector) SendCommand(argsToSend []string, windowId int) {
 	for i := 0; i < len(argsToSend); i++ {
 		if strings.Contains(argsToSend[i], " ") {
 			argsToSend[i] = fmt.Sprintf("\"%s\"", argsToSend[i])
@@ -25,18 +35,18 @@ func (cs *KittyConnector) SendCommand(commandExecutor CommandExecutor, argsToSen
 
 	commandText := fmt.Sprintf("'%s\\n'", strings.Join(argsToSend, " "))
 	args := []string{"send-text", "-m", fmt.Sprintf("id:%d", windowId), commandText}
-	commandExecutor.ExecuteCommand(args)
+	kc.commandExecutor.ExecuteCommand(args)
 }
 
-func (ec *KittyConnector) CloseEntry(commandExecutor CommandExecutor, entry WindowListEntry) {
+func (kc *KittyConnector) CloseEntry(entry WindowListEntry) {
 	switch entry.EntryType {
 	case OsWindow:
 		break
 	case Tab:
-		closeTab(commandExecutor, entry)
+		closeTab(kc.commandExecutor, entry)
 		break
 	case Window:
-		closeWindow(commandExecutor, entry)
+		closeWindow(kc.commandExecutor, entry)
 		break
 	}
 }
@@ -55,15 +65,15 @@ func closeWindow(commandExecutor CommandExecutor, entry WindowListEntry) {
 	commandExecutor.ExecuteCommand(args)
 }
 
-func (ef *KittyConnector) FocusEntry(commandExecutor CommandExecutor, entry WindowListEntry) {
+func (kc *KittyConnector) FocusEntry(entry WindowListEntry) {
 	switch entry.EntryType {
 	case OsWindow:
 		break
 	case Tab:
-		focusCommand("focus-tab", commandExecutor, entry)
+		focusCommand("focus-tab", kc.commandExecutor, entry)
 		break
 	case Window:
-		focusCommand("focus-window", commandExecutor, entry)
+		focusCommand("focus-window", kc.commandExecutor, entry)
 	}
 }
 
@@ -74,7 +84,7 @@ func focusCommand(focusType string, commandExecutor CommandExecutor, entry Windo
 	commandExecutor.ExecuteCommand(args)
 }
 
-func (c *KittyConnector) CreateWindow(commandExecutor CommandExecutor, title string, tabId int, tabTitle string, newTab bool, cwd string) int {
+func (kc *KittyConnector) CreateWindow(title string, tabId int, tabTitle string, newTab bool, cwd string) int {
 	createArgs := make([]string, 0)
 	createArgs = append(createArgs, "new-window")
 	if title != "" {
@@ -100,7 +110,7 @@ func (c *KittyConnector) CreateWindow(commandExecutor CommandExecutor, title str
 		createArgs = append(createArgs, fmt.Sprintf("%s", cwd))
 	}
 
-	result := commandExecutor.ExecuteCommand(createArgs)
+	result := kc.commandExecutor.ExecuteCommand(createArgs)
 	windowId, err := strconv.Atoi(result)
 	if err != nil {
 		return -1
@@ -108,10 +118,10 @@ func (c *KittyConnector) CreateWindow(commandExecutor CommandExecutor, title str
 	return windowId
 }
 
-func (wl *KittyConnector) WindowList(commandExecutor CommandExecutor) []KittyOsWindow {
+func (kc *KittyConnector) WindowList() []KittyOsWindow {
 	var r []KittyOsWindow
 
-	commandOutput := commandExecutor.ExecuteCommand([]string{"ls"})
+	commandOutput := kc.commandExecutor.ExecuteCommand([]string{"ls"})
 	err := json.Unmarshal([]byte(commandOutput), &r)
 	if err != nil {
 		fmt.Println("JSON Error:", err.Error())
@@ -120,15 +130,15 @@ func (wl *KittyConnector) WindowList(commandExecutor CommandExecutor) []KittyOsW
 	return r
 }
 
-func (er *KittyConnector) RenameEntry(commandExecutor CommandExecutor, entry WindowListEntry, newName string) {
+func (kc *KittyConnector) RenameEntry(entry WindowListEntry, newName string) {
 	switch entry.EntryType {
 	case OsWindow:
 		break
 	case Tab:
-		renameCmd("set-tab-title", commandExecutor, entry, newName)
+		renameCmd("set-tab-title", kc.commandExecutor, entry, newName)
 		break
 	case Window:
-		renameCmd("set-window-title", commandExecutor, entry, newName)
+		renameCmd("set-window-title", kc.commandExecutor, entry, newName)
 	}
 }
 

@@ -8,11 +8,11 @@ import (
 func TestSendCommand(t *testing.T) {
 	Convey("should generate correct string including \\n at the end", t, func() {
 		ce := &MockCommandExecutor{}
-		kc := KittyConnector{}
+		kc := NewKittyConnector(ce)
 
-		kc.SendCommand(ce, []string{"nvim", "."}, 5)
+		kc.SendCommand([]string{"nvim", "."}, 5)
 		So(
-			ce.GetSavedArgs(),
+			ce.GetSavedArgs()[0],
 			ShouldResemble,
 			[]string{
 				"send-text",
@@ -25,11 +25,11 @@ func TestSendCommand(t *testing.T) {
 
 	Convey("should surround multi-word arguments in double-quotes", t, func() {
 		ce := &MockCommandExecutor{}
-		kc := KittyConnector{}
+		kc := NewKittyConnector(ce)
 
-		kc.SendCommand(ce, []string{"echo", "foo bar baz", ">", "out.txt"}, 23)
+		kc.SendCommand([]string{"echo", "foo bar baz", ">", "out.txt"}, 23)
 		So(
-			ce.GetSavedArgs(),
+			ce.GetSavedArgs()[0],
 			ShouldResemble,
 			[]string{
 				"send-text",
