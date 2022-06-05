@@ -2,19 +2,9 @@ package settings
 
 import (
 	"encoding/json"
-	"github.com/guysherman/kittymux/kitty"
 	"log"
 	"os"
 )
-
-type QuickNavDatabase struct {
-	QuickNavs map[string][]QuickNavHandle
-}
-
-type QuickNavHandle struct {
-	EntryId   int
-	EntryType kitty.WindowListEntryType
-}
 
 type IQuickNavDao interface {
 	Read(filepath string) (QuickNavDatabase, error)

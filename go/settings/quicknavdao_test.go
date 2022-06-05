@@ -8,7 +8,7 @@ import (
 	. "github.com/smartystreets/goconvey/convey"
 )
 
-func TestQuickNavs(t *testing.T) {
+func TestQuickNavDao(t *testing.T) {
 	Convey("Serialize then Deserialize yields equivalent object", t, func() {
 		testFilePath := "test_quick_navs_test.json"
 		expected := QuickNavDatabase{
