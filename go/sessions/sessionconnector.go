@@ -26,7 +26,7 @@ func NewSessionConnector(sessionDao ISessionDao, kittyConnector kitty.IKittyConn
 }
 
 func (sc *SessionConnector) LoadSession(sessionName string) {
-	stateDir := GetStateDir()
+	stateDir := settings.GetStateDir()
 	sessionPath := fmt.Sprintf("%s/%s.json", stateDir, sessionName)
 	quickNavPath := fmt.Sprintf("%s/quicknavs.json", stateDir)
 

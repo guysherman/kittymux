@@ -2,7 +2,6 @@ package sessions
 
 import (
 	"encoding/json"
-	"fmt"
 	"os"
 )
 
@@ -51,14 +50,4 @@ func (s *SessionDao) Write(session Session, filepath string) error {
 	}
 
 	return nil
-}
-
-func GetStateDir() string {
-	if os.Getenv("KITTYMUX_STATE_DIR") != "" {
-		return os.Getenv("KITTYMUX_STATE_DIR")
-	} else if os.Getenv("XDG_STATE_HOME") != "" {
-		return fmt.Sprintf("%s/kittymux", os.Getenv("XDG_STATE_HOME"))
-	} else {
-		return "~/.local/state/kittymux"
-	}
 }

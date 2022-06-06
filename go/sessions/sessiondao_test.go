@@ -1,9 +1,11 @@
 package sessions
 
 import (
-	. "github.com/smartystreets/goconvey/convey"
 	"os"
 	"testing"
+
+	"github.com/guysherman/kittymux/settings"
+	. "github.com/smartystreets/goconvey/convey"
 )
 
 func TestSessionDao(t *testing.T) {
@@ -41,7 +43,7 @@ func TestSessionDao(t *testing.T) {
 		Convey("when KITTYMUX_STATE_DIR is set", func() {
 			expectedStateDir := "/home/kitty/kittymux_state"
 			os.Setenv("KITTYMUX_STATE_DIR", expectedStateDir)
-			stateDir := GetStateDir()
+			stateDir := settings.GetStateDir()
 			So(stateDir, ShouldEqual, expectedStateDir)
 
 			os.Unsetenv("KITTYMUX_STATE_DIR")
@@ -50,7 +52,7 @@ func TestSessionDao(t *testing.T) {
 		Convey("when XDG_STATE_HOME is set", func() {
 			expectedStateDir := "/home/kitty/state/kittymux"
 			os.Setenv("XDG_STATE_HOME", "/home/kitty/state")
-			stateDir := GetStateDir()
+			stateDir := settings.GetStateDir()
 			So(stateDir, ShouldEqual, expectedStateDir)
 
 			os.Unsetenv("XDG_STATE_HOME")
@@ -58,7 +60,7 @@ func TestSessionDao(t *testing.T) {
 
 		Convey("when none is set", func() {
 			expectedStateDir := "~/.local/state/kittymux"
-			stateDir := GetStateDir()
+			stateDir := settings.GetStateDir()
 			So(stateDir, ShouldEqual, expectedStateDir)
 		})
 	})
