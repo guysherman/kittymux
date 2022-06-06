@@ -33,4 +33,85 @@ func TestQuickNavDatabase(t *testing.T) {
 
 		So(actual, ShouldResemble, expected)
 	})
+
+	Convey("Database Actions", t, func() {
+		Convey("Given empty database", func() {
+			Convey("Set shortcut", func() {
+				qnd := MockQuickNavDao{}
+				qnd.SetWriteReturnValue(MockQuickNavDaoWriteReturn{Err: nil})
+				qnd.SetReadReturnValue(MockQuickNavDaoReadReturn{
+					Db: QuickNavDatabase{
+						QuickNavs: map[string][]QuickNavHandle{},
+					},
+					Err: nil,
+				})
+				db := NewQuickNavDatabase(&qnd)
+				expectedDb := QuickNavDatabase{
+					QuickNavs: map[string][]QuickNavHandle{
+						"a": {
+							{
+								EntryId:   5,
+								EntryType: kitty.Window,
+							},
+						},
+					},
+					dao: &qnd,
+				}
+
+				db = db.SetShortcut("a", QuickNavHandle{EntryId: 5, EntryType: kitty.Window})
+				So(db, ShouldResemble, expectedDb)
+				So(qnd.GetCalls().Write.QuickNavs, ShouldResemble, expectedDb)
+			})
+		})
+
+		Convey("Given handle already in db", func() {
+			qnd := MockQuickNavDao{}
+			qnd.SetWriteReturnValue(MockQuickNavDaoWriteReturn{Err: nil})
+			qnd.SetReadReturnValue(MockQuickNavDaoReadReturn{
+				Db: QuickNavDatabase{
+					QuickNavs: map[string][]QuickNavHandle{
+						"b": {
+							{
+								EntryId:   5,
+								EntryType: kitty.Window,
+							},
+						},
+					},
+				},
+				Err: nil,
+			})
+
+			Convey("Set shortcut", func() {
+				db := NewQuickNavDatabase(&qnd)
+				expectedDb := QuickNavDatabase{
+					QuickNavs: map[string][]QuickNavHandle{
+						"a": {
+							{
+								EntryId:   5,
+								EntryType: kitty.Window,
+							},
+						},
+					},
+					dao: &qnd,
+				}
+
+				db = db.SetShortcut("a", QuickNavHandle{EntryId: 5, EntryType: kitty.Window})
+				So(db, ShouldResemble, expectedDb)
+				So(qnd.GetCalls().Write.QuickNavs, ShouldResemble, expectedDb)
+			})
+
+			Convey("Remove shortcut", func() {
+				db := NewQuickNavDatabase(&qnd)
+				expectedDb := QuickNavDatabase{
+					QuickNavs: map[string][]QuickNavHandle{},
+					dao:       &qnd,
+				}
+
+				db = db.RemoveHandle(QuickNavHandle{EntryId: 5, EntryType: kitty.Window})
+				So(db, ShouldResemble, expectedDb)
+				So(qnd.GetCalls().Write.QuickNavs, ShouldResemble, expectedDb)
+
+			})
+		})
+	})
 }
