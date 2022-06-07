@@ -40,7 +40,7 @@ type EntryLister interface {
 
 type EntryListerBase struct{}
 
-func (el *EntryListerBase) EntryList(kittyConnector *KittyConnector) []WindowListEntry {
+func (el *EntryListerBase) EntryList(kittyConnector IKittyConnector) []WindowListEntry {
 	windowList := kittyConnector.WindowList()
 	entryList := make([]WindowListEntry, 0)
 	for i := 0; i < len(windowList); i++ {

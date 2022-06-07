@@ -7,6 +7,7 @@ import (
 	"github.com/charmbracelet/bubbles/list"
 	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
+	"github.com/guysherman/kittymux/kitty"
 )
 
 const listHeight = 14
@@ -32,10 +33,11 @@ type model struct {
 	height    int
 	inputText string
 	mode      uiMode
+	kc        kitty.IKittyConnector
 }
 
 func (m model) Init() tea.Cmd {
-	return listWindows
+	return listWindows(m)
 }
 
 func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
@@ -43,7 +45,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case tea.WindowSizeMsg:
 		return handleWindowResized(m, msg)
 	case ListUpdatedMsg:
-		return m, listWindows
+		return m, listWindows(m)
 	case ListWindowsMsg:
 		return handleWindowList(m, msg)
 	case ExitMessage:
@@ -108,10 +110,14 @@ func main() {
 	i := textinput.New()
 	i.Prompt = ""
 
+	ce := kitty.KittyCommandExecutor{}
+	kc := kitty.NewKittyConnector(&ce)
+
 	m := model{
 		list:  l,
 		input: i,
 		mode:  Navigate,
+		kc:    kc,
 	}
 
 	if err := tea.NewProgram(m, tea.WithAltScreen()).Start(); err != nil {

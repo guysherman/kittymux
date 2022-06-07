@@ -30,5 +30,5 @@ func renameModeEnterPressed(m model) (tea.Model, tea.Cmd) {
 	m.input.Blur()
 	i, _ := m.list.SelectedItem().(item)
 
-	return m, renameEntry(i, m.inputText)
+	return m, renameEntry(m, i, m.inputText)
 }

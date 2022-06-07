@@ -37,16 +37,6 @@ type ItemDelegate struct{}
 func (d ItemDelegate) Height() int  { return 1 }
 func (d ItemDelegate) Spacing() int { return 0 }
 func (d ItemDelegate) Update(msg tea.Msg, m *list.Model) tea.Cmd {
-	switch msg := msg.(type) {
-	case tea.KeyMsg:
-		switch {
-		case key.Matches(msg, DefaultItemActions.Delete):
-			item := m.SelectedItem().(item)
-			return closeEntry(item)
-		}
-
-	}
-
 	return nil
 }
 func (d ItemDelegate) Render(w io.Writer, m list.Model, index int, listItem list.Item) {

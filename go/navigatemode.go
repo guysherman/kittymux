@@ -17,6 +17,8 @@ func NavigateModeUpdate(m model, msg tea.Msg) (tea.Model, tea.Cmd) {
 			m.mode = Rename
 			m.input.Focus()
 			return m, nil
+		case "x":
+			return closeEntryPressed(m)
 		case "ctrl+c":
 			m.quitting = true
 			return m, tea.Quit
@@ -57,7 +59,12 @@ func prevTabPressed(m model) (tea.Model, tea.Cmd) {
 	return m, nil
 }
 
+func closeEntryPressed(m model) (tea.Model, tea.Cmd) {
+	i, _ := m.list.SelectedItem().(item)
+	return m, closeEntry(m, i)
+}
+
 func navigateModeEnterPressed(m model) (tea.Model, tea.Cmd) {
 	i, _ := m.list.SelectedItem().(item)
-	return m, focusEntry(i)
+	return m, focusEntry(m, i)
 }
