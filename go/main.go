@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/charmbracelet/bubbles/key"
 	"github.com/charmbracelet/bubbles/list"
 	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
@@ -13,6 +14,22 @@ import (
 const listHeight = 14
 
 type uiMode int64
+
+type additionalListActions struct {
+	PrevTab key.Binding
+	NextTab key.Binding
+}
+
+var AdditionalActions = additionalListActions{
+	PrevTab: key.NewBinding(
+		key.WithKeys("K"),
+		key.WithHelp("K", "previous tab"),
+	),
+	NextTab: key.NewBinding(
+		key.WithKeys("J"),
+		key.WithHelp("J", "next tab"),
+	),
+}
 
 const (
 	None uiMode = iota
@@ -106,6 +123,12 @@ func main() {
 	l.Styles.Title = TitleStyle
 	l.Styles.PaginationStyle = PaginationStyle
 	l.Styles.HelpStyle = HelpStyle
+	l.AdditionalFullHelpKeys = func() []key.Binding {
+		return []key.Binding{
+			AdditionalActions.PrevTab,
+			AdditionalActions.NextTab,
+		}
+	}
 
 	i := textinput.New()
 	i.Prompt = ""
