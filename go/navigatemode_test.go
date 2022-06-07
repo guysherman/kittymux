@@ -127,6 +127,22 @@ func TestNavigateMode(t *testing.T) {
 			So(cw.GetSavedArgs()[0], ShouldResemble, []string{"close-tab", "-m", "id:1"})
 		})
 
+		Convey("del deletes an entry", func() {
+			msg := tea.KeyMsg{
+				Type: tea.KeyDelete,
+				Alt:  false,
+			}
+
+			cw := kitty.MockCommandExecutor{}
+			kc := kitty.NewKittyConnector(&cw)
+			m.kc = kc
+
+			_, cmd := NavigateModeUpdate(m, msg)
+			newMsg := cmd()
+			So(fmt.Sprintf("%T", newMsg), ShouldResemble, fmt.Sprintf("%T", ListUpdatedMsg{}))
+			So(cw.GetSavedArgs()[0], ShouldResemble, []string{"close-tab", "-m", "id:1"})
+		})
+
 		Reset(func() {
 			l = list.New(items, ItemDelegate{}, 0, 0)
 			i = textinput.New()

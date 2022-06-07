@@ -17,6 +17,8 @@ func NavigateModeUpdate(m model, msg tea.Msg) (tea.Model, tea.Cmd) {
 			m.mode = Rename
 			m.input.Focus()
 			return m, nil
+		case "delete":
+			return closeEntryPressed(m)
 		case "x":
 			return closeEntryPressed(m)
 		case "ctrl+c":
