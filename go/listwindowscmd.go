@@ -16,7 +16,7 @@ func listWindows(m model) tea.Cmd {
 		entries := wl.EntryList(m.kc)
 		items := []item{}
 		for _, entry := range entries {
-			items = append(items, item{listEntry: entry})
+			items = append(items, item{listEntry: entry, listMode: m.mode})
 		}
 
 		return ListWindowsMsg{ListItems: items}

@@ -8,11 +8,11 @@ func RenameModeUpdate(m model, msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
 	case tea.KeyMsg:
 		switch keypress := msg.String(); keypress {
-		case "ctrl+c":
-			m.quitting = true
-			return m, tea.Quit
 		case "enter":
 			return renameModeEnterPressed(m)
+		case "esc":
+			m.mode = Navigate
+			return m, nil
 		default:
 			im, cmd := m.input.Update(msg)
 			m.input = im

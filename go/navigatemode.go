@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/charmbracelet/bubbles/list"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/guysherman/kittymux/kitty"
 )
@@ -21,6 +22,10 @@ func NavigateModeUpdate(m model, msg tea.Msg) (tea.Model, tea.Cmd) {
 			return closeEntryPressed(m)
 		case "x":
 			return closeEntryPressed(m)
+		case "'":
+			return quickNavModePressed(m)
+		case "m":
+			return setQuickNavModePressed(m)
 		case "ctrl+c":
 			m.quitting = true
 			return m, tea.Quit
@@ -66,7 +71,46 @@ func closeEntryPressed(m model) (tea.Model, tea.Cmd) {
 	return m, closeEntry(m, i)
 }
 
+func quickNavModePressed(m model) (tea.Model, tea.Cmd) {
+	m.mode = QuickNav
+	listItems := []list.Item{}
+	for _, listItem := range m.list.Items() {
+		i := listItem.(item)
+		i.listMode = QuickNav
+		listItems = append(listItems, i)
+	}
+
+	m.list.SetItems(listItems)
+	return m, nil
+}
+
+func setQuickNavModePressed(m model) (tea.Model, tea.Cmd) {
+	m.mode = SetQuickNav
+	listItems := []list.Item{}
+	for _, listItem := range m.list.Items() {
+		i := listItem.(item)
+		i.listMode = SetQuickNav
+		listItems = append(listItems, i)
+	}
+
+	m.list.SetItems(listItems)
+	return m, nil
+}
+
 func navigateModeEnterPressed(m model) (tea.Model, tea.Cmd) {
 	i, _ := m.list.SelectedItem().(item)
 	return m, focusEntry(m, i)
+}
+
+func setNavigateMode(m model) (tea.Model, tea.Cmd) {
+	m.mode = Navigate
+	listItems := []list.Item{}
+	for _, listItem := range m.list.Items() {
+		i := listItem.(item)
+		i.listMode = Navigate
+		listItems = append(listItems, i)
+	}
+
+	m.list.SetItems(listItems)
+	return m, nil
 }

@@ -83,6 +83,32 @@ func TestNavigateMode(t *testing.T) {
 			So(cmd, ShouldBeNil)
 		})
 
+		Convey("' enters quicknav mode", func() {
+			msg := tea.KeyMsg{
+				Type:  tea.KeyRunes,
+				Runes: []rune{'\''},
+				Alt:   false,
+			}
+
+			newM, cmd := NavigateModeUpdate(m, msg)
+			So(newM.(model).mode, ShouldEqual, QuickNav)
+			So(newM.(model).list.Items()[0].(item).listMode, ShouldEqual, QuickNav)
+			So(cmd, ShouldBeNil)
+		})
+
+		Convey("m enters SetQuickNav mode", func() {
+			msg := tea.KeyMsg{
+				Type:  tea.KeyRunes,
+				Runes: []rune{'m'},
+				Alt:   false,
+			}
+
+			newM, cmd := NavigateModeUpdate(m, msg)
+			So(newM.(model).mode, ShouldEqual, SetQuickNav)
+			So(newM.(model).list.Items()[0].(item).listMode, ShouldEqual, SetQuickNav)
+			So(cmd, ShouldBeNil)
+		})
+
 		Convey("ctrl+c quits", func() {
 			msg := tea.KeyMsg{
 				Type: tea.KeyCtrlC,

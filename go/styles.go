@@ -9,6 +9,8 @@ var (
 	TitleStyle        = lipgloss.NewStyle().MarginLeft(2)
 	ItemStyle         = makeItemStyle(false, 50)
 	SelectedItemStyle = makeItemStyle(true, 50)
+	SelectedTextStyle = lipgloss.NewStyle().Background(lipgloss.Color("4"))
+	ShortcutStyle     = lipgloss.NewStyle().Background(lipgloss.Color("7")).Foreground(lipgloss.Color("0"))
 	PaginationStyle   = list.DefaultStyles().PaginationStyle.PaddingLeft(4)
 	HelpStyle         = list.DefaultStyles().HelpStyle.PaddingLeft(4)
 	QuitTextStyle     = lipgloss.NewStyle().Margin(1, 0, 2, 4)
@@ -22,9 +24,9 @@ var (
 
 func makeItemStyle(selected bool, width int) lipgloss.Style {
 	if selected {
-		return lipgloss.NewStyle().PaddingLeft(2).Width(width - 2).Background(lipgloss.Color("4"))
+		return lipgloss.NewStyle().Width(width - 2).Background(lipgloss.Color("4"))
 	} else {
-		return lipgloss.NewStyle().PaddingLeft(4).Width(width - 2)
+		return lipgloss.NewStyle().Width(width - 2)
 	}
 }
 

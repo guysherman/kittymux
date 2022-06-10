@@ -75,6 +75,12 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case Rename:
 			mdl, c := RenameModeUpdate(m, msg)
 			return mdl, c
+		case QuickNav:
+			mdl, c := QuickNavModeUpdate(m, msg)
+			return mdl, c
+		case SetQuickNav:
+			mdl, c := SetQuickNavModeUpdate(m, msg)
+			return mdl, c
 		default:
 			return m, nil
 		}
