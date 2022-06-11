@@ -20,7 +20,7 @@ func (qnd *QuickNavDao) Read(filepath string) (QuickNavDatabase, error) {
 			log.Print("WARN: No quicknavs found")
 			return QuickNavDatabase{
 				QuickNavs: map[string][]QuickNavHandle{},
-			}, e
+			}, nil
 		} else if err != nil {
 			log.Fatal(err)
 			os.Exit(-8)

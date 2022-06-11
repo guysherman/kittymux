@@ -47,8 +47,7 @@ func TestQuickNavDao(t *testing.T) {
 			QuickNavs: map[string][]QuickNavHandle{},
 		}
 
-		db, err := qnd.Read("foozlenoozle.json")
-		So(err.Error(), ShouldEndWith, "no such file or directory")
+		db, _ := qnd.Read("foozlenoozle.json")
 		So(db, ShouldResemble, expected)
 	})
 }

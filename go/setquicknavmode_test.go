@@ -1,12 +1,14 @@
 package main
 
 import (
+	"fmt"
 	"testing"
 
 	"github.com/charmbracelet/bubbles/list"
 	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/guysherman/kittymux/kitty"
+	"github.com/guysherman/kittymux/settings"
 	. "github.com/smartystreets/goconvey/convey"
 )
 
@@ -25,18 +27,26 @@ func TestSetQuickNavMode(t *testing.T) {
 					Text:      "Win 1",
 					EntryType: kitty.Window,
 					Id:        2,
+					Tab: &kitty.KittyTab{
+						Id: 1,
+					},
 				},
 			},
 			item{
 				listEntry: kitty.WindowListEntry{
 					Text:      "Tab 2",
 					EntryType: kitty.Tab,
+					Id:        3,
 				},
 			},
 			item{
 				listEntry: kitty.WindowListEntry{
 					Text:      "Win 2",
 					EntryType: kitty.Window,
+					Id:        4,
+					Tab: &kitty.KittyTab{
+						Id: 3,
+					},
 				},
 			},
 		}
@@ -45,7 +55,7 @@ func TestSetQuickNavMode(t *testing.T) {
 		i.Prompt = ""
 		m := model{list: l, input: i, mode: SetQuickNav}
 
-		Convey("Selecting a letter sets the shortcut key on an entry", func() {
+		Convey("Selecting a letter updates the quick nav database", func() {
 			msg := tea.KeyMsg{
 				Type:  tea.KeyRunes,
 				Runes: []rune{'a'},
@@ -54,18 +64,26 @@ func TestSetQuickNavMode(t *testing.T) {
 
 			cw := kitty.MockCommandExecutor{}
 			kc := kitty.NewKittyConnector(&cw)
+			qndao := settings.MockQuickNavDao{}
+			qndao.SetReadReturnValue(settings.MockQuickNavDaoReadReturn{
+				Db: settings.QuickNavDatabase{
+					QuickNavs: map[string][]settings.QuickNavHandle{},
+				},
+				Err: nil,
+			})
+			qndb := settings.NewQuickNavDatabase(&qndao)
+			m.qndb = qndb
 			m.kc = kc
 
 			newModel, cmd := SetQuickNavModeUpdate(m, msg)
-			listItems := newModel.(model).list.Items()
-			i := listItems[0].(item)
-			So(cmd, ShouldBeNil)
-			So(i.shortcutKey, ShouldEqual, "a")
+			newMsg := cmd()
+			So(fmt.Sprintf("%T", newMsg), ShouldEqual, fmt.Sprintf("%T", QuickNavsUpdatedMsg{}))
+			So(newMsg.(QuickNavsUpdatedMsg).qndb.QuickNavs["a"][0], ShouldResemble, settings.QuickNavHandle{EntryId: 1, EntryType: kitty.Tab})
 			So(newModel.(model).mode, ShouldEqual, Navigate)
 			So(newModel.(model).list.Items()[0].(item).listMode, ShouldEqual, Navigate)
 		})
 
-		Convey("Selecting a number sets the shortcut key on an entry", func() {
+		Convey("Selecting a number updates the quick nav database", func() {
 			msg := tea.KeyMsg{
 				Type:  tea.KeyRunes,
 				Runes: []rune{'1'},
@@ -74,16 +92,105 @@ func TestSetQuickNavMode(t *testing.T) {
 
 			cw := kitty.MockCommandExecutor{}
 			kc := kitty.NewKittyConnector(&cw)
+			qndao := settings.MockQuickNavDao{}
+			qndao.SetReadReturnValue(settings.MockQuickNavDaoReadReturn{
+				Db: settings.QuickNavDatabase{
+					QuickNavs: map[string][]settings.QuickNavHandle{},
+				},
+				Err: nil,
+			})
+			qndb := settings.NewQuickNavDatabase(&qndao)
+			m.qndb = qndb
 			m.kc = kc
 			m.list.Select(3)
 
 			newModel, cmd := SetQuickNavModeUpdate(m, msg)
-			listItems := newModel.(model).list.Items()
-			i := listItems[3].(item)
-			So(cmd, ShouldBeNil)
-			So(i.shortcutKey, ShouldEqual, "1")
+			newMsg := cmd()
+			So(fmt.Sprintf("%T", newMsg), ShouldEqual, fmt.Sprintf("%T", QuickNavsUpdatedMsg{}))
+			So(newMsg.(QuickNavsUpdatedMsg).qndb.QuickNavs["1"][0], ShouldResemble, settings.QuickNavHandle{EntryId: 4, EntryType: kitty.Window})
+			So(newModel.(model).mode, ShouldEqual, Navigate)
+			So(newModel.(model).list.Items()[0].(item).listMode, ShouldEqual, Navigate)
 		})
 
+		Convey("assigning the same shortcut to a second window in the same tab removes it from the first", func() {
+			cw := kitty.MockCommandExecutor{}
+			kc := kitty.NewKittyConnector(&cw)
+			qndao := settings.MockQuickNavDao{}
+			qndao.SetReadReturnValue(settings.MockQuickNavDaoReadReturn{
+				Db: settings.QuickNavDatabase{
+					QuickNavs: map[string][]settings.QuickNavHandle{
+						"a": {
+							{
+								EntryId:   1,
+								EntryType: kitty.Tab,
+							},
+						},
+					},
+				},
+				Err: nil,
+			})
+			qndb := settings.NewQuickNavDatabase(&qndao)
+			m.qndb = qndb
+			m.kc = kc
+			item1 := m.list.Items()[0].(item)
+			item1.shortcutKey = "a"
+			m.list.SetItem(0, item1)
+			m.list.Select(1)
+
+			msg := tea.KeyMsg{
+				Type:  tea.KeyRunes,
+				Runes: []rune{'a'},
+				Alt:   false,
+			}
+
+			_, cmd := SetQuickNavModeUpdate(m, msg)
+			qnum := cmd()
+			qndb = qnum.(QuickNavsUpdatedMsg).qndb
+			byEntryId := qndb.ShortcutsByEntryId()
+			So(byEntryId["w:2"], ShouldEqual, "a")
+			So(byEntryId["t:1"], ShouldEqual, "")
+
+		})
+
+		Convey("assigning the same shortcut to a second window in a different tab adds it as normal", func() {
+			cw := kitty.MockCommandExecutor{}
+			kc := kitty.NewKittyConnector(&cw)
+			qndao := settings.MockQuickNavDao{}
+			qndao.SetReadReturnValue(settings.MockQuickNavDaoReadReturn{
+				Db: settings.QuickNavDatabase{
+					QuickNavs: map[string][]settings.QuickNavHandle{
+						"a": {
+							{
+								EntryId:   1,
+								EntryType: kitty.Tab,
+							},
+						},
+					},
+				},
+				Err: nil,
+			})
+			qndb := settings.NewQuickNavDatabase(&qndao)
+			m.qndb = qndb
+			m.kc = kc
+			item1 := m.list.Items()[0].(item)
+			item1.shortcutKey = "a"
+			m.list.SetItem(0, item1)
+			m.list.Select(3)
+
+			msg := tea.KeyMsg{
+				Type:  tea.KeyRunes,
+				Runes: []rune{'a'},
+				Alt:   false,
+			}
+
+			_, cmd := SetQuickNavModeUpdate(m, msg)
+			qnum := cmd()
+			qndb = qnum.(QuickNavsUpdatedMsg).qndb
+			byEntryId := qndb.ShortcutsByEntryId()
+			So(byEntryId["w:4"], ShouldEqual, "a")
+			So(byEntryId["t:1"], ShouldEqual, "a")
+
+		})
 		Convey("pressing esc returns to normal", func() {
 			msg := tea.KeyMsg{
 				Type: tea.KeyEscape,

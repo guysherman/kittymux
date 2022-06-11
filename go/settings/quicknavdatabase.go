@@ -110,21 +110,29 @@ func (d QuickNavDatabase) ShortcutsByEntryId() map[string]string {
 
 	for shortcut, handles := range d.QuickNavs {
 		for _, handle := range handles {
-			entryType := ""
-			switch handle.EntryType {
-			case kitty.OsWindow:
-				entryType = "o"
-				break
-			case kitty.Tab:
-				entryType = "t"
-				break
-			case kitty.Window:
-				entryType = "w"
-				break
-			}
-			entryId := fmt.Sprintf("%s:%d", entryType, handle.EntryId)
+			entryId := entryIdForEntryTypeAndId(handle.EntryType, handle.EntryId)
 			result[entryId] = shortcut
 		}
 	}
 	return result
+}
+
+func entryIdForEntryTypeAndId(windowEntryType kitty.WindowListEntryType, id int) string {
+	entryType := ""
+	switch windowEntryType {
+	case kitty.OsWindow:
+		entryType = "o"
+		break
+	case kitty.Tab:
+		entryType = "t"
+		break
+	case kitty.Window:
+		entryType = "w"
+		break
+	}
+	return fmt.Sprintf("%s:%d", entryType, id)
+}
+
+func EntryIdForEntry(entry kitty.WindowListEntry) string {
+	return entryIdForEntryTypeAndId(entry.EntryType, entry.Id)
 }

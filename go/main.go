@@ -9,6 +9,7 @@ import (
 	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/guysherman/kittymux/kitty"
+	"github.com/guysherman/kittymux/settings"
 )
 
 const listHeight = 14
@@ -51,6 +52,7 @@ type model struct {
 	inputText string
 	mode      uiMode
 	kc        kitty.IKittyConnector
+	qndb      settings.QuickNavDatabase
 }
 
 func (m model) Init() tea.Cmd {
@@ -67,6 +69,8 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		return handleWindowList(m, msg)
 	case ExitMessage:
 		return m, tea.Quit
+	case QuickNavsUpdatedMsg:
+		return handleQuickNavDatabase(m, msg)
 	default:
 		switch m.mode {
 		case Navigate:
@@ -102,7 +106,32 @@ func handleWindowList(m model, msg ListWindowsMsg) (tea.Model, tea.Cmd) {
 	for _, item := range msg.ListItems {
 		items = append(items, item)
 	}
+
+	shortcuts := m.qndb.ShortcutsByEntryId()
+	items = assignShortcutKeys(items, shortcuts)
 	m.list.SetItems(items)
+	return m, nil
+}
+
+func assignShortcutKeys(items []list.Item, shortcuts map[string]string) []list.Item {
+	newItems := []list.Item{}
+	for _, i := range items {
+		listItem := i.(item)
+		entryId := settings.EntryIdForEntry(listItem.listEntry)
+		listItem.shortcutKey = shortcuts[entryId]
+		newItems = append(newItems, listItem)
+	}
+
+	return newItems
+}
+
+func handleQuickNavDatabase(m model, msg QuickNavsUpdatedMsg) (tea.Model, tea.Cmd) {
+	items := m.list.Items()
+	shortcuts := msg.qndb.ShortcutsByEntryId()
+
+	items = assignShortcutKeys(items, shortcuts)
+	m.list.SetItems(items)
+
 	return m, nil
 }
 
@@ -141,12 +170,15 @@ func main() {
 
 	ce := kitty.KittyCommandExecutor{}
 	kc := kitty.NewKittyConnector(&ce)
+	qnd := settings.QuickNavDao{}
+	qndb := settings.NewQuickNavDatabase(&qnd)
 
 	m := model{
 		list:  l,
 		input: i,
 		mode:  Navigate,
 		kc:    kc,
+		qndb:  qndb,
 	}
 
 	if err := tea.NewProgram(m, tea.WithAltScreen()).Start(); err != nil {

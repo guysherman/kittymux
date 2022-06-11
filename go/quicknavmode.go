@@ -46,7 +46,7 @@ func findEntry(m model, shortcutKey string) (item, bool) {
 	listItems := m.list.Items()
 	for _, i := range listItems {
 		listItem := i.(item)
-		if listItem.shortcutKey == shortcutKey {
+		if listItem.shortcutKey == shortcutKey && listItem.listEntry.TabIsFocused {
 			return listItem, true
 		}
 	}
