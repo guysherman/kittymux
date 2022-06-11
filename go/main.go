@@ -42,14 +42,13 @@ func interactiveMode() {
 	items := []list.Item{}
 
 	const defaultWidth = 20
+	const listHeight = 14
 
 	l := list.New(items, ItemDelegate{}, defaultWidth, listHeight)
 	l.SetShowStatusBar(false)
 	l.SetShowTitle(false)
 	l.SetShowHelp(true)
 	l.SetFilteringEnabled(false)
-	l.Styles.Title = TitleStyle
-	l.Styles.PaginationStyle = PaginationStyle
 	l.Styles.HelpStyle = HelpStyle
 	l.AdditionalFullHelpKeys = func() []key.Binding {
 		return []key.Binding{
@@ -85,5 +84,4 @@ func interactiveMode() {
 		fmt.Println("Error running program:", err)
 		os.Exit(1)
 	}
-
 }
