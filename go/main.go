@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"os"
 
@@ -9,6 +10,7 @@ import (
 	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/guysherman/kittymux/kitty"
+	"github.com/guysherman/kittymux/sessions"
 	"github.com/guysherman/kittymux/settings"
 )
 
@@ -53,6 +55,7 @@ type model struct {
 	mode      uiMode
 	kc        kitty.IKittyConnector
 	qndb      settings.QuickNavDatabase
+	sc        sessions.ISessionConnector
 }
 
 func (m model) Init() tea.Cmd {
@@ -146,6 +149,26 @@ func (m model) View() string {
 }
 
 func main() {
+	session := flag.String("session", "", "the name of the session to restore")
+	flag.Parse()
+
+	if *session != "" {
+		ce := kitty.KittyCommandExecutor{}
+		kc := kitty.NewKittyConnector(&ce)
+		qnd := settings.QuickNavDao{}
+		qndb := settings.NewQuickNavDatabase(&qnd)
+
+		sd := sessions.SessionDao{}
+		sc := sessions.NewSessionConnector(&sd, kc, qndb)
+
+		sc.LoadSession(*session)
+		os.Exit(0)
+	}
+
+	interactiveMode()
+}
+
+func interactiveMode() {
 	items := []list.Item{}
 
 	const defaultWidth = 20
@@ -173,16 +196,21 @@ func main() {
 	qnd := settings.QuickNavDao{}
 	qndb := settings.NewQuickNavDatabase(&qnd)
 
+	sd := sessions.SessionDao{}
+	sc := sessions.NewSessionConnector(&sd, kc, qndb)
+
 	m := model{
 		list:  l,
 		input: i,
 		mode:  Navigate,
 		kc:    kc,
 		qndb:  qndb,
+		sc:    sc,
 	}
 
 	if err := tea.NewProgram(m, tea.WithAltScreen()).Start(); err != nil {
 		fmt.Println("Error running program:", err)
 		os.Exit(1)
 	}
+
 }

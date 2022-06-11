@@ -18,7 +18,7 @@ func TestSendCommand(t *testing.T) {
 				"send-text",
 				"-m",
 				"id:5",
-				"'nvim .\\n'",
+				"nvim .\\n",
 			},
 		)
 	})
@@ -35,7 +35,7 @@ func TestSendCommand(t *testing.T) {
 				"send-text",
 				"-m",
 				"id:23",
-				"'echo \"foo bar baz\" > out.txt\\n'",
+				"echo \"foo bar baz\" > out.txt\\n",
 			},
 		)
 	})

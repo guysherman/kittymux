@@ -12,32 +12,31 @@ import (
 
 type ISessionConnector interface {
 	LoadSession(sessionName string)
+	SaveSession(tab kitty.KittyTab)
 }
 
 type SessionConnector struct {
-	kittyConnector kitty.IKittyConnector
-	sessionDao     ISessionDao
-	quickNavDao    settings.IQuickNavDao
+	kittyConnector   kitty.IKittyConnector
+	sessionDao       ISessionDao
+	quickNavDatabase settings.QuickNavDatabase
 }
 
-func NewSessionConnector(sessionDao ISessionDao, kittyConnector kitty.IKittyConnector, quickNavDao settings.IQuickNavDao) *SessionConnector {
-	sc := &SessionConnector{sessionDao: sessionDao, kittyConnector: kittyConnector, quickNavDao: quickNavDao}
+func NewSessionConnector(sessionDao ISessionDao, kittyConnector kitty.IKittyConnector, quickNavDatabase settings.QuickNavDatabase) *SessionConnector {
+	sc := &SessionConnector{sessionDao: sessionDao, kittyConnector: kittyConnector, quickNavDatabase: quickNavDatabase}
 	return sc
 }
 
 func (sc *SessionConnector) LoadSession(sessionName string) {
 	stateDir := settings.GetStateDir()
 	sessionPath := fmt.Sprintf("%s/%s.json", stateDir, sessionName)
-	quickNavPath := fmt.Sprintf("%s/quicknavs.json", stateDir)
 
 	session, err := sc.sessionDao.Read(sessionPath)
 	if err != nil {
 		log.Fatal(err)
-		os.Exit(-2)
+		os.Exit(2)
 	}
 
-	quickNavs, err := sc.quickNavDao.Read(quickNavPath)
-
+	tabId := 0
 	for i := 0; i < len(session.Windows); i++ {
 		sessionWindow := session.Windows[i]
 		windowId := 0
@@ -56,14 +55,16 @@ func (sc *SessionConnector) LoadSession(sessionName string) {
 					break
 				} else if retries >= 3 {
 					log.Fatalf("Could not find tab [%s]", session.Title)
-					os.Exit(-4)
+					os.Exit(4)
 				}
 				time.Sleep(1000)
 				retries++
 			}
 
+			tabId = tab.Id
+
 			// Add the quicknav for the tab
-			quickNavs.QuickNavs[session.ShortcutKey] = append(quickNavs.QuickNavs[session.ShortcutKey], settings.QuickNavHandle{
+			sc.quickNavDatabase = sc.quickNavDatabase.SetShortcut(session.ShortcutKey, settings.QuickNavHandle{
 				EntryId:   tab.Id,
 				EntryType: kitty.Tab,
 			})
@@ -73,10 +74,10 @@ func (sc *SessionConnector) LoadSession(sessionName string) {
 			sc.kittyConnector.FocusEntry(entry)
 		} else {
 			// create the window
-			windowId = sc.kittyConnector.CreateWindow(sessionWindow.Title, 0, session.Title, false, sessionWindow.Cwd)
+			windowId = sc.kittyConnector.CreateWindow(sessionWindow.Title, tabId, "", false, sessionWindow.Cwd)
 		}
 		// add the quicknav for the window
-		quickNavs.QuickNavs[sessionWindow.ShortcutKey] = append(quickNavs.QuickNavs[sessionWindow.ShortcutKey], settings.QuickNavHandle{
+		sc.quickNavDatabase = sc.quickNavDatabase.SetShortcut(sessionWindow.ShortcutKey, settings.QuickNavHandle{
 			EntryId:   windowId,
 			EntryType: kitty.Window,
 		})
@@ -85,8 +86,6 @@ func (sc *SessionConnector) LoadSession(sessionName string) {
 		sc.kittyConnector.SendCommand([]string{"cd", sessionWindow.ForegroundProcess.Cwd}, windowId)
 		sc.kittyConnector.SendCommand(sessionWindow.ForegroundProcess.Args, windowId)
 	}
-
-	sc.quickNavDao.Write(quickNavs, quickNavPath)
 }
 
 func findTab(kc kitty.IKittyConnector, tabTitle string) (kitty.KittyTab, bool) {
@@ -105,4 +104,38 @@ func findTab(kc kitty.IKittyConnector, tabTitle string) (kitty.KittyTab, bool) {
 	}
 
 	return kitty.KittyTab{}, false
+}
+
+func (sc *SessionConnector) SaveSession(tab kitty.KittyTab) {
+	windows := []Window{}
+	shortcuts := sc.quickNavDatabase.ShortcutsByEntryId()
+
+	for _, w := range tab.Windows {
+		entryId := fmt.Sprintf("w:%d", w.Id)
+		shortcutKey := shortcuts[entryId]
+		window := Window{
+			Title:       w.Title,
+			ShortcutKey: shortcutKey,
+			ForegroundProcess: ProcessHandle{
+				Args: w.Foreground_processes[0].Cmdline,
+				Cwd:  w.Foreground_processes[0].Cwd,
+			},
+			Cwd: w.Cwd,
+		}
+
+		windows = append(windows, window)
+	}
+
+	tabEntryId := fmt.Sprintf("t:%d", tab.Id)
+	tabShortcutKey := shortcuts[tabEntryId]
+	session := Session{
+		Title:       tab.Title,
+		ShortcutKey: tabShortcutKey,
+		Windows:     windows,
+		Layout:      tab.Layout,
+	}
+
+	sessionsDir := settings.GetStateDir()
+	sessionPath := fmt.Sprintf("%s/%s.json", sessionsDir, tab.Title)
+	sc.sessionDao.Write(session, sessionPath)
 }

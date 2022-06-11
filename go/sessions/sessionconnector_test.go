@@ -14,7 +14,13 @@ func TestLoadSession(t *testing.T) {
 		Convey("Load single new tab", func() {
 			msd := &MockSessionDao{}
 			mce := &kitty.MockCommandExecutor{}
-			qnd := &settings.MockQuickNavDao{}
+			qn := settings.MockQuickNavDao{}
+			qn.SetReadReturnValue(settings.MockQuickNavDaoReadReturn{
+				Db: settings.QuickNavDatabase{
+					QuickNavs: map[string][]settings.QuickNavHandle{},
+				},
+			})
+			qnd := settings.NewQuickNavDatabase(&qn)
 			kc := kitty.NewKittyConnector(mce)
 			sc := NewSessionConnector(msd, kc, qnd)
 
@@ -22,7 +28,7 @@ func TestLoadSession(t *testing.T) {
 				Title:       "Test",
 				ShortcutKey: "a",
 				Windows: []Window{
-					Window{
+					{
 						Title:       "Test Window",
 						ShortcutKey: "b",
 						ForegroundProcess: ProcessHandle{
@@ -77,7 +83,7 @@ func TestLoadSession(t *testing.T) {
 			mce.SetReturnValueOnce("")
 			mce.SetReturnValueOnce("")
 
-			qnd.SetReadReturnValue(settings.MockQuickNavDaoReadReturn{
+			qn.SetReadReturnValue(settings.MockQuickNavDaoReadReturn{
 				Db: settings.QuickNavDatabase{
 					QuickNavs: map[string][]settings.QuickNavHandle{},
 				},
@@ -107,25 +113,32 @@ func TestLoadSession(t *testing.T) {
 			os.Setenv("KITTYMUX_STATE_DIR", "/foo/")
 			So(msdCalls.Read[0].filepath, ShouldEndWith, "sessionName.json")
 
-			qndCalls := qnd.GetCalls()
-			So(qndCalls.Read.Filepath, ShouldEndWith, "quicknavs.json")
+			qnCalls := qn.GetCalls()
+			So(qnCalls.Read.Filepath, ShouldEndWith, "quicknavs.json")
 
 			cmds := mce.GetSavedArgs()
-			So(cmds[0], ShouldResemble, []string{"new-window", "--title", "Test Window", "--new-tab", "--tab-title", "\"Test\"", "--cwd", "~/"})
+			So(cmds[0], ShouldResemble, []string{"new-window", "--title", "Test Window", "--new-tab", "--tab-title", "Test", "--cwd", "~/"})
 			So(cmds[1], ShouldResemble, []string{"ls"})
 			So(cmds[2], ShouldResemble, []string{"focus-tab", "-m", "id:2"})
-			So(cmds[3], ShouldResemble, []string{"send-text", "-m", "id:29", "'cd ~/\\n'"})
-			So(cmds[4], ShouldResemble, []string{"send-text", "-m", "id:29", "'nvim .\\n'"})
+			So(cmds[3], ShouldResemble, []string{"send-text", "-m", "id:29", "cd ~/\\n"})
+			So(cmds[4], ShouldResemble, []string{"send-text", "-m", "id:29", "nvim .\\n"})
 
-			So(qndCalls.Write.Filepath, ShouldEndWith, "quicknavs.json")
-			So(qndCalls.Write.QuickNavs, ShouldResemble, expectedQuickNavs)
+			So(qnCalls.Write.Filepath, ShouldEndWith, "quicknavs.json")
+			//TODO: This naming is confusing
+			So(qnCalls.Write.QuickNavs.QuickNavs, ShouldResemble, expectedQuickNavs.QuickNavs)
 
 		})
 
 		Convey("Load new tab with two windows", func() {
 			msd := &MockSessionDao{}
 			mce := &kitty.MockCommandExecutor{}
-			qnd := &settings.MockQuickNavDao{}
+			qn := settings.MockQuickNavDao{}
+			qn.SetReadReturnValue(settings.MockQuickNavDaoReadReturn{
+				Db: settings.QuickNavDatabase{
+					QuickNavs: map[string][]settings.QuickNavHandle{},
+				},
+			})
+			qnd := settings.NewQuickNavDatabase(&qn)
 			kc := kitty.NewKittyConnector(mce)
 			sc := NewSessionConnector(msd, kc, qnd)
 
@@ -212,7 +225,7 @@ func TestLoadSession(t *testing.T) {
 			// send command
 			mce.SetReturnValueOnce("")
 
-			qnd.SetReadReturnValue(settings.MockQuickNavDaoReadReturn{
+			qn.SetReadReturnValue(settings.MockQuickNavDaoReadReturn{
 				Db: settings.QuickNavDatabase{
 					QuickNavs: map[string][]settings.QuickNavHandle{},
 				},
@@ -248,24 +261,92 @@ func TestLoadSession(t *testing.T) {
 			os.Setenv("KITTYMUX_STATE_DIR", "/foo/")
 			So(msdCalls.Read[0].filepath, ShouldEndWith, "sessionName.json")
 
-			qndCalls := qnd.GetCalls()
-			So(qndCalls.Read.Filepath, ShouldEndWith, "quicknavs.json")
+			qnCalls := qn.GetCalls()
+			So(qnCalls.Read.Filepath, ShouldEndWith, "quicknavs.json")
 
 			cmds := mce.GetSavedArgs()
 			So(len(cmds), ShouldEqual, 8)
-			So(cmds[0], ShouldResemble, []string{"new-window", "--title", "Test Window", "--new-tab", "--tab-title", "\"Test\"", "--cwd", "~/"})
+			So(cmds[0], ShouldResemble, []string{"new-window", "--title", "Test Window", "--new-tab", "--tab-title", "Test", "--cwd", "~/"})
 			So(cmds[1], ShouldResemble, []string{"ls"})
 			So(cmds[2], ShouldResemble, []string{"focus-tab", "-m", "id:2"})
-			So(cmds[3], ShouldResemble, []string{"send-text", "-m", "id:29", "'cd ~/\\n'"})
-			So(cmds[4], ShouldResemble, []string{"send-text", "-m", "id:29", "'nvim .\\n'"})
+			So(cmds[3], ShouldResemble, []string{"send-text", "-m", "id:29", "cd ~/\\n"})
+			So(cmds[4], ShouldResemble, []string{"send-text", "-m", "id:29", "nvim .\\n"})
 
-			So(cmds[5], ShouldResemble, []string{"new-window", "--title", "Test Window 2", "-m", "title:Test", "--cwd", "~/bar"})
-			So(cmds[6], ShouldResemble, []string{"send-text", "-m", "id:30", "'cd ~/\\n'"})
-			So(cmds[7], ShouldResemble, []string{"send-text", "-m", "id:30", "'foo .\\n'"})
+			So(cmds[5], ShouldResemble, []string{"new-window", "--title", "Test Window 2", "-m", "id:2", "--cwd", "~/bar"})
+			So(cmds[6], ShouldResemble, []string{"send-text", "-m", "id:30", "cd ~/\\n"})
+			So(cmds[7], ShouldResemble, []string{"send-text", "-m", "id:30", "foo .\\n"})
 
-			So(qndCalls.Write.Filepath, ShouldEndWith, "quicknavs.json")
-			So(qndCalls.Write.QuickNavs, ShouldResemble, expectedQuickNavs)
+			So(qnCalls.Write.Filepath, ShouldEndWith, "quicknavs.json")
+			// TODO: this naming is confusing
+			So(qnCalls.Write.QuickNavs.QuickNavs, ShouldResemble, expectedQuickNavs.QuickNavs)
 
 		})
+	})
+
+	Convey("Save session", t, func() {
+		tab := kitty.KittyTab{
+			Id:     1,
+			Layout: "stack",
+			Title:  "Tab1",
+			Windows: []kitty.KittyWindow{
+				{
+					Id:    1,
+					Title: "Win1",
+					Cwd:   "/foo",
+					Foreground_processes: []kitty.KittyForegroundProcessHandle{
+						{
+							Cmdline: []string{"nvim", "."},
+							Cwd:     "/foo",
+						},
+					},
+				},
+			},
+		}
+
+		ce := kitty.MockCommandExecutor{}
+		kc := kitty.NewKittyConnector(&ce)
+		qn := settings.MockQuickNavDao{}
+		qn.SetReadReturnValue(settings.MockQuickNavDaoReadReturn{
+			Db: settings.QuickNavDatabase{
+				QuickNavs: map[string][]settings.QuickNavHandle{
+					"a": {
+						{
+							EntryId:   1,
+							EntryType: kitty.Tab,
+						},
+					},
+					"b": {
+						{
+							EntryId:   1,
+							EntryType: kitty.Window,
+						},
+					},
+				},
+			},
+		})
+		qnd := settings.NewQuickNavDatabase(&qn)
+		sd := MockSessionDao{}
+		sc := NewSessionConnector(&sd, kc, qnd)
+
+		expected := Session{
+			Title:       "Tab1",
+			ShortcutKey: "a",
+			Windows: []Window{
+				{
+					Title:       "Win1",
+					ShortcutKey: "b",
+					ForegroundProcess: ProcessHandle{
+						Args: []string{"nvim", "."},
+						Cwd:  "/foo",
+					},
+					Cwd: "/foo",
+				},
+			},
+			Layout: "stack",
+		}
+
+		sc.SaveSession(tab)
+
+		So(sd.GetCalls().Write[0].Session, ShouldResemble, expected)
 	})
 }

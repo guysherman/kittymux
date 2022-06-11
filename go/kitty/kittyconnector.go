@@ -27,14 +27,15 @@ func NewKittyConnector(commandExecutor CommandExecutor) *KittyConnector {
 }
 
 func (kc *KittyConnector) SendCommand(argsToSend []string, windowId int) {
+	args := make([]string, 0)
 	for i := 0; i < len(argsToSend); i++ {
 		if strings.Contains(argsToSend[i], " ") {
 			argsToSend[i] = fmt.Sprintf("\"%s\"", argsToSend[i])
 		}
 	}
 
-	commandText := fmt.Sprintf("'%s\\n'", strings.Join(argsToSend, " "))
-	args := []string{"send-text", "-m", fmt.Sprintf("id:%d", windowId), commandText}
+	commandText := fmt.Sprintf("%s\\n", strings.Join(argsToSend, " "))
+	args = append(args, "send-text", "-m", fmt.Sprintf("id:%d", windowId), commandText)
 	kc.commandExecutor.ExecuteCommand(args)
 }
 
@@ -99,7 +100,7 @@ func (kc *KittyConnector) CreateWindow(title string, tabId int, tabTitle string,
 	} else if newTab && tabTitle != "" {
 		createArgs = append(createArgs, "--new-tab")
 		createArgs = append(createArgs, "--tab-title")
-		createArgs = append(createArgs, fmt.Sprintf("\"%s\"", tabTitle))
+		createArgs = append(createArgs, fmt.Sprintf("%s", tabTitle))
 	} else if tabTitle != "" {
 		createArgs = append(createArgs, "-m")
 		createArgs = append(createArgs, fmt.Sprintf("title:%s", tabTitle))

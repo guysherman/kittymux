@@ -22,7 +22,7 @@ func NewQuickNavDatabase(dao IQuickNavDao) QuickNavDatabase {
 	db, err := dao.Read(quickNavDatabasePath())
 	if err != nil {
 		log.Fatal(err)
-		os.Exit(-9)
+		os.Exit(9)
 	}
 
 	db.dao = dao

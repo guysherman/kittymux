@@ -23,7 +23,7 @@ func (qnd *QuickNavDao) Read(filepath string) (QuickNavDatabase, error) {
 			}, nil
 		} else if err != nil {
 			log.Fatal(err)
-			os.Exit(-8)
+			os.Exit(8)
 		}
 	}
 
@@ -41,18 +41,18 @@ func (qnd *QuickNavDao) Write(quickNavs QuickNavDatabase, filepath string) error
 	bytes, err := json.Marshal(quickNavs)
 	if err != nil {
 		log.Fatal(err)
-		os.Exit(-5)
+		os.Exit(5)
 	}
 
 	f, err := os.Create(filepath)
 	if err != nil {
 		log.Fatal(err)
-		os.Exit(-6)
+		os.Exit(6)
 	}
 	_, err = f.Write(bytes)
 	if err != nil {
 		log.Fatal(err)
-		os.Exit(-7)
+		os.Exit(7)
 	}
 
 	f.Close()

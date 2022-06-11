@@ -26,6 +26,8 @@ func NavigateModeUpdate(m model, msg tea.Msg) (tea.Model, tea.Cmd) {
 			return quickNavModePressed(m)
 		case "m":
 			return setQuickNavModePressed(m)
+		case "s":
+			return saveSessionPressed(m)
 		case "ctrl+c":
 			m.quitting = true
 			return m, tea.Quit
@@ -95,6 +97,15 @@ func setQuickNavModePressed(m model) (tea.Model, tea.Cmd) {
 
 	m.list.SetItems(listItems)
 	return m, nil
+}
+
+func saveSessionPressed(m model) (tea.Model, tea.Cmd) {
+	selected := m.list.SelectedItem().(item)
+	if selected.listEntry.EntryType != kitty.Tab {
+		return m, nil
+	}
+
+	return m, saveSession(m)
 }
 
 func navigateModeEnterPressed(m model) (tea.Model, tea.Cmd) {

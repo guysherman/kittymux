@@ -1,8 +1,11 @@
 package kitty
 
-import "os/exec"
-import "os"
-import "log"
+import (
+	"log"
+	"os"
+	"os/exec"
+	"strings"
+)
 
 type CommandExecutor interface {
 	ExecuteCommand(args []string) string
@@ -16,8 +19,8 @@ func (c *KittyCommandExecutor) ExecuteCommand(args []string) string {
 	output, err := cmd.Output()
 	if err != nil {
 		log.Fatal(err)
-		os.Exit(-1)
+		os.Exit(1)
 	}
 
-	return string(output)
+	return strings.TrimSpace(string(output))
 }

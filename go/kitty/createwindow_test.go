@@ -45,9 +45,9 @@ func TestWindowCreator(t *testing.T) {
 
 		ce.SetReturnValue("99")
 
-		id := kc.CreateWindow("test title", 0, "test tab", true, "")
+		id := kc.CreateWindow("test title", 0, "testtab", true, "")
 		So(id, ShouldEqual, 99)
-		So(ce.GetSavedArgs()[0], ShouldResemble, []string{"new-window", "--title", "test title", "--new-tab", "--tab-title", "\"test tab\""})
+		So(ce.GetSavedArgs()[0], ShouldResemble, []string{"new-window", "--title", "test title", "--new-tab", "--tab-title", "testtab"})
 	})
 
 	Convey("new window with a specified cwd", t, func() {

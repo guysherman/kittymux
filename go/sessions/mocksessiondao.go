@@ -15,8 +15,8 @@ type MockSessionDaoReadCall struct {
 }
 
 type MockSessionDaoWriteCall struct {
-	session  Session
-	filepath string
+	Session  Session
+	Filepath string
 }
 
 type MockSessionDaoReturns struct {
@@ -57,7 +57,7 @@ func (s *MockSessionDao) Read(filepath string) (Session, error) {
 }
 
 func (s *MockSessionDao) Write(session Session, filepath string) error {
-	s.Calls.Write = append(s.Calls.Write, MockSessionDaoWriteCall{session: session, filepath: filepath})
+	s.Calls.Write = append(s.Calls.Write, MockSessionDaoWriteCall{Session: session, Filepath: filepath})
 
 	returnCount := len(s.Returns.WriteOnce)
 	if returnCount > 0 {
