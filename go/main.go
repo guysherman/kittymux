@@ -19,8 +19,11 @@ const listHeight = 14
 type uiMode int64
 
 type additionalListActions struct {
-	PrevTab key.Binding
-	NextTab key.Binding
+	PrevTab     key.Binding
+	NextTab     key.Binding
+	QuickNav    key.Binding
+	SetQuickNav key.Binding
+	Save        key.Binding
 }
 
 var AdditionalActions = additionalListActions{
@@ -31,6 +34,18 @@ var AdditionalActions = additionalListActions{
 	NextTab: key.NewBinding(
 		key.WithKeys("J"),
 		key.WithHelp("J", "next tab"),
+	),
+	QuickNav: key.NewBinding(
+		key.WithKeys("'"),
+		key.WithHelp("'", "followed by <letter> to jump to a quick nav"),
+	),
+	SetQuickNav: key.NewBinding(
+		key.WithKeys("m"),
+		key.WithHelp("m", "followed by <letter> to set a quick nav"),
+	),
+	Save: key.NewBinding(
+		key.WithKeys("s"),
+		key.WithHelp("s", "(tabs only) save tab as session"),
 	),
 }
 
@@ -185,6 +200,9 @@ func interactiveMode() {
 		return []key.Binding{
 			AdditionalActions.PrevTab,
 			AdditionalActions.NextTab,
+			AdditionalActions.QuickNav,
+			AdditionalActions.SetQuickNav,
+			AdditionalActions.Save,
 		}
 	}
 
