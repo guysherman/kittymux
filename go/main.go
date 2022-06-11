@@ -19,19 +19,23 @@ func main() {
 	flag.Parse()
 
 	if *session != "" {
-		ce := kitty.KittyCommandExecutor{}
-		kc := kitty.NewKittyConnector(&ce)
-		qnd := settings.QuickNavDao{}
-		qndb := settings.NewQuickNavDatabase(&qnd)
-
-		sd := sessions.SessionDao{}
-		sc := sessions.NewSessionConnector(&sd, kc, qndb)
-
-		sc.LoadSession(*session)
-		os.Exit(0)
+		cliMode(session)
 	}
 
 	interactiveMode()
+}
+
+func cliMode(session *string) {
+	ce := kitty.KittyCommandExecutor{}
+	kc := kitty.NewKittyConnector(&ce)
+	qnd := settings.QuickNavDao{}
+	qndb := settings.NewQuickNavDatabase(&qnd)
+
+	sd := sessions.SessionDao{}
+	sc := sessions.NewSessionConnector(&sd, kc, qndb)
+
+	sc.LoadSession(*session)
+	os.Exit(0)
 }
 
 func interactiveMode() {
