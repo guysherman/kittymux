@@ -6,10 +6,6 @@ import (
 	"github.com/guysherman/kittymux/settings"
 )
 
-type QuickNavsUpdatedMsg struct {
-	qndb settings.QuickNavDatabase
-}
-
 func updateQuickNav(m UiModel, i ListItemModel, keypress string) tea.Cmd {
 	return func() tea.Msg {
 		handle := settings.QuickNavHandle{

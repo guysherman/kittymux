@@ -5,10 +5,6 @@ import (
 	"github.com/guysherman/kittymux/kitty"
 )
 
-type ListWindowsMsg struct {
-	ListItems []ListItemModel
-}
-
 func listWindows(m UiModel) tea.Cmd {
 	return func() tea.Msg {
 		wl := kitty.EntryListerBase{}
