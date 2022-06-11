@@ -14,8 +14,6 @@ import (
 	"github.com/guysherman/kittymux/settings"
 )
 
-const listHeight = 14
-
 func (m UiModel) Init() tea.Cmd {
 	return listWindows(m)
 }
