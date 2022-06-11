@@ -5,7 +5,7 @@ import (
 	tea "github.com/charmbracelet/bubbletea"
 )
 
-func QuickNavModeUpdate(m model, msg tea.Msg) (tea.Model, tea.Cmd) {
+func QuickNavModeUpdate(m UiModel, msg tea.Msg) (tea.Model, tea.Cmd) {
 	var listEntry ListItemModel
 	var found bool
 	switch msg := msg.(type) {
@@ -13,11 +13,11 @@ func QuickNavModeUpdate(m model, msg tea.Msg) (tea.Model, tea.Cmd) {
 		switch {
 		case key.Matches(msg, lowercaseLetters):
 			keypress := msg.String()
-			listEntry, found = findEntry(m, keypress)
+			listEntry, found = findEntry(m.list, keypress)
 			break
 		case key.Matches(msg, numbers):
 			keypress := msg.String()
-			listEntry, found = findEntry(m, keypress)
+			listEntry, found = findEntry(m.list, keypress)
 			break
 		case key.Matches(msg, cancel):
 			return setNavigateMode(m)

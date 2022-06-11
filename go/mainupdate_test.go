@@ -45,7 +45,7 @@ func TestMainUpdate(t *testing.T) {
 		l := list.New(items, ItemDelegate{}, 0, 0)
 		i := textinput.New()
 		i.Prompt = ""
-		m := model{list: l, input: i, mode: Navigate}
+		m := UiModel{list: l, input: i, mode: Navigate}
 
 		Convey("QuickNavsUpdatedMessage assigns shortcut keys to model", func() {
 			qndb := settings.QuickNavDatabase{
@@ -69,7 +69,7 @@ func TestMainUpdate(t *testing.T) {
 
 			newm, cmd := m.Update(msg)
 			So(cmd, ShouldBeNil)
-			newModel := newm.(model)
+			newModel := newm.(UiModel)
 			So(newModel.list.Items()[0].(ListItemModel).shortcutKey, ShouldEqual, "a")
 			So(newModel.list.Items()[1].(ListItemModel).shortcutKey, ShouldEqual, "")
 			So(newModel.list.Items()[3].(ListItemModel).shortcutKey, ShouldEqual, "a")

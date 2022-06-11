@@ -10,7 +10,7 @@ type QuickNavsUpdatedMsg struct {
 	qndb settings.QuickNavDatabase
 }
 
-func updateQuickNav(m model, i ListItemModel, keypress string) tea.Cmd {
+func updateQuickNav(m UiModel, i ListItemModel, keypress string) tea.Cmd {
 	return func() tea.Msg {
 		handle := settings.QuickNavHandle{
 			EntryId:   i.listEntry.Id,
@@ -52,7 +52,7 @@ func getTabIdForListItem(i ListItemModel) int {
 	return tabId
 }
 
-func collectItemsForTabId(m model, tabId int) []ListItemModel {
+func collectItemsForTabId(m UiModel, tabId int) []ListItemModel {
 	items := []ListItemModel{}
 	listItems := m.list.Items()
 	for _, i := range listItems {

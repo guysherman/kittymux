@@ -9,7 +9,7 @@ type ListWindowsMsg struct {
 	ListItems []ListItemModel
 }
 
-func listWindows(m model) tea.Cmd {
+func listWindows(m UiModel) tea.Cmd {
 	return func() tea.Msg {
 		wl := kitty.EntryListerBase{}
 

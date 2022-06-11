@@ -47,7 +47,7 @@ func TestRenameMode(t *testing.T) {
 		i := textinput.New()
 		i.SetValue("Foozle")
 		i.Prompt = ""
-		m := model{list: l, input: i, mode: Rename}
+		m := UiModel{list: l, input: i, mode: Rename}
 
 		Convey("Renames entry when enter is pressed", func() {
 			msg := tea.KeyMsg{
@@ -61,7 +61,7 @@ func TestRenameMode(t *testing.T) {
 
 			newModel, cmd := RenameModeUpdate(m, msg)
 			newMsg := cmd()
-			So(newModel.(model).inputText, ShouldEqual, "Foozle")
+			So(newModel.(UiModel).inputText, ShouldEqual, "Foozle")
 			So(fmt.Sprintf("%T", newMsg), ShouldEqual, fmt.Sprintf("%T", ListUpdatedMsg{}))
 		})
 
@@ -77,7 +77,7 @@ func TestRenameMode(t *testing.T) {
 
 			newModel, cmd := RenameModeUpdate(m, msg)
 			So(cmd, ShouldBeNil)
-			So(newModel.(model).mode, ShouldEqual, Navigate)
+			So(newModel.(UiModel).mode, ShouldEqual, Navigate)
 		})
 
 	})

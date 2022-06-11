@@ -4,7 +4,7 @@ import tea "github.com/charmbracelet/bubbletea"
 
 type NoopMessage struct{}
 
-func saveSession(m model) tea.Cmd {
+func saveSession(m UiModel) tea.Cmd {
 	return func() tea.Msg {
 		selected := m.list.SelectedItem().(ListItemModel)
 		tab := selected.listEntry.Tab

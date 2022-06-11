@@ -53,7 +53,7 @@ func TestSetQuickNavMode(t *testing.T) {
 		l := list.New(items, ItemDelegate{}, 0, 0)
 		i := textinput.New()
 		i.Prompt = ""
-		m := model{list: l, input: i, mode: SetQuickNav}
+		m := UiModel{list: l, input: i, mode: SetQuickNav}
 
 		Convey("Selecting a letter updates the quick nav database", func() {
 			msg := tea.KeyMsg{
@@ -79,8 +79,8 @@ func TestSetQuickNavMode(t *testing.T) {
 			newMsg := cmd()
 			So(fmt.Sprintf("%T", newMsg), ShouldEqual, fmt.Sprintf("%T", QuickNavsUpdatedMsg{}))
 			So(newMsg.(QuickNavsUpdatedMsg).qndb.QuickNavs["a"][0], ShouldResemble, settings.QuickNavHandle{EntryId: 1, EntryType: kitty.Tab})
-			So(newModel.(model).mode, ShouldEqual, Navigate)
-			So(newModel.(model).list.Items()[0].(ListItemModel).listMode, ShouldEqual, Navigate)
+			So(newModel.(UiModel).mode, ShouldEqual, Navigate)
+			So(newModel.(UiModel).list.Items()[0].(ListItemModel).listMode, ShouldEqual, Navigate)
 		})
 
 		Convey("Selecting a number updates the quick nav database", func() {
@@ -108,8 +108,8 @@ func TestSetQuickNavMode(t *testing.T) {
 			newMsg := cmd()
 			So(fmt.Sprintf("%T", newMsg), ShouldEqual, fmt.Sprintf("%T", QuickNavsUpdatedMsg{}))
 			So(newMsg.(QuickNavsUpdatedMsg).qndb.QuickNavs["1"][0], ShouldResemble, settings.QuickNavHandle{EntryId: 4, EntryType: kitty.Window})
-			So(newModel.(model).mode, ShouldEqual, Navigate)
-			So(newModel.(model).list.Items()[0].(ListItemModel).listMode, ShouldEqual, Navigate)
+			So(newModel.(UiModel).mode, ShouldEqual, Navigate)
+			So(newModel.(UiModel).list.Items()[0].(ListItemModel).listMode, ShouldEqual, Navigate)
 		})
 
 		Convey("assigning the same shortcut to a second window in the same tab removes it from the first", func() {
@@ -203,15 +203,15 @@ func TestSetQuickNavMode(t *testing.T) {
 
 			newModel, cmd := SetQuickNavModeUpdate(m, msg)
 			So(cmd, ShouldBeNil)
-			So(newModel.(model).mode, ShouldEqual, Navigate)
-			So(newModel.(model).list.Items()[0].(ListItemModel).listMode, ShouldEqual, Navigate)
+			So(newModel.(UiModel).mode, ShouldEqual, Navigate)
+			So(newModel.(UiModel).list.Items()[0].(ListItemModel).listMode, ShouldEqual, Navigate)
 		})
 
 		Reset(func() {
 			l = list.New(items, ItemDelegate{}, 0, 0)
 			i = textinput.New()
 			i.Prompt = ""
-			m = model{list: l, input: i}
+			m = UiModel{list: l, input: i}
 		})
 
 	})

@@ -62,7 +62,7 @@ func TestQuickNavMode(t *testing.T) {
 		l := list.New(items, ItemDelegate{}, 0, 0)
 		i := textinput.New()
 		i.Prompt = ""
-		m := model{list: l, input: i, mode: QuickNav}
+		m := UiModel{list: l, input: i, mode: QuickNav}
 
 		Convey("Selecting a letter focuses an entry, within the focused tab", func() {
 			msg := tea.KeyMsg{
@@ -110,15 +110,15 @@ func TestQuickNavMode(t *testing.T) {
 
 			newModel, cmd := QuickNavModeUpdate(m, msg)
 			So(cmd, ShouldBeNil)
-			So(newModel.(model).mode, ShouldEqual, Navigate)
-			So(newModel.(model).list.Items()[0].(ListItemModel).listMode, ShouldEqual, Navigate)
+			So(newModel.(UiModel).mode, ShouldEqual, Navigate)
+			So(newModel.(UiModel).list.Items()[0].(ListItemModel).listMode, ShouldEqual, Navigate)
 		})
 
 		Reset(func() {
 			l = list.New(items, ItemDelegate{}, 0, 0)
 			i = textinput.New()
 			i.Prompt = ""
-			m = model{list: l, input: i}
+			m = UiModel{list: l, input: i}
 		})
 
 	})

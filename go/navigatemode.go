@@ -6,7 +6,7 @@ import (
 	"github.com/guysherman/kittymux/kitty"
 )
 
-func NavigateModeUpdate(m model, msg tea.Msg) (tea.Model, tea.Cmd) {
+func NavigateModeUpdate(m UiModel, msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
 	case tea.KeyMsg:
 		switch keypress := msg.String(); keypress {
@@ -42,7 +42,7 @@ func NavigateModeUpdate(m model, msg tea.Msg) (tea.Model, tea.Cmd) {
 	return m, nil
 }
 
-func nextTabPressed(m model) (tea.Model, tea.Cmd) {
+func nextTabPressed(m UiModel) (tea.Model, tea.Cmd) {
 	items := m.list.Items()
 	for i := m.list.Index() + 1; i < len(items); i++ {
 		item := items[i].(ListItemModel)
@@ -55,7 +55,7 @@ func nextTabPressed(m model) (tea.Model, tea.Cmd) {
 	return m, nil
 }
 
-func prevTabPressed(m model) (tea.Model, tea.Cmd) {
+func prevTabPressed(m UiModel) (tea.Model, tea.Cmd) {
 	items := m.list.Items()
 	for i := m.list.Index() - 1; i >= 0; i-- {
 		item := items[i].(ListItemModel)
@@ -68,12 +68,12 @@ func prevTabPressed(m model) (tea.Model, tea.Cmd) {
 	return m, nil
 }
 
-func closeEntryPressed(m model) (tea.Model, tea.Cmd) {
+func closeEntryPressed(m UiModel) (tea.Model, tea.Cmd) {
 	i, _ := m.list.SelectedItem().(ListItemModel)
 	return m, closeEntry(m, i)
 }
 
-func quickNavModePressed(m model) (tea.Model, tea.Cmd) {
+func quickNavModePressed(m UiModel) (tea.Model, tea.Cmd) {
 	m.mode = QuickNav
 	listItems := []list.Item{}
 	for _, listItem := range m.list.Items() {
@@ -86,7 +86,7 @@ func quickNavModePressed(m model) (tea.Model, tea.Cmd) {
 	return m, nil
 }
 
-func setQuickNavModePressed(m model) (tea.Model, tea.Cmd) {
+func setQuickNavModePressed(m UiModel) (tea.Model, tea.Cmd) {
 	m.mode = SetQuickNav
 	listItems := []list.Item{}
 	for _, listItem := range m.list.Items() {
@@ -99,7 +99,7 @@ func setQuickNavModePressed(m model) (tea.Model, tea.Cmd) {
 	return m, nil
 }
 
-func saveSessionPressed(m model) (tea.Model, tea.Cmd) {
+func saveSessionPressed(m UiModel) (tea.Model, tea.Cmd) {
 	selected := m.list.SelectedItem().(ListItemModel)
 	if selected.listEntry.EntryType != kitty.Tab {
 		return m, nil
@@ -108,12 +108,12 @@ func saveSessionPressed(m model) (tea.Model, tea.Cmd) {
 	return m, saveSession(m)
 }
 
-func navigateModeEnterPressed(m model) (tea.Model, tea.Cmd) {
+func navigateModeEnterPressed(m UiModel) (tea.Model, tea.Cmd) {
 	i, _ := m.list.SelectedItem().(ListItemModel)
 	return m, focusEntry(m, i)
 }
 
-func setNavigateMode(m model) (tea.Model, tea.Cmd) {
+func setNavigateMode(m UiModel) (tea.Model, tea.Cmd) {
 	m.mode = Navigate
 	listItems := []list.Item{}
 	for _, listItem := range m.list.Items() {

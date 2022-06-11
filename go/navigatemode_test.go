@@ -69,7 +69,7 @@ func TestNavigateMode(t *testing.T) {
 		l := list.New(items, ItemDelegate{}, 0, 0)
 		i := textinput.New()
 		i.Prompt = ""
-		m := model{list: l, input: i}
+		m := UiModel{list: l, input: i}
 
 		Convey("Shift J selects tab 2", func() {
 			msg := tea.KeyMsg{
@@ -79,7 +79,7 @@ func TestNavigateMode(t *testing.T) {
 			}
 
 			m, cmd := NavigateModeUpdate(m, msg)
-			So(m.(model).list.Index(), ShouldEqual, 2)
+			So(m.(UiModel).list.Index(), ShouldEqual, 2)
 			So(cmd, ShouldBeNil)
 		})
 
@@ -92,7 +92,7 @@ func TestNavigateMode(t *testing.T) {
 			}
 
 			m, cmd := NavigateModeUpdate(m, msg)
-			So(m.(model).list.Index(), ShouldEqual, 0)
+			So(m.(UiModel).list.Index(), ShouldEqual, 0)
 			So(cmd, ShouldBeNil)
 		})
 
@@ -104,8 +104,8 @@ func TestNavigateMode(t *testing.T) {
 			}
 
 			newM, cmd := NavigateModeUpdate(m, msg)
-			So(newM.(model).mode, ShouldEqual, Rename)
-			So(newM.(model).input.Focused(), ShouldBeTrue)
+			So(newM.(UiModel).mode, ShouldEqual, Rename)
+			So(newM.(UiModel).input.Focused(), ShouldBeTrue)
 			So(cmd, ShouldBeNil)
 		})
 
@@ -117,8 +117,8 @@ func TestNavigateMode(t *testing.T) {
 			}
 
 			newM, cmd := NavigateModeUpdate(m, msg)
-			So(newM.(model).mode, ShouldEqual, QuickNav)
-			So(newM.(model).list.Items()[0].(ListItemModel).listMode, ShouldEqual, QuickNav)
+			So(newM.(UiModel).mode, ShouldEqual, QuickNav)
+			So(newM.(UiModel).list.Items()[0].(ListItemModel).listMode, ShouldEqual, QuickNav)
 			So(cmd, ShouldBeNil)
 		})
 
@@ -130,8 +130,8 @@ func TestNavigateMode(t *testing.T) {
 			}
 
 			newM, cmd := NavigateModeUpdate(m, msg)
-			So(newM.(model).mode, ShouldEqual, SetQuickNav)
-			So(newM.(model).list.Items()[0].(ListItemModel).listMode, ShouldEqual, SetQuickNav)
+			So(newM.(UiModel).mode, ShouldEqual, SetQuickNav)
+			So(newM.(UiModel).list.Items()[0].(ListItemModel).listMode, ShouldEqual, SetQuickNav)
 			So(cmd, ShouldBeNil)
 		})
 
@@ -226,7 +226,7 @@ func TestNavigateMode(t *testing.T) {
 			}
 
 			newM, cmd := NavigateModeUpdate(m, msg)
-			So(newM.(model).quitting, ShouldBeTrue)
+			So(newM.(UiModel).quitting, ShouldBeTrue)
 			So(cmd, ShouldNotBeNil)
 		})
 
@@ -283,7 +283,7 @@ func TestNavigateMode(t *testing.T) {
 			l = list.New(items, ItemDelegate{}, 0, 0)
 			i = textinput.New()
 			i.Prompt = ""
-			m = model{list: l, input: i}
+			m = UiModel{list: l, input: i}
 		})
 	})
 }

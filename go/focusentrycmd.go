@@ -6,7 +6,7 @@ import (
 
 type ExitMessage struct{}
 
-func focusEntry(m model, i ListItemModel) tea.Cmd {
+func focusEntry(m UiModel, i ListItemModel) tea.Cmd {
 	return func() tea.Msg {
 		m.kc.FocusEntry(i.listEntry)
 

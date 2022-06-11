@@ -5,7 +5,7 @@ import (
 	tea "github.com/charmbracelet/bubbletea"
 )
 
-func SetQuickNavModeUpdate(m model, msg tea.Msg) (tea.Model, tea.Cmd) {
+func SetQuickNavModeUpdate(m UiModel, msg tea.Msg) (tea.Model, tea.Cmd) {
 	shortcut := false
 	var keypress string
 	switch msg := msg.(type) {

@@ -16,37 +16,11 @@ import (
 
 const listHeight = 14
 
-type uiMode int64
-
-const (
-	None uiMode = iota
-	Command
-	Navigate
-	Rename
-	QuickNav
-	SetQuickNav
-)
-
-type model struct {
-	list      list.Model
-	input     textinput.Model
-	items     []ListItemModel
-	choice    string
-	quitting  bool
-	width     int
-	height    int
-	inputText string
-	mode      uiMode
-	kc        kitty.IKittyConnector
-	qndb      settings.QuickNavDatabase
-	sc        sessions.ISessionConnector
-}
-
-func (m model) Init() tea.Cmd {
+func (m UiModel) Init() tea.Cmd {
 	return listWindows(m)
 }
 
-func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
+func (m UiModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
 	case tea.WindowSizeMsg:
 		return handleWindowResized(m, msg)
@@ -78,7 +52,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	}
 }
 
-func handleWindowResized(m model, msg tea.WindowSizeMsg) (tea.Model, tea.Cmd) {
+func handleWindowResized(m UiModel, msg tea.WindowSizeMsg) (tea.Model, tea.Cmd) {
 	m.list.SetWidth(msg.Width)
 	m.width = msg.Width
 	m.height = msg.Height
@@ -88,7 +62,7 @@ func handleWindowResized(m model, msg tea.WindowSizeMsg) (tea.Model, tea.Cmd) {
 	return m, nil
 }
 
-func handleWindowList(m model, msg ListWindowsMsg) (tea.Model, tea.Cmd) {
+func handleWindowList(m UiModel, msg ListWindowsMsg) (tea.Model, tea.Cmd) {
 	items := []list.Item{}
 	for _, item := range msg.ListItems {
 		items = append(items, item)
@@ -112,7 +86,7 @@ func assignShortcutKeys(items []list.Item, shortcuts map[string]string) []list.I
 	return newItems
 }
 
-func handleQuickNavDatabase(m model, msg QuickNavsUpdatedMsg) (tea.Model, tea.Cmd) {
+func handleQuickNavDatabase(m UiModel, msg QuickNavsUpdatedMsg) (tea.Model, tea.Cmd) {
 	items := m.list.Items()
 	shortcuts := msg.qndb.ShortcutsByEntryId()
 
@@ -122,7 +96,7 @@ func handleQuickNavDatabase(m model, msg QuickNavsUpdatedMsg) (tea.Model, tea.Cm
 	return m, nil
 }
 
-func (m model) View() string {
+func (m UiModel) View() string {
 	if m.choice != "" || m.quitting {
 		return ""
 	}
@@ -186,7 +160,7 @@ func interactiveMode() {
 	sd := sessions.SessionDao{}
 	sc := sessions.NewSessionConnector(&sd, kc, qndb)
 
-	m := model{
+	m := UiModel{
 		list:  l,
 		input: i,
 		mode:  Navigate,

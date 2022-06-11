@@ -4,7 +4,7 @@ import (
 	tea "github.com/charmbracelet/bubbletea"
 )
 
-func RenameModeUpdate(m model, msg tea.Msg) (tea.Model, tea.Cmd) {
+func RenameModeUpdate(m UiModel, msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
 	case tea.KeyMsg:
 		switch keypress := msg.String(); keypress {
@@ -23,7 +23,7 @@ func RenameModeUpdate(m model, msg tea.Msg) (tea.Model, tea.Cmd) {
 	return m, nil
 }
 
-func renameModeEnterPressed(m model) (tea.Model, tea.Cmd) {
+func renameModeEnterPressed(m UiModel) (tea.Model, tea.Cmd) {
 	m.mode = Navigate
 	m.inputText = m.input.Value()
 	m.input.SetValue("")
