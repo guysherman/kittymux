@@ -6,7 +6,7 @@ import (
 )
 
 type ListWindowsMsg struct {
-	ListItems []item
+	ListItems []ListItemModel
 }
 
 func listWindows(m model) tea.Cmd {
@@ -14,9 +14,9 @@ func listWindows(m model) tea.Cmd {
 		wl := kitty.EntryListerBase{}
 
 		entries := wl.EntryList(m.kc)
-		items := []item{}
+		items := []ListItemModel{}
 		for _, entry := range entries {
-			items = append(items, item{listEntry: entry, listMode: m.mode})
+			items = append(items, ListItemModel{listEntry: entry, listMode: m.mode})
 		}
 
 		return ListWindowsMsg{ListItems: items}

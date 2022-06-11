@@ -30,7 +30,7 @@ const (
 type model struct {
 	list      list.Model
 	input     textinput.Model
-	items     []item
+	items     []ListItemModel
 	choice    string
 	quitting  bool
 	width     int
@@ -103,7 +103,7 @@ func handleWindowList(m model, msg ListWindowsMsg) (tea.Model, tea.Cmd) {
 func assignShortcutKeys(items []list.Item, shortcuts map[string]string) []list.Item {
 	newItems := []list.Item{}
 	for _, i := range items {
-		listItem := i.(item)
+		listItem := i.(ListItemModel)
 		entryId := settings.EntryIdForEntry(listItem.listEntry)
 		listItem.shortcutKey = shortcuts[entryId]
 		newItems = append(newItems, listItem)

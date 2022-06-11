@@ -6,7 +6,7 @@ type NoopMessage struct{}
 
 func saveSession(m model) tea.Cmd {
 	return func() tea.Msg {
-		selected := m.list.SelectedItem().(item)
+		selected := m.list.SelectedItem().(ListItemModel)
 		tab := selected.listEntry.Tab
 		m.sc.SaveSession(*tab)
 		return NoopMessage{}

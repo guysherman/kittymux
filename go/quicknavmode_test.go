@@ -14,7 +14,7 @@ import (
 func TestQuickNavMode(t *testing.T) {
 	Convey("QuickNav Mode", t, func() {
 		items := []list.Item{
-			item{
+			ListItemModel{
 				listEntry: kitty.WindowListEntry{
 					Text:              "Tab 1",
 					EntryType:         kitty.Tab,
@@ -25,7 +25,7 @@ func TestQuickNavMode(t *testing.T) {
 				},
 				shortcutKey: "a",
 			},
-			item{
+			ListItemModel{
 				listEntry: kitty.WindowListEntry{
 					Text:              "Win 1",
 					EntryType:         kitty.Window,
@@ -36,7 +36,7 @@ func TestQuickNavMode(t *testing.T) {
 				},
 				shortcutKey: "1",
 			},
-			item{
+			ListItemModel{
 				listEntry: kitty.WindowListEntry{
 					Text:              "Tab 2",
 					EntryType:         kitty.Tab,
@@ -47,7 +47,7 @@ func TestQuickNavMode(t *testing.T) {
 				},
 				shortcutKey: "a",
 			},
-			item{
+			ListItemModel{
 				listEntry: kitty.WindowListEntry{
 					Text:              "Win 2",
 					EntryType:         kitty.Window,
@@ -111,7 +111,7 @@ func TestQuickNavMode(t *testing.T) {
 			newModel, cmd := QuickNavModeUpdate(m, msg)
 			So(cmd, ShouldBeNil)
 			So(newModel.(model).mode, ShouldEqual, Navigate)
-			So(newModel.(model).list.Items()[0].(item).listMode, ShouldEqual, Navigate)
+			So(newModel.(model).list.Items()[0].(ListItemModel).listMode, ShouldEqual, Navigate)
 		})
 
 		Reset(func() {

@@ -11,13 +11,13 @@ import (
 	"github.com/guysherman/kittymux/kitty"
 )
 
-type item struct {
+type ListItemModel struct {
 	listEntry   kitty.WindowListEntry
 	listMode    uiMode
 	shortcutKey string
 }
 
-func (i item) FilterValue() string { return i.listEntry.Text }
+func (i ListItemModel) FilterValue() string { return i.listEntry.Text }
 
 type ItemDelegate struct{}
 
@@ -28,7 +28,7 @@ func (d ItemDelegate) Update(msg tea.Msg, m *list.Model) tea.Cmd {
 }
 
 func (d ItemDelegate) Render(w io.Writer, m list.Model, index int, listItem list.Item) {
-	i, ok := listItem.(item)
+	i, ok := listItem.(ListItemModel)
 	if !ok {
 		return
 	}

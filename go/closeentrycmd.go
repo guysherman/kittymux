@@ -4,7 +4,7 @@ import (
 	tea "github.com/charmbracelet/bubbletea"
 )
 
-func closeEntry(m model, i item) tea.Cmd {
+func closeEntry(m model, i ListItemModel) tea.Cmd {
 	return func() tea.Msg {
 		m.kc.CloseEntry(i.listEntry)
 

@@ -45,7 +45,7 @@ func NavigateModeUpdate(m model, msg tea.Msg) (tea.Model, tea.Cmd) {
 func nextTabPressed(m model) (tea.Model, tea.Cmd) {
 	items := m.list.Items()
 	for i := m.list.Index() + 1; i < len(items); i++ {
-		item := items[i].(item)
+		item := items[i].(ListItemModel)
 		if item.listEntry.EntryType == kitty.Tab {
 			m.list.Select(i)
 			break
@@ -58,7 +58,7 @@ func nextTabPressed(m model) (tea.Model, tea.Cmd) {
 func prevTabPressed(m model) (tea.Model, tea.Cmd) {
 	items := m.list.Items()
 	for i := m.list.Index() - 1; i >= 0; i-- {
-		item := items[i].(item)
+		item := items[i].(ListItemModel)
 		if item.listEntry.EntryType == kitty.Tab {
 			m.list.Select(i)
 			break
@@ -69,7 +69,7 @@ func prevTabPressed(m model) (tea.Model, tea.Cmd) {
 }
 
 func closeEntryPressed(m model) (tea.Model, tea.Cmd) {
-	i, _ := m.list.SelectedItem().(item)
+	i, _ := m.list.SelectedItem().(ListItemModel)
 	return m, closeEntry(m, i)
 }
 
@@ -77,7 +77,7 @@ func quickNavModePressed(m model) (tea.Model, tea.Cmd) {
 	m.mode = QuickNav
 	listItems := []list.Item{}
 	for _, listItem := range m.list.Items() {
-		i := listItem.(item)
+		i := listItem.(ListItemModel)
 		i.listMode = QuickNav
 		listItems = append(listItems, i)
 	}
@@ -90,7 +90,7 @@ func setQuickNavModePressed(m model) (tea.Model, tea.Cmd) {
 	m.mode = SetQuickNav
 	listItems := []list.Item{}
 	for _, listItem := range m.list.Items() {
-		i := listItem.(item)
+		i := listItem.(ListItemModel)
 		i.listMode = SetQuickNav
 		listItems = append(listItems, i)
 	}
@@ -100,7 +100,7 @@ func setQuickNavModePressed(m model) (tea.Model, tea.Cmd) {
 }
 
 func saveSessionPressed(m model) (tea.Model, tea.Cmd) {
-	selected := m.list.SelectedItem().(item)
+	selected := m.list.SelectedItem().(ListItemModel)
 	if selected.listEntry.EntryType != kitty.Tab {
 		return m, nil
 	}
@@ -109,7 +109,7 @@ func saveSessionPressed(m model) (tea.Model, tea.Cmd) {
 }
 
 func navigateModeEnterPressed(m model) (tea.Model, tea.Cmd) {
-	i, _ := m.list.SelectedItem().(item)
+	i, _ := m.list.SelectedItem().(ListItemModel)
 	return m, focusEntry(m, i)
 }
 
@@ -117,7 +117,7 @@ func setNavigateMode(m model) (tea.Model, tea.Cmd) {
 	m.mode = Navigate
 	listItems := []list.Item{}
 	for _, listItem := range m.list.Items() {
-		i := listItem.(item)
+		i := listItem.(ListItemModel)
 		i.listMode = Navigate
 		listItems = append(listItems, i)
 	}

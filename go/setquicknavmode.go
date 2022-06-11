@@ -24,7 +24,7 @@ func SetQuickNavModeUpdate(m model, msg tea.Msg) (tea.Model, tea.Cmd) {
 	}
 
 	if shortcut {
-		listEntry := m.list.SelectedItem().(item)
+		listEntry := m.list.SelectedItem().(ListItemModel)
 		cmd := updateQuickNav(m, listEntry, keypress)
 		mdl, _ := setNavigateMode(m)
 		return mdl, cmd

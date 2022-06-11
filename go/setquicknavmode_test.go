@@ -15,14 +15,14 @@ import (
 func TestSetQuickNavMode(t *testing.T) {
 	Convey("SetQuickNav Mode", t, func() {
 		items := []list.Item{
-			item{
+			ListItemModel{
 				listEntry: kitty.WindowListEntry{
 					Text:      "Tab 1",
 					EntryType: kitty.Tab,
 					Id:        1,
 				},
 			},
-			item{
+			ListItemModel{
 				listEntry: kitty.WindowListEntry{
 					Text:      "Win 1",
 					EntryType: kitty.Window,
@@ -32,14 +32,14 @@ func TestSetQuickNavMode(t *testing.T) {
 					},
 				},
 			},
-			item{
+			ListItemModel{
 				listEntry: kitty.WindowListEntry{
 					Text:      "Tab 2",
 					EntryType: kitty.Tab,
 					Id:        3,
 				},
 			},
-			item{
+			ListItemModel{
 				listEntry: kitty.WindowListEntry{
 					Text:      "Win 2",
 					EntryType: kitty.Window,
@@ -80,7 +80,7 @@ func TestSetQuickNavMode(t *testing.T) {
 			So(fmt.Sprintf("%T", newMsg), ShouldEqual, fmt.Sprintf("%T", QuickNavsUpdatedMsg{}))
 			So(newMsg.(QuickNavsUpdatedMsg).qndb.QuickNavs["a"][0], ShouldResemble, settings.QuickNavHandle{EntryId: 1, EntryType: kitty.Tab})
 			So(newModel.(model).mode, ShouldEqual, Navigate)
-			So(newModel.(model).list.Items()[0].(item).listMode, ShouldEqual, Navigate)
+			So(newModel.(model).list.Items()[0].(ListItemModel).listMode, ShouldEqual, Navigate)
 		})
 
 		Convey("Selecting a number updates the quick nav database", func() {
@@ -109,7 +109,7 @@ func TestSetQuickNavMode(t *testing.T) {
 			So(fmt.Sprintf("%T", newMsg), ShouldEqual, fmt.Sprintf("%T", QuickNavsUpdatedMsg{}))
 			So(newMsg.(QuickNavsUpdatedMsg).qndb.QuickNavs["1"][0], ShouldResemble, settings.QuickNavHandle{EntryId: 4, EntryType: kitty.Window})
 			So(newModel.(model).mode, ShouldEqual, Navigate)
-			So(newModel.(model).list.Items()[0].(item).listMode, ShouldEqual, Navigate)
+			So(newModel.(model).list.Items()[0].(ListItemModel).listMode, ShouldEqual, Navigate)
 		})
 
 		Convey("assigning the same shortcut to a second window in the same tab removes it from the first", func() {
@@ -132,7 +132,7 @@ func TestSetQuickNavMode(t *testing.T) {
 			qndb := settings.NewQuickNavDatabase(&qndao)
 			m.qndb = qndb
 			m.kc = kc
-			item1 := m.list.Items()[0].(item)
+			item1 := m.list.Items()[0].(ListItemModel)
 			item1.shortcutKey = "a"
 			m.list.SetItem(0, item1)
 			m.list.Select(1)
@@ -172,7 +172,7 @@ func TestSetQuickNavMode(t *testing.T) {
 			qndb := settings.NewQuickNavDatabase(&qndao)
 			m.qndb = qndb
 			m.kc = kc
-			item1 := m.list.Items()[0].(item)
+			item1 := m.list.Items()[0].(ListItemModel)
 			item1.shortcutKey = "a"
 			m.list.SetItem(0, item1)
 			m.list.Select(3)
@@ -204,7 +204,7 @@ func TestSetQuickNavMode(t *testing.T) {
 			newModel, cmd := SetQuickNavModeUpdate(m, msg)
 			So(cmd, ShouldBeNil)
 			So(newModel.(model).mode, ShouldEqual, Navigate)
-			So(newModel.(model).list.Items()[0].(item).listMode, ShouldEqual, Navigate)
+			So(newModel.(model).list.Items()[0].(ListItemModel).listMode, ShouldEqual, Navigate)
 		})
 
 		Reset(func() {

@@ -35,7 +35,7 @@ func TestNavigateMode(t *testing.T) {
 		}
 
 		items := []list.Item{
-			item{
+			ListItemModel{
 				listEntry: kitty.WindowListEntry{
 					Text:      "Tab1",
 					EntryType: kitty.Tab,
@@ -44,7 +44,7 @@ func TestNavigateMode(t *testing.T) {
 				},
 				shortcutKey: "a",
 			},
-			item{
+			ListItemModel{
 				listEntry: kitty.WindowListEntry{
 					Text:      "Win1",
 					EntryType: kitty.Window,
@@ -53,13 +53,13 @@ func TestNavigateMode(t *testing.T) {
 				},
 				shortcutKey: "b",
 			},
-			item{
+			ListItemModel{
 				listEntry: kitty.WindowListEntry{
 					Text:      "Tab 2",
 					EntryType: kitty.Tab,
 				},
 			},
-			item{
+			ListItemModel{
 				listEntry: kitty.WindowListEntry{
 					Text:      "Win 2",
 					EntryType: kitty.Window,
@@ -118,7 +118,7 @@ func TestNavigateMode(t *testing.T) {
 
 			newM, cmd := NavigateModeUpdate(m, msg)
 			So(newM.(model).mode, ShouldEqual, QuickNav)
-			So(newM.(model).list.Items()[0].(item).listMode, ShouldEqual, QuickNav)
+			So(newM.(model).list.Items()[0].(ListItemModel).listMode, ShouldEqual, QuickNav)
 			So(cmd, ShouldBeNil)
 		})
 
@@ -131,7 +131,7 @@ func TestNavigateMode(t *testing.T) {
 
 			newM, cmd := NavigateModeUpdate(m, msg)
 			So(newM.(model).mode, ShouldEqual, SetQuickNav)
-			So(newM.(model).list.Items()[0].(item).listMode, ShouldEqual, SetQuickNav)
+			So(newM.(model).list.Items()[0].(ListItemModel).listMode, ShouldEqual, SetQuickNav)
 			So(cmd, ShouldBeNil)
 		})
 

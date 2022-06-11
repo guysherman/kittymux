@@ -14,7 +14,7 @@ import (
 func TestRenameMode(t *testing.T) {
 	Convey("Rename Mode", t, func() {
 		items := []list.Item{
-			item{
+			ListItemModel{
 				listEntry: kitty.WindowListEntry{
 					Text:      "Tab 1",
 					EntryType: kitty.Tab,
@@ -22,7 +22,7 @@ func TestRenameMode(t *testing.T) {
 				},
 				shortcutKey: "a",
 			},
-			item{
+			ListItemModel{
 				listEntry: kitty.WindowListEntry{
 					Text:      "Win 1",
 					EntryType: kitty.Window,
@@ -30,13 +30,13 @@ func TestRenameMode(t *testing.T) {
 				},
 				shortcutKey: "1",
 			},
-			item{
+			ListItemModel{
 				listEntry: kitty.WindowListEntry{
 					Text:      "Tab 2",
 					EntryType: kitty.Tab,
 				},
 			},
-			item{
+			ListItemModel{
 				listEntry: kitty.WindowListEntry{
 					Text:      "Win 2",
 					EntryType: kitty.Window,

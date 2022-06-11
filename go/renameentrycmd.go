@@ -6,7 +6,7 @@ import (
 
 type ListUpdatedMsg struct{}
 
-func renameEntry(m model, i item, newName string) tea.Cmd {
+func renameEntry(m model, i ListItemModel, newName string) tea.Cmd {
 	return func() tea.Msg {
 		m.kc.RenameEntry(i.listEntry, newName)
 

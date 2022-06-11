@@ -10,7 +10,7 @@ type QuickNavsUpdatedMsg struct {
 	qndb settings.QuickNavDatabase
 }
 
-func updateQuickNav(m model, i item, keypress string) tea.Cmd {
+func updateQuickNav(m model, i ListItemModel, keypress string) tea.Cmd {
 	return func() tea.Msg {
 		handle := settings.QuickNavHandle{
 			EntryId:   i.listEntry.Id,
@@ -38,7 +38,7 @@ func updateQuickNav(m model, i item, keypress string) tea.Cmd {
 	}
 }
 
-func getTabIdForListItem(i item) int {
+func getTabIdForListItem(i ListItemModel) int {
 	tabId := 0
 	switch i.listEntry.EntryType {
 	case kitty.OsWindow:
@@ -52,11 +52,11 @@ func getTabIdForListItem(i item) int {
 	return tabId
 }
 
-func collectItemsForTabId(m model, tabId int) []item {
-	items := []item{}
+func collectItemsForTabId(m model, tabId int) []ListItemModel {
+	items := []ListItemModel{}
 	listItems := m.list.Items()
 	for _, i := range listItems {
-		listItem := i.(item)
+		listItem := i.(ListItemModel)
 		switch listItem.listEntry.EntryType {
 		case kitty.OsWindow:
 			break
