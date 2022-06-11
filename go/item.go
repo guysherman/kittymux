@@ -11,22 +11,6 @@ import (
 	"github.com/guysherman/kittymux/kitty"
 )
 
-type itemActions struct {
-	Rename key.Binding
-	Delete key.Binding
-}
-
-var DefaultItemActions = itemActions{
-	Rename: key.NewBinding(
-		key.WithKeys("a"),
-		key.WithHelp("a", "rename"),
-	),
-	Delete: key.NewBinding(
-		key.WithKeys("x", tea.KeyDelete.String()),
-		key.WithHelp("x/del", "close"),
-	),
-}
-
 type item struct {
 	listEntry   kitty.WindowListEntry
 	listMode    uiMode
