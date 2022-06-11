@@ -29,15 +29,3 @@ func QuickNavModeUpdate(m model, msg tea.Msg) (tea.Model, tea.Cmd) {
 	}
 	return m, nil
 }
-
-func findEntry(m model, shortcutKey string) (ListItemModel, bool) {
-	listItems := m.list.Items()
-	for _, i := range listItems {
-		listItem := i.(ListItemModel)
-		if listItem.shortcutKey == shortcutKey && listItem.listEntry.TabIsFocused {
-			return listItem, true
-		}
-	}
-
-	return ListItemModel{}, false
-}
