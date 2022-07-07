@@ -137,5 +137,9 @@ func (sc *SessionConnector) SaveSession(tab kitty.KittyTab) {
 
 	sessionsDir := settings.GetStateDir()
 	sessionPath := fmt.Sprintf("%s/%s.json", sessionsDir, tab.Title)
-	sc.sessionDao.Write(session, sessionPath)
+	err := sc.sessionDao.Write(session, sessionPath)
+	if err != nil {
+		log.Fatal(err)
+		os.Exit(-99)
+	}
 }

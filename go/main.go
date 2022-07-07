@@ -28,12 +28,21 @@ func main() {
 func cliMode(session *string) {
 	ce := kitty.KittyCommandExecutor{}
 	kc := kitty.NewKittyConnector(&ce)
+	el := kitty.EntryListerBase{}
+
 	qnd := settings.QuickNavDao{}
 	qndb := settings.NewQuickNavDatabase(&qnd)
 
+	entryList := el.EntryList(kc)
+	for _, entry := range entryList {
+		if entry.Title == *session {
+			kc.FocusEntry(entry)
+			os.Exit(0)
+		}
+	}
+
 	sd := sessions.SessionDao{}
 	sc := sessions.NewSessionConnector(&sd, kc, qndb)
-
 	sc.LoadSession(*session)
 	os.Exit(0)
 }
