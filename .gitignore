@@ -127,3 +127,5 @@ dist
 .pnp.*
 
 .scratch/
+
+go/kittymux
