@@ -7,8 +7,12 @@ import (
 )
 
 func NavigateModeUpdate(m UiModel, msg tea.Msg) (tea.Model, tea.Cmd) {
+	var cmds []tea.Cmd
 	switch msg := msg.(type) {
 	case tea.KeyMsg:
+		if m.list.FilterState() == list.Filtering {
+			break
+		}
 		switch keypress := msg.String(); keypress {
 		case "J":
 			return nextTabPressed(m)
@@ -33,13 +37,13 @@ func NavigateModeUpdate(m UiModel, msg tea.Msg) (tea.Model, tea.Cmd) {
 			return m, tea.Quit
 		case "enter":
 			return navigateModeEnterPressed(m)
-		default:
-			lm, cmd := m.list.Update(msg)
-			m.list = lm
-			return m, cmd
 		}
 	}
-	return m, nil
+
+	lm, cmd := m.list.Update(msg)
+	m.list = lm
+	cmds = append(cmds, cmd)
+	return m, tea.Batch(cmds...)
 }
 
 func nextTabPressed(m UiModel) (tea.Model, tea.Cmd) {

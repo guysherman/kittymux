@@ -92,6 +92,7 @@ func handleWindowList(m UiModel, msg ListWindowsMsg) (tea.Model, tea.Cmd) {
 	shortcuts := m.qndb.ShortcutsByEntryId()
 	items = assignShortcutKeys(items, shortcuts)
 	m.list.SetItems(items)
+	m.list.ResetFilter()
 	return m, nil
 }
 
@@ -118,11 +119,16 @@ func handleQuickNavDatabase(m UiModel, msg QuickNavsUpdatedMsg) (tea.Model, tea.
 }
 
 func (m UiModel) View() string {
+	var smallerBox string
 	if m.choice != "" || m.quitting {
 		return ""
 	}
 
 	box := OuterStyle(m.width, m.height-5).Render("\n" + m.list.View())
-	smallerBox := FooterStyle(m.width).Render(m.input.View())
+	if m.list.FilterState() != list.Filtering {
+		smallerBox = FooterStyle(m.width).Render(m.input.View())
+	} else {
+		smallerBox = FooterStyle(m.width).Render(m.list.FilterInput.View())
+	}
 	return fmt.Sprintf("%s\n%s", box, smallerBox)
 }

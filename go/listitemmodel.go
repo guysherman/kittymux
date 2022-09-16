@@ -11,7 +11,7 @@ type ListItemModel struct {
 	shortcutKey string
 }
 
-func (i ListItemModel) FilterValue() string { return i.listEntry.Text }
+func (i ListItemModel) FilterValue() string { return i.listEntry.Title }
 
 func findEntry(l list.Model, shortcutKey string) (ListItemModel, bool) {
 	listItems := l.Items()

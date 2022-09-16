@@ -57,7 +57,8 @@ func interactiveMode() {
 	l.SetShowStatusBar(false)
 	l.SetShowTitle(false)
 	l.SetShowHelp(true)
-	l.SetFilteringEnabled(false)
+	l.SetFilteringEnabled(true)
+	l.SetShowFilter(false)
 	l.Styles.HelpStyle = HelpStyle
 	l.AdditionalFullHelpKeys = func() []key.Binding {
 		return []key.Binding{
@@ -68,6 +69,10 @@ func interactiveMode() {
 			AdditionalActions.Save,
 		}
 	}
+
+	fi := textinput.New()
+	fi.Prompt = "/"
+	l.FilterInput = fi
 
 	i := textinput.New()
 	i.Prompt = ""
