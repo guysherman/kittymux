@@ -11,6 +11,6 @@ func GetStateDir() string {
 	} else if os.Getenv("XDG_STATE_HOME") != "" {
 		return fmt.Sprintf("%s/kittymux", os.Getenv("XDG_STATE_HOME"))
 	} else {
-		return "~/.local/state/kittymux"
+		return fmt.Sprintf("%s/.local/state/kittymux", os.Getenv("HOME"))
 	}
 }
