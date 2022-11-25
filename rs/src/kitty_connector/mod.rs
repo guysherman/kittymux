@@ -1,62 +1,54 @@
-mod command_executor;
-
-use mockall::automock;
+pub mod command_executor;
 
 use self::command_executor::CommandExecutor;
 
-#[automock]
-pub trait KittyRemote {
-    fn close_window(&self, id: i32) -> ();
-    fn close_tab(&self, id: i32) -> ();
-    fn set_window_title(&self, id: i32, new_title: &str) -> ();
-    fn set_tab_title(&self, id: i32, new_title: &str) -> ();
-    fn focus_window(&self, id: i32) -> ();
-    fn focus_tab(&self, id: i32) -> ();
-}
-
 pub struct KittyConnector<'a> {
-    executor: &'a dyn CommandExecutor,
+    pub executor: &'a dyn CommandExecutor,
 }
 
-impl KittyRemote for KittyConnector<'_> {
-    fn close_window(&self, id: i32) -> () {
+impl KittyConnector<'_> {
+    pub fn close_window(&self, id: i32) -> () {
         self.executor
             .execute_command("close-window", &["-m", format!("id:{}", id).as_str()]);
     }
 
-    fn close_tab(&self, id: i32) -> () {
+    pub fn close_tab(&self, id: i32) -> () {
         self.executor
             .execute_command("close-tab", &["-m", format!("id:{}", id).as_str()]);
     }
 
-    fn set_window_title(&self, id: i32, new_title: &str) -> () {
+    pub fn set_window_title(&self, id: i32, new_title: &str) -> () {
         self.executor.execute_command(
             "set-window-title",
             &["-m", format!("id:{}", id).as_str(), new_title],
         );
     }
 
-    fn set_tab_title(&self, id: i32, new_title: &str) -> () {
+    pub fn set_tab_title(&self, id: i32, new_title: &str) -> () {
         self.executor.execute_command(
             "set-tab-title",
             &["-m", format!("id:{}", id).as_str(), new_title],
         );
     }
 
-    fn focus_window(&self, id: i32) -> () {
+    pub fn focus_window(&self, id: i32) -> () {
         self.executor
             .execute_command("focus-window", &["-m", format!("id:{}", id).as_str()]);
     }
 
-    fn focus_tab(&self, id: i32) -> () {
+    pub fn focus_tab(&self, id: i32) -> () {
         self.executor
             .execute_command("focus-tab", &["-m", format!("id:{}", id).as_str()]);
+    }
+
+    pub fn ls(&self) -> String {
+        self.executor.execute_command("ls", &[])
     }
 }
 
 #[cfg(test)]
 mod tests {
-    use super::{command_executor::MockCommandExecutor, KittyConnector, KittyRemote};
+    use super::{command_executor::MockCommandExecutor, KittyConnector};
 
     #[test]
     fn given_id_when_close_window_called_then_execute_command_called() {
@@ -146,5 +138,18 @@ mod tests {
 
         let conn = KittyConnector { executor: &mock };
         conn.focus_tab(5);
+    }
+
+    #[test]
+    fn when_ls_called_then_execute_command_called() {
+        let ls_payload = "[]";
+        let mut mock = MockCommandExecutor::new();
+        mock.expect_execute_command()
+            .withf(|cmd: &str, _args: &[&str]| cmd == "ls")
+            .times(1)
+            .returning(|_cmd: &str, _args: &[&str]| ls_payload.to_string());
+
+        let conn = KittyConnector { executor: &mock };
+        conn.ls();
     }
 }
