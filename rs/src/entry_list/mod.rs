@@ -1,6 +1,8 @@
 mod entry_type;
 mod window_list_entry;
 
+use std::num;
+
 use json::JsonValue;
 use mockall::automock;
 
@@ -14,6 +16,22 @@ pub trait EntryList {
 
 pub struct KittyEntryList<'a> {
     connector: &'a KittyConnector<'a>,
+}
+
+impl EntryList for KittyEntryList<'_> {
+    fn load(&self) -> Vec<WindowListEntry> {
+        let ls_text = self.connector.ls();
+        let ls_response = json::parse(&ls_text).unwrap();
+        let num_entries = count_entries(&ls_response);
+        let mut entries: Vec<WindowListEntry> = vec![];
+        entries.reserve(num_entries);
+
+        for os_window in ls_response.members() {
+            flatten_os_window(&mut entries, &os_window);
+        }
+
+        entries
+    }
 }
 
 fn count_entries(ls_response: &JsonValue) -> usize {
@@ -32,44 +50,42 @@ fn count_entries(ls_response: &JsonValue) -> usize {
     count
 }
 
-impl EntryList for KittyEntryList<'_> {
-    fn load(&self) -> Vec<WindowListEntry> {
-        let ls_text = self.connector.ls();
-        let ls_response = json::parse(&ls_text).unwrap();
-        let num_entries = count_entries(&ls_response);
-        let mut entries: Vec<WindowListEntry> = vec![];
-        entries.reserve(num_entries);
+fn flatten_os_window(entries: &mut Vec<WindowListEntry>, os_window: &JsonValue) {
+    entries.push(WindowListEntry::new_from_os_window(&os_window));
+    let num_tabs = os_window["tabs"].len();
+    let os_window_focused = os_window["is_focused"].as_bool().unwrap_or_default();
+    for (i, tab) in os_window["tabs"].members().enumerate() {
+        let tab_is_last = i == num_tabs - 1;
+        flatten_tab(entries, tab, tab_is_last, os_window_focused)
+    }
+}
 
-        for os_window in ls_response.members() {
-            entries.push(WindowListEntry::new_from_os_window(&os_window));
-            let num_tabs = os_window["tabs"].len();
-            let os_window_focused = os_window["is_focused"].as_bool().unwrap_or_default();
-            for (i, tab) in os_window["tabs"].members().enumerate() {
-                let tab_is_last = i == num_tabs - 1;
-                entries.push(WindowListEntry::new_from_tab(
-                    &tab,
-                    tab_is_last,
-                    os_window_focused,
-                ));
+fn flatten_tab(
+    entries: &mut Vec<WindowListEntry>,
+    tab: &JsonValue,
+    tab_is_last: bool,
+    os_window_focused: bool,
+) {
+    let tab_is_focused = tab["is_focused"].as_bool().unwrap_or_default();
+    let tab_id = tab["id"].as_u32().unwrap_or_default();
+    let num_windows = tab["windows"].len();
 
-                let tab_is_focused = tab["is_focused"].as_bool().unwrap_or_default();
-                let tab_id = tab["id"].as_u32().unwrap_or_default();
-                let num_windows = tab["windows"].len();
-                for (j, window) in tab["windows"].members().enumerate() {
-                    let window_is_last = j == num_windows - 1;
-                    entries.push(WindowListEntry::new_from_window(
-                        &window,
-                        window_is_last,
-                        tab_is_last,
-                        os_window_focused,
-                        tab_is_focused,
-                        tab_id,
-                    ));
-                }
-            }
-        }
+    entries.push(WindowListEntry::new_from_tab(
+        &tab,
+        tab_is_last,
+        os_window_focused,
+    ));
 
-        entries
+    for (j, window) in tab["windows"].members().enumerate() {
+        let window_is_last = j == num_windows - 1;
+        entries.push(WindowListEntry::new_from_window(
+            &window,
+            window_is_last,
+            tab_is_last,
+            os_window_focused,
+            tab_is_focused,
+            tab_id,
+        ));
     }
 }
 
