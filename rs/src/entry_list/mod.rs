@@ -1,25 +1,23 @@
-mod entry_type;
-mod window_list_entry;
-
-use std::num;
+pub mod entry_type;
+pub mod window_list_entry;
 
 use json::JsonValue;
-use mockall::automock;
 
-use self::window_list_entry::WindowListEntry;
+use self::{
+    entry_type::EntryType::{Tab, Window},
+    window_list_entry::WindowListEntry };
 use crate::kitty_connector::KittyConnector;
-
-#[automock]
-pub trait EntryList {
-    fn load(&self) -> Vec<WindowListEntry>;
-}
 
 pub struct KittyEntryList<'a> {
     connector: &'a KittyConnector<'a>,
 }
 
-impl EntryList for KittyEntryList<'_> {
-    fn load(&self) -> Vec<WindowListEntry> {
+impl KittyEntryList<'_> {
+    pub fn new<'a>(connector: &'a KittyConnector<'a>) -> KittyEntryList {
+        KittyEntryList { connector }
+    }
+
+    pub fn load(&self) -> Vec<WindowListEntry> {
         let ls_text = self.connector.ls();
         let ls_response = json::parse(&ls_text).unwrap();
         let num_entries = count_entries(&ls_response);
@@ -31,6 +29,18 @@ impl EntryList for KittyEntryList<'_> {
         }
 
         entries
+    }
+
+    pub fn connector(&self) -> &KittyConnector {
+        &self.connector
+    }
+
+    pub fn focus_entry(&self, entry: &WindowListEntry) {
+        match &entry.entry_type {
+            Window => self.connector.focus_window(entry.id),
+            Tab => self.connector.focus_tab(entry.tab_id),
+            _ => {}
+        }
     }
 }
 
@@ -91,7 +101,7 @@ fn flatten_tab(
 
 #[cfg(test)]
 mod tests {
-    use super::{EntryList, KittyEntryList, WindowListEntry};
+    use super::{KittyEntryList, WindowListEntry};
     use crate::kitty_connector::command_executor::MockCommandExecutor;
     use crate::kitty_connector::KittyConnector;
 

@@ -31,12 +31,12 @@ impl KittyConnector<'_> {
         );
     }
 
-    pub fn focus_window(&self, id: i32) -> () {
+    pub fn focus_window(&self, id: u32) -> () {
         self.executor
             .execute_command("focus-window", &["-m", format!("id:{}", id).as_str()]);
     }
 
-    pub fn focus_tab(&self, id: i32) -> () {
+    pub fn focus_tab(&self, id: u32) -> () {
         self.executor
             .execute_command("focus-tab", &["-m", format!("id:{}", id).as_str()]);
     }

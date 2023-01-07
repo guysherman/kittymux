@@ -12,6 +12,8 @@ A terminal navigator for the kitty terminal
 
 [dependencies]
 assert = "0.7.4"
+crossterm = "0.25.0"
 json = "0.12.4"
 mockall = "0.11.3"
+tui = "0.19.0"
 

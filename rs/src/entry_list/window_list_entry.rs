@@ -11,16 +11,16 @@ const LAST_TAB_LAST_WINDOW_INDENT: &str = "    └─ ";
 
 #[derive(Debug, Eq, PartialEq)]
 pub struct WindowListEntry {
-    id: u32,
-    text: String,
-    entry_type: EntryType,
-    pid: u32,
-    cwd: String,
-    title: String,
-    is_focused: bool,
-    tab_is_focused: bool,
-    os_window_is_focused: bool,
-    tab_id: u32,
+    pub id: u32,
+    pub text: String,
+    pub entry_type: EntryType,
+    pub pid: u32,
+    pub cwd: String,
+    pub title: String,
+    pub is_focused: bool,
+    pub tab_is_focused: bool,
+    pub os_window_is_focused: bool,
+    pub tab_id: u32,
 }
 
 impl WindowListEntry {
