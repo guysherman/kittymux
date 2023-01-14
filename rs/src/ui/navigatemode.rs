@@ -11,28 +11,28 @@ use tui::{
 };
 
 use crate::{
-    entry_list::{window_list_entry::WindowListEntry, KittyWindowList}, ui::mode::Mode,
+    kitty_model::{window_list_entry::WindowListEntry, KittyModel}, ui::mode::Mode,
 };
 
-use super::entry_list::EntryList;
+use super::model::AppModel;
 
 pub struct NavigateMode<'a> {
-    kitty_window_list: &'a dyn KittyWindowList
+    kitty_model: &'a dyn KittyModel
 }
 
 impl<'a> NavigateMode<'a> {
-    pub fn new(kitty_window_list: &'a dyn KittyWindowList) -> NavigateMode<'a> {
-        NavigateMode { kitty_window_list }
+    pub fn new(kitty_window_list: &'a dyn KittyModel) -> NavigateMode<'a> {
+        NavigateMode { kitty_model: kitty_window_list }
     }
 }
 
 impl<'a> Mode for NavigateMode<'a> {
     fn draw<'b>(
         terminal: &'b mut Terminal<CrosstermBackend<Stdout>>,
-        entry_list: &mut EntryList,
+        model: &mut AppModel,
     ) -> Result<CompletedFrame<'b>> {
         terminal.draw(|f| {
-            let list: Vec<ListItem> = entry_list
+            let list: Vec<ListItem> = model
                 .items()
                 .iter()
                 .map(|x: &WindowListEntry| {
@@ -62,33 +62,37 @@ impl<'a> Mode for NavigateMode<'a> {
                 .borders(Borders::ALL)
                 .border_type(tui::widgets::BorderType::Rounded);
 
-            f.render_stateful_widget(list, panes[0], &mut entry_list.state());
+            f.render_stateful_widget(list, panes[0], &mut model.state());
             f.render_widget(block2, panes[1]);
         })
     }
 
-    fn handle_input(&self, event: &KeyEvent, entry_list: &mut EntryList) -> Result<bool> {
+    fn handle_input(&self, event: &KeyEvent, model: &mut AppModel) -> Result<bool> {
         match event.code {
             KeyCode::Char('q') => Ok(true),
             KeyCode::Char('j') => {
-                entry_list.select_next();
+                model.select_next();
                 Ok(false)
             }
             KeyCode::Char('k') => {
-                entry_list.select_prev();
+                model.select_prev();
                 Ok(false)
             }
             KeyCode::Char('J') => {
-                entry_list.select_next_tab();
+                model.select_next_tab();
                 Ok(false)
             }
             KeyCode::Char('K') => {
-                entry_list.select_prev_tab();
+                model.select_prev_tab();
+                Ok(false)
+            }
+            KeyCode::Char('x') => {
+                model.selected().map(|entry| self.kitty_model.close_entry(entry));
                 Ok(false)
             }
             KeyCode::Enter => {
-                entry_list.selected().map(|selected_item| {
-                    self.kitty_window_list.focus_entry(selected_item);
+                model.selected().map(|selected_item| {
+                    self.kitty_model.focus_entry(selected_item);
                 });
                 Ok(true)
             }
@@ -101,7 +105,7 @@ impl<'a> Mode for NavigateMode<'a> {
 mod tests {
     use crossterm::event::{KeyModifiers, KeyEventState};
 
-    use crate::entry_list::{entry_type::EntryType, MockKittyWindowList};
+    use crate::kitty_model::{entry_type::EntryType, KittyModel};
 
     use super::*;
 
@@ -196,11 +200,11 @@ mod tests {
 
     #[test]
     fn given_0_selected_when_j_pressed_1_selected() {
-        let window_list = MockKittyWindowList::new();
+        let window_list = KittyModel::new();
         let mode = NavigateMode::new(&window_list);
-        let mut entry_list = EntryList::with_items(basic_windows());
+        let mut model = AppModel::with_items(basic_windows());
         let event = KeyEvent::new_with_kind_and_state(KeyCode::Char('j'), KeyModifiers::empty(), crossterm::event::KeyEventKind::Press, KeyEventState::NONE);
-        mode.handle_input(&event, &mut entry_list).unwrap();
+        mode.handle_input(&event, &mut model).unwrap();
         let expected = WindowListEntry {
             id: 1,
             text: "my tab".to_string(),
@@ -214,16 +218,16 @@ mod tests {
             tab_id: 1,
         };
 
-        assert_eq!(*entry_list.selected().unwrap(), expected);
+        assert_eq!(*model.selected().unwrap(), expected);
     }
 
     #[test]
     fn given_0_selected_when_shift_j_pressed_1_selected() {
-        let window_list = MockKittyWindowList::new();
+        let window_list = KittyModel::new();
         let mode = NavigateMode::new(&window_list);
-        let mut entry_list = EntryList::with_items(basic_windows());
+        let mut model = AppModel::with_items(basic_windows());
         let event = KeyEvent::new_with_kind_and_state(KeyCode::Char('J'), KeyModifiers::SHIFT, crossterm::event::KeyEventKind::Press, KeyEventState::NONE);
-        mode.handle_input(&event, &mut entry_list).unwrap();
+        mode.handle_input(&event, &mut model).unwrap();
         let expected = WindowListEntry {
             id: 1,
             text: "my tab".to_string(),
@@ -237,17 +241,17 @@ mod tests {
             tab_id: 1,
         };
 
-        assert_eq!(*entry_list.selected().unwrap(), expected);
+        assert_eq!(*model.selected().unwrap(), expected);
 
     }
 
     #[test]
     fn given_1_selected_when_shift_j_pressed_3_selected() {
-        let window_list = MockKittyWindowList::new();
+        let window_list = KittyModel::new();
         let mode = NavigateMode::new(&window_list);
 
-        let mut entry_list = EntryList::with_items(basic_windows());
-        entry_list.state().select(Some(1));
+        let mut model = AppModel::with_items(basic_windows());
+        model.state().select(Some(1));
 
         let event = KeyEvent::new_with_kind_and_state(KeyCode::Char('J'), KeyModifiers::SHIFT, crossterm::event::KeyEventKind::Press, KeyEventState::NONE);
         let expected = WindowListEntry {
@@ -263,17 +267,17 @@ mod tests {
             tab_id: 2,
         };
 
-        mode.handle_input(&event, &mut entry_list).unwrap();
-        assert_eq!(*entry_list.selected().unwrap(), expected);
+        mode.handle_input(&event, &mut model).unwrap();
+        assert_eq!(*model.selected().unwrap(), expected);
     }
 
     #[test]
     fn given_3_selected_when_shift_k_pressed_1_selected() {
-        let window_list = MockKittyWindowList::new();
+        let window_list = KittyModel::new();
         let mode = NavigateMode::new(&window_list);
 
-        let mut entry_list = EntryList::with_items(basic_windows());
-        entry_list.state().select(Some(3));
+        let mut model = AppModel::with_items(basic_windows());
+        model.state().select(Some(3));
 
         let event = KeyEvent::new_with_kind_and_state(KeyCode::Char('K'), KeyModifiers::SHIFT, crossterm::event::KeyEventKind::Press, KeyEventState::NONE);
         let expected = WindowListEntry {
@@ -289,9 +293,25 @@ mod tests {
             tab_id: 1,
         };
 
-        mode.handle_input(&event, &mut entry_list).unwrap();
-        assert_eq!(*entry_list.selected().unwrap(), expected);
+        mode.handle_input(&event, &mut model).unwrap();
+        assert_eq!(*model.selected().unwrap(), expected);
+    }
 
+    #[test]
+    fn given_1_selected_when_x_pressed_then_close_entry_called() {
+        let mut mock_window_list = KittyModel::new();
+        mock_window_list.expect_close_entry()
+            .withf(|_entry: &WindowListEntry| true)
+            .times(1)
+            .returning(|_| ());
+
+        let mode = NavigateMode::new(&mock_window_list);
+
+        let mut model = AppModel::with_items(basic_windows());
+        model.state().select(Some(1));
+
+        let event = KeyEvent::new_with_kind_and_state(KeyCode::Char('x'), KeyModifiers::empty(), crossterm::event::KeyEventKind::Press, KeyEventState::NONE);
+        mode.handle_input(&event, &mut model);
     }
 
 }

@@ -1,6 +1,8 @@
-mod entry_list;
+mod model;
 mod mode;
 mod navigatemode;
+mod command;
+mod load_command;
 
 use crossterm::{
     event::{self, DisableMouseCapture, EnableMouseCapture, Event},
@@ -10,26 +12,26 @@ use crossterm::{
 use std::{io, time::Duration};
 use tui::{backend::CrosstermBackend, Terminal};
 
-use crate::entry_list::KittyWindowList;
+use crate::kitty_model::KittyModel;
 
-use self::{entry_list::EntryList, mode::Mode, navigatemode::NavigateMode};
+use self::{model::AppModel, mode::Mode, navigatemode::NavigateMode};
 
-pub fn run(kitty_entry_list: & dyn KittyWindowList) -> Result<(), io::Error> {
+pub fn run(kitty_model: & dyn KittyModel) -> Result<(), io::Error> {
     // setup terminal
     enable_raw_mode()?;
     let mut stdout = io::stdout();
     execute!(stdout, EnterAlternateScreen, EnableMouseCapture)?;
     let backend = CrosstermBackend::new(stdout);
     let mut terminal = Terminal::new(backend)?;
-    let mut entry_list = EntryList::with_items(kitty_entry_list.load());
-    let mode = NavigateMode::new(kitty_entry_list);
+    let mut app_model = AppModel::with_items(kitty_model.load());
+    let mode = NavigateMode::new(kitty_model);
 
     loop {
-        NavigateMode::draw(&mut terminal, &mut entry_list)?;
+        NavigateMode::draw(&mut terminal, &mut app_model)?;
 
         if crossterm::event::poll(Duration::from_millis(200))? {
             if let Event::Key(key) = event::read()? {
-                let should_quit = mode.handle_input(&key, &mut entry_list)?;
+                let should_quit = mode.handle_input(&key, &mut app_model)?;
                 if should_quit {
                     break;
                 }

@@ -9,19 +9,20 @@ use self::{
     window_list_entry::WindowListEntry };
 use crate::kitty_connector::KittyConnector;
 
-pub struct FlatWindowList<'a> {
+pub struct BaseKittyModel<'a> {
     connector: &'a KittyConnector<'a>,
 }
 
 #[automock]
-pub trait KittyWindowList {
+pub trait KittyModel {
     fn load(&self) -> Vec<WindowListEntry>;
     fn focus_entry(&self, entry: &WindowListEntry);
+    fn close_entry(&self, entry: &WindowListEntry);
 }
 
-impl FlatWindowList<'_> {
-    pub fn new<'a>(connector: &'a KittyConnector<'a>) -> FlatWindowList {
-        FlatWindowList { connector }
+impl BaseKittyModel<'_> {
+    pub fn new<'a>(connector: &'a KittyConnector<'a>) -> BaseKittyModel {
+        BaseKittyModel { connector }
     }
 
     pub fn connector(&self) -> &KittyConnector {
@@ -29,7 +30,7 @@ impl FlatWindowList<'_> {
     }
 }
 
-impl KittyWindowList for FlatWindowList<'_> {
+impl KittyModel for BaseKittyModel<'_> {
     fn load(&self) -> Vec<WindowListEntry> {
         let ls_text = self.connector.ls();
         let ls_response = json::parse(&ls_text).unwrap();
@@ -48,6 +49,14 @@ impl KittyWindowList for FlatWindowList<'_> {
         match &entry.entry_type {
             Window => self.connector.focus_window(entry.id),
             Tab => self.connector.focus_tab(entry.tab_id),
+            _ => {}
+        }
+    }
+
+    fn close_entry(&self, entry: &WindowListEntry) {
+        match &entry.entry_type {
+            Window => self.connector.close_window(entry.id),
+            Tab => self.connector.close_tab(entry.tab_id),
             _ => {}
         }
     }
@@ -110,7 +119,8 @@ fn flatten_tab(
 
 #[cfg(test)]
 mod tests {
-    use super::{FlatWindowList, WindowListEntry, KittyWindowList};
+    use super::entry_type::EntryType;
+    use super::{BaseKittyModel, WindowListEntry, KittyModel};
     use crate::kitty_connector::command_executor::MockCommandExecutor;
     use crate::kitty_connector::KittyConnector;
 
@@ -124,7 +134,7 @@ mod tests {
 
         let connector = KittyConnector { executor: &mock };
         let expected: Vec<WindowListEntry> = vec![];
-        let el = FlatWindowList {
+        let el = BaseKittyModel {
             connector: &connector,
         };
         let list = el.load();
@@ -133,7 +143,7 @@ mod tests {
     }
 
     #[test]
-    fn given_ls_returns_single_window_tree_when_load_called_then_correct_vec_returned() {
+    fn given_ls_returns_singe_window_tree_when_load_called_then_correct_vec_returned() {
         let ls_return = r###"
   [ {
     "id": 2,
@@ -208,11 +218,69 @@ mod tests {
             WindowListEntry::new_from_tab(tab_json, true, true),
             WindowListEntry::new_from_window(window_json, true, true, true, true, 3),
         ];
-        let el = FlatWindowList {
+        let el = BaseKittyModel {
             connector: &connector,
         };
         let list = el.load();
 
         assert_eq!(expected.as_slice(), list.as_slice());
     }
+
+    #[test]
+    fn given_tab_when_close_entry_called_then_command_is_close_tab() {
+        let mut mock = MockCommandExecutor::new();
+        mock.expect_execute_command()
+            .withf(|cmd: &str, _args: &[&str]| cmd == "close-tab")
+            .times(1)
+            .returning(|_cmd: &str, _args: &[&str]| "".to_string());
+
+        let connector = KittyConnector { executor: &mock };
+        let el = BaseKittyModel {
+            connector: &connector,
+        };
+
+        let entry = WindowListEntry {
+            id: 1,
+            text: "my tab".to_string(),
+            title: "my tab".to_string(),
+            entry_type: EntryType::Tab,
+            pid: 0,
+            cwd: "".to_string(),
+            is_focused: true,
+            tab_is_focused: true,
+            os_window_is_focused: true,
+            tab_id: 1,
+        };
+
+        el.close_entry(&entry);
+    }
+
+    fn given_window_when_close_entry_called_then_command_is_close_window() {
+        let mut mock = MockCommandExecutor::new();
+        mock.expect_execute_command()
+            .withf(|cmd: &str, _args: &[&str]| cmd == "close-window")
+            .times(1)
+            .returning(|_cmd: &str, _args: &[&str]| "".to_string());
+
+        let connector = KittyConnector { executor: &mock };
+        let el = BaseKittyModel {
+            connector: &connector,
+        };
+
+        let entry = WindowListEntry {
+            id: 1,
+            tab_id: 1,
+            pid: 1,
+            cwd: "/foo".to_string(),
+            text: "1".to_string(),
+            title: "1".to_string(),
+            entry_type: EntryType::Window,
+            is_focused: true,
+            tab_is_focused: true,
+            os_window_is_focused: true,
+        };
+
+        el.close_entry(&entry);
+    }
+
 }

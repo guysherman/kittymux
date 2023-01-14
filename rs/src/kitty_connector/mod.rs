@@ -7,12 +7,12 @@ pub struct KittyConnector<'a> {
 }
 
 impl KittyConnector<'_> {
-    pub fn close_window(&self, id: i32) -> () {
+    pub fn close_window(&self, id: u32) -> () {
         self.executor
             .execute_command("close-window", &["-m", format!("id:{}", id).as_str()]);
     }
 
-    pub fn close_tab(&self, id: i32) -> () {
+    pub fn close_tab(&self, id: u32) -> () {
         self.executor
             .execute_command("close-tab", &["-m", format!("id:{}", id).as_str()]);
     }
