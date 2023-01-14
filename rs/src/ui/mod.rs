@@ -3,18 +3,18 @@ mod mode;
 mod navigatemode;
 
 use crossterm::{
-    event::{self, DisableMouseCapture, EnableMouseCapture, Event, KeyCode},
+    event::{self, DisableMouseCapture, EnableMouseCapture, Event},
     execute,
     terminal::{disable_raw_mode, enable_raw_mode, EnterAlternateScreen, LeaveAlternateScreen},
 };
 use std::{io, time::Duration};
 use tui::{backend::CrosstermBackend, Terminal};
 
-use crate::entry_list::KittyEntryList;
+use crate::entry_list::KittyWindowList;
 
 use self::{entry_list::EntryList, mode::Mode, navigatemode::NavigateMode};
 
-pub fn run(kitty_entry_list: &KittyEntryList) -> Result<(), io::Error> {
+pub fn run(kitty_entry_list: & dyn KittyWindowList) -> Result<(), io::Error> {
     // setup terminal
     enable_raw_mode()?;
     let mut stdout = io::stdout();

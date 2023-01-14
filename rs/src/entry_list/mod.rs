@@ -2,22 +2,35 @@ pub mod entry_type;
 pub mod window_list_entry;
 
 use json::JsonValue;
+use mockall::automock;
 
 use self::{
     entry_type::EntryType::{Tab, Window},
     window_list_entry::WindowListEntry };
 use crate::kitty_connector::KittyConnector;
 
-pub struct KittyEntryList<'a> {
+pub struct FlatWindowList<'a> {
     connector: &'a KittyConnector<'a>,
 }
 
-impl KittyEntryList<'_> {
-    pub fn new<'a>(connector: &'a KittyConnector<'a>) -> KittyEntryList {
-        KittyEntryList { connector }
+#[automock]
+pub trait KittyWindowList {
+    fn load(&self) -> Vec<WindowListEntry>;
+    fn focus_entry(&self, entry: &WindowListEntry);
+}
+
+impl FlatWindowList<'_> {
+    pub fn new<'a>(connector: &'a KittyConnector<'a>) -> FlatWindowList {
+        FlatWindowList { connector }
     }
 
-    pub fn load(&self) -> Vec<WindowListEntry> {
+    pub fn connector(&self) -> &KittyConnector {
+        &self.connector
+    }
+}
+
+impl KittyWindowList for FlatWindowList<'_> {
+    fn load(&self) -> Vec<WindowListEntry> {
         let ls_text = self.connector.ls();
         let ls_response = json::parse(&ls_text).unwrap();
         let num_entries = count_entries(&ls_response);
@@ -31,11 +44,7 @@ impl KittyEntryList<'_> {
         entries
     }
 
-    pub fn connector(&self) -> &KittyConnector {
-        &self.connector
-    }
-
-    pub fn focus_entry(&self, entry: &WindowListEntry) {
+    fn focus_entry(&self, entry: &WindowListEntry) {
         match &entry.entry_type {
             Window => self.connector.focus_window(entry.id),
             Tab => self.connector.focus_tab(entry.tab_id),
@@ -101,7 +110,7 @@ fn flatten_tab(
 
 #[cfg(test)]
 mod tests {
-    use super::{KittyEntryList, WindowListEntry};
+    use super::{FlatWindowList, WindowListEntry, KittyWindowList};
     use crate::kitty_connector::command_executor::MockCommandExecutor;
     use crate::kitty_connector::KittyConnector;
 
@@ -115,7 +124,7 @@ mod tests {
 
         let connector = KittyConnector { executor: &mock };
         let expected: Vec<WindowListEntry> = vec![];
-        let el = KittyEntryList {
+        let el = FlatWindowList {
             connector: &connector,
         };
         let list = el.load();
@@ -199,7 +208,7 @@ mod tests {
             WindowListEntry::new_from_tab(tab_json, true, true),
             WindowListEntry::new_from_window(window_json, true, true, true, true, 3),
         ];
-        let el = KittyEntryList {
+        let el = FlatWindowList {
             connector: &connector,
         };
         let list = el.load();
