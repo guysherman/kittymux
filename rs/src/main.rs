@@ -12,7 +12,7 @@ mod ui;
 
 
 fn main() -> Result<(), Box<dyn Error>> {
-    let kc = KittyConnector { executor: Box::new(KittyCommandExecutor {}) };
-    let km: Box<dyn KittyModel> = Box::new(BaseKittyModel::new(kc));
+    let kc = KittyConnector { executor: &KittyCommandExecutor {} };
+    let km = BaseKittyModel::new(kc);
     ui::run(&km)
 }

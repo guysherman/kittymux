@@ -11,8 +11,8 @@ use self::{
     window_list_entry::WindowListEntry };
 use crate::kitty_connector::KittyConnector;
 
-pub struct BaseKittyModel {
-    connector: KittyConnector,
+pub struct BaseKittyModel<'a> {
+    connector: KittyConnector<'a>,
 }
 
 #[automock]
@@ -22,7 +22,7 @@ pub trait KittyModel {
     fn close_entry(&self, entry: &WindowListEntry);
 }
 
-impl BaseKittyModel {
+impl BaseKittyModel<'_> {
     pub fn new(connector: KittyConnector) -> BaseKittyModel {
         BaseKittyModel { connector }
     }
@@ -32,7 +32,7 @@ impl BaseKittyModel {
     }
 }
 
-impl KittyModel for BaseKittyModel {
+impl KittyModel for BaseKittyModel<'_> {
     fn load(&self) -> Result<Vec<WindowListEntry>, Box<dyn Error>> {
         let ls_text = self.connector.ls();
         let ls_response = json::parse(&ls_text)?;
@@ -134,7 +134,7 @@ mod tests {
             .times(1)
             .returning(|_cmd: &str, _args: &[&str]| "[]".to_string());
 
-        let connector = KittyConnector { executor: Box::new(mock) };
+        let connector = KittyConnector { executor: &mock };
         let expected: Vec<WindowListEntry> = vec![];
         let el = BaseKittyModel {
             connector,
@@ -214,7 +214,7 @@ mod tests {
             .times(1)
             .returning(|_cmd: &str, _args: &[&str]| ls_return.to_string());
 
-        let connector = KittyConnector { executor: Box::new(mock) };
+        let connector = KittyConnector { executor: &mock };
         let expected: Vec<WindowListEntry> = vec![
             WindowListEntry::new_from_os_window(os_window_json),
             WindowListEntry::new_from_tab(tab_json, true, true),
@@ -236,7 +236,7 @@ mod tests {
             .times(1)
             .returning(|_cmd: &str, _args: &[&str]| "".to_string());
 
-        let connector = KittyConnector { executor: Box::new(mock) };
+        let connector = KittyConnector { executor: &mock };
         let el = BaseKittyModel {
             connector,
         };
@@ -264,7 +264,7 @@ mod tests {
             .times(1)
             .returning(|_cmd: &str, _args: &[&str]| "".to_string());
 
-        let connector = KittyConnector { executor: Box::new(mock) };
+        let connector = KittyConnector { executor: &mock };
         let el = BaseKittyModel {
             connector,
         };

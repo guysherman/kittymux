@@ -18,7 +18,7 @@ use crate::kitty_model::KittyModel;
 
 use self::{model::AppModel, mode::Mode, navigatemode::NavigateMode};
 
-pub fn run(kitty_model: &Box<dyn KittyModel>) -> Result<(), Box<dyn Error>> {
+pub fn run(kitty_model: &dyn KittyModel) -> Result<(), Box<dyn Error>> {
     // setup terminal
     enable_raw_mode()?;
     let mut stdout = io::stdout();

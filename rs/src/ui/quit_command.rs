@@ -18,7 +18,7 @@ impl QuitCommand {
 }
 
 impl Command for QuitCommand {
-    fn execute(&mut self, _kitty_model: &Box<dyn KittyModel>) -> Result<Option<AppModel>, Box<dyn Error>> {
+    fn execute(&mut self, _kitty_model: &dyn KittyModel) -> Result<Option<AppModel>, Box<dyn Error>> {
         Ok(self.model.take())
     }
 }

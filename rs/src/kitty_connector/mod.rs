@@ -2,11 +2,11 @@ pub mod command_executor;
 
 use self::command_executor::CommandExecutor;
 
-pub struct KittyConnector {
-    pub executor: Box<dyn CommandExecutor>,
+pub struct KittyConnector<'a> {
+    pub executor: &'a dyn CommandExecutor,
 }
 
-impl KittyConnector {
+impl KittyConnector<'_> {
     pub fn close_window(&self, id: u32) -> () {
         self.executor
             .execute_command("close-window", &["-m", format!("id:{}", id).as_str()]);
@@ -60,7 +60,7 @@ mod tests {
             .times(1)
             .returning(|_cmd: &str, _args: &[&str]| "".to_string());
 
-        let conn = KittyConnector { executor: Box::new(mock) };
+        let conn = KittyConnector { executor: &mock };
         conn.close_window(5);
     }
 
@@ -74,7 +74,7 @@ mod tests {
             .times(1)
             .returning(|_cmd: &str, _args: &[&str]| "".to_string());
 
-        let conn = KittyConnector { executor: Box::new(mock) };
+        let conn = KittyConnector { executor: &mock };
         conn.close_tab(5);
     }
 
@@ -91,7 +91,7 @@ mod tests {
             .times(1)
             .returning(|_cmd: &str, _args: &[&str]| "".to_string());
 
-        let conn = KittyConnector { executor: Box::new(mock) };
+        let conn = KittyConnector { executor: &mock };
         conn.set_window_title(5, "new title");
     }
 
@@ -108,7 +108,7 @@ mod tests {
             .times(1)
             .returning(|_cmd: &str, _args: &[&str]| "".to_string());
 
-        let conn = KittyConnector { executor: Box::new(mock) };
+        let conn = KittyConnector { executor: &mock };
         conn.set_tab_title(5, "new title");
     }
 
@@ -122,7 +122,7 @@ mod tests {
             .times(1)
             .returning(|_cmd: &str, _args: &[&str]| "".to_string());
 
-        let conn = KittyConnector { executor: Box::new(mock) };
+        let conn = KittyConnector { executor: &mock };
         conn.focus_window(5);
     }
 
@@ -136,7 +136,7 @@ mod tests {
             .times(1)
             .returning(|_cmd: &str, _args: &[&str]| "".to_string());
 
-        let conn = KittyConnector { executor: Box::new(mock) };
+        let conn = KittyConnector { executor: &mock };
         conn.focus_tab(5);
     }
 
@@ -149,7 +149,7 @@ mod tests {
             .times(1)
             .returning(|_cmd: &str, _args: &[&str]| ls_payload.to_string());
 
-        let conn = KittyConnector { executor: Box::new(mock) };
+        let conn = KittyConnector { executor: &mock };
         conn.ls();
     }
 }

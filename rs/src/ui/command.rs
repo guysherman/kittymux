@@ -5,5 +5,5 @@ use crate::kitty_model::KittyModel;
 use super::model::AppModel;
 
 pub trait Command {
-    fn execute(&mut self, kitty_model: &Box<dyn KittyModel>) -> Result<Option<AppModel>, Box<dyn Error>>;
+    fn execute(&mut self, kitty_model: &dyn KittyModel) -> Result<Option<AppModel>, Box<dyn Error>>;
 }

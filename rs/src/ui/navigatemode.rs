@@ -17,11 +17,11 @@ use crate::{
 use super::{model::AppModel, command::Command, noop_command::NoopCommand, load_command::LoadCommand, quit_command::QuitCommand};
 
 pub struct NavigateMode<'a> {
-    kitty_model: &'a Box<dyn KittyModel>
+    kitty_model: &'a dyn KittyModel
 }
 
 impl NavigateMode<'_> {
-    pub fn new(kitty_model: &Box<dyn KittyModel>) -> NavigateMode {
+    pub fn new(kitty_model: &dyn KittyModel) -> NavigateMode {
         NavigateMode { kitty_model }
     }
 }
@@ -200,7 +200,7 @@ mod tests {
 
     #[test]
     fn given_0_selected_when_j_pressed_1_selected() {
-        let kitty_model: Box<dyn KittyModel> = Box::new(MockKittyModel::new());
+        let kitty_model = MockKittyModel::new();
         let mode = NavigateMode::new(&kitty_model);
         let mut model = AppModel::with_items(basic_windows());
         let event = KeyEvent::new_with_kind_and_state(KeyCode::Char('j'), KeyModifiers::empty(), crossterm::event::KeyEventKind::Press, KeyEventState::NONE);
@@ -224,7 +224,7 @@ mod tests {
 
     #[test]
     fn given_0_selected_when_shift_j_pressed_1_selected() {
-        let kitty_model: Box<dyn KittyModel> = Box::new(MockKittyModel::new());
+        let kitty_model = MockKittyModel::new();
         let mode = NavigateMode::new(&kitty_model);
         let mut model = AppModel::with_items(basic_windows());
         let event = KeyEvent::new_with_kind_and_state(KeyCode::Char('J'), KeyModifiers::SHIFT, crossterm::event::KeyEventKind::Press, KeyEventState::NONE);
@@ -249,7 +249,7 @@ mod tests {
 
     #[test]
     fn given_1_selected_when_shift_j_pressed_3_selected() {
-        let kitty_model: Box<dyn KittyModel> = Box::new(MockKittyModel::new());
+        let kitty_model = MockKittyModel::new();
         let mode = NavigateMode::new(&kitty_model);
 
         let mut model = AppModel::with_items(basic_windows());
@@ -276,7 +276,7 @@ mod tests {
 
     #[test]
     fn given_3_selected_when_shift_k_pressed_1_selected() {
-        let kitty_model: Box<dyn KittyModel> = Box::new(MockKittyModel::new());
+        let kitty_model = MockKittyModel::new();
         let mode = NavigateMode::new(&kitty_model);
 
         let mut model = AppModel::with_items(basic_windows());
@@ -309,7 +309,7 @@ mod tests {
             .times(1)
             .returning(|_| ());
 
-        let kitty_model: Box<dyn KittyModel> = Box::new(mock_window_list);
+        let kitty_model = mock_window_list;
         let mode = NavigateMode::new(&kitty_model);
 
         let mut model = AppModel::with_items(basic_windows());
