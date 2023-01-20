@@ -4,6 +4,7 @@ use tui::widgets::ListState;
 pub struct AppModel {
     list_state: ListState,
     items: Vec<WindowListEntry>,
+    should_quit: bool,
 }
 
 impl AppModel {
@@ -18,7 +19,7 @@ impl AppModel {
         let mut state = ListState::default();
         state.select(selected);
 
-        AppModel { list_state: state, items }
+        AppModel { list_state: state, items, should_quit: false }
     }
 
     pub fn select_next(&mut self) {
@@ -78,6 +79,14 @@ impl AppModel {
             Some(i) => self.items.get(i),
             None => None,
         }
+    }
+
+    pub fn quit(&mut self) {
+        self.should_quit = true;
+    }
+
+    pub fn should_quit(&self) -> bool {
+        self.should_quit
     }
 }
 
@@ -334,9 +343,9 @@ mod tests {
 
     #[test]
     fn given_1_selected_when_select_next_tab_3_selected() {
-        let mut entry_list = AppModel::with_items(windows_and_tabs());
-        entry_list.list_state.select(Some(1));
-        entry_list.select_next_tab();
+        let mut app_model = AppModel::with_items(windows_and_tabs());
+        app_model.list_state.select(Some(1));
+        app_model.select_next_tab();
 
         let expected = WindowListEntry {
             id: 2,
@@ -351,14 +360,14 @@ mod tests {
             tab_id: 2,
         };
 
-        assert_eq!(*entry_list.selected().unwrap(), expected);
+        assert_eq!(*app_model.selected().unwrap(), expected);
     }
 
     #[test]
     fn given_3_selected_when_select_prev_tab_1_selected() {
-        let mut entry_list = AppModel::with_items(windows_and_tabs());
-        entry_list.list_state.select(Some(3));
-        entry_list.select_prev_tab();
+        let mut app_model = AppModel::with_items(windows_and_tabs());
+        app_model.list_state.select(Some(3));
+        app_model.select_prev_tab();
 
         let expected = WindowListEntry {
             id: 1,
@@ -373,6 +382,6 @@ mod tests {
             tab_id: 1,
         };
 
-        assert_eq!(*entry_list.selected().unwrap(), expected);
+        assert_eq!(*app_model.selected().unwrap(), expected);
     }
 }

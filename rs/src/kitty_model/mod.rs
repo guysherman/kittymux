@@ -1,6 +1,8 @@
 pub mod entry_type;
 pub mod window_list_entry;
 
+use std::error::Error;
+
 use json::JsonValue;
 use mockall::automock;
 
@@ -9,19 +11,19 @@ use self::{
     window_list_entry::WindowListEntry };
 use crate::kitty_connector::KittyConnector;
 
-pub struct BaseKittyModel<'a> {
-    connector: &'a KittyConnector<'a>,
+pub struct BaseKittyModel {
+    connector: KittyConnector,
 }
 
 #[automock]
 pub trait KittyModel {
-    fn load(&self) -> Vec<WindowListEntry>;
+    fn load(&self) -> Result<Vec<WindowListEntry>, Box<dyn Error>>;
     fn focus_entry(&self, entry: &WindowListEntry);
     fn close_entry(&self, entry: &WindowListEntry);
 }
 
-impl BaseKittyModel<'_> {
-    pub fn new<'a>(connector: &'a KittyConnector<'a>) -> BaseKittyModel {
+impl BaseKittyModel {
+    pub fn new(connector: KittyConnector) -> BaseKittyModel {
         BaseKittyModel { connector }
     }
 
@@ -30,10 +32,10 @@ impl BaseKittyModel<'_> {
     }
 }
 
-impl KittyModel for BaseKittyModel<'_> {
-    fn load(&self) -> Vec<WindowListEntry> {
+impl KittyModel for BaseKittyModel {
+    fn load(&self) -> Result<Vec<WindowListEntry>, Box<dyn Error>> {
         let ls_text = self.connector.ls();
-        let ls_response = json::parse(&ls_text).unwrap();
+        let ls_response = json::parse(&ls_text)?;
         let num_entries = count_entries(&ls_response);
         let mut entries: Vec<WindowListEntry> = vec![];
         entries.reserve(num_entries);
@@ -42,7 +44,7 @@ impl KittyModel for BaseKittyModel<'_> {
             flatten_os_window(&mut entries, &os_window);
         }
 
-        entries
+        Ok(entries)
     }
 
     fn focus_entry(&self, entry: &WindowListEntry) {
@@ -132,12 +134,12 @@ mod tests {
             .times(1)
             .returning(|_cmd: &str, _args: &[&str]| "[]".to_string());
 
-        let connector = KittyConnector { executor: &mock };
+        let connector = KittyConnector { executor: Box::new(mock) };
         let expected: Vec<WindowListEntry> = vec![];
         let el = BaseKittyModel {
-            connector: &connector,
+            connector,
         };
-        let list = el.load();
+        let list = Result::expect(el.load(), "KittyModel::load returned an error");
 
         assert_eq!(expected.as_slice(), list.as_slice());
     }
@@ -212,16 +214,16 @@ mod tests {
             .times(1)
             .returning(|_cmd: &str, _args: &[&str]| ls_return.to_string());
 
-        let connector = KittyConnector { executor: &mock };
+        let connector = KittyConnector { executor: Box::new(mock) };
         let expected: Vec<WindowListEntry> = vec![
             WindowListEntry::new_from_os_window(os_window_json),
             WindowListEntry::new_from_tab(tab_json, true, true),
             WindowListEntry::new_from_window(window_json, true, true, true, true, 3),
         ];
         let el = BaseKittyModel {
-            connector: &connector,
+            connector,
         };
-        let list = el.load();
+        let list = Result::expect(el.load(), "KittyModel::load returned an error");
 
         assert_eq!(expected.as_slice(), list.as_slice());
     }
@@ -234,9 +236,9 @@ mod tests {
             .times(1)
             .returning(|_cmd: &str, _args: &[&str]| "".to_string());
 
-        let connector = KittyConnector { executor: &mock };
+        let connector = KittyConnector { executor: Box::new(mock) };
         let el = BaseKittyModel {
-            connector: &connector,
+            connector,
         };
 
         let entry = WindowListEntry {
@@ -262,9 +264,9 @@ mod tests {
             .times(1)
             .returning(|_cmd: &str, _args: &[&str]| "".to_string());
 
-        let connector = KittyConnector { executor: &mock };
+        let connector = KittyConnector { executor: Box::new(mock) };
         let el = BaseKittyModel {
-            connector: &connector,
+            connector,
         };
 
         let entry = WindowListEntry {

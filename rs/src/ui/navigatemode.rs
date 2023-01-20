@@ -1,4 +1,4 @@
-use std::io::{Result, Stdout};
+use std::{io::{Stdout}, error::Error};
 
 use crossterm::event::{KeyCode, KeyEvent};
 use tui::{
@@ -14,23 +14,23 @@ use crate::{
     kitty_model::{window_list_entry::WindowListEntry, KittyModel}, ui::mode::Mode,
 };
 
-use super::model::AppModel;
+use super::{model::AppModel, command::Command, noop_command::NoopCommand, load_command::LoadCommand, quit_command::QuitCommand};
 
 pub struct NavigateMode<'a> {
-    kitty_model: &'a dyn KittyModel
+    kitty_model: &'a Box<dyn KittyModel>
 }
 
-impl<'a> NavigateMode<'a> {
-    pub fn new(kitty_window_list: &'a dyn KittyModel) -> NavigateMode<'a> {
-        NavigateMode { kitty_model: kitty_window_list }
+impl NavigateMode<'_> {
+    pub fn new(kitty_model: &Box<dyn KittyModel>) -> NavigateMode {
+        NavigateMode { kitty_model }
     }
 }
 
-impl<'a> Mode for NavigateMode<'a> {
+impl Mode for NavigateMode<'_> {
     fn draw<'b>(
         terminal: &'b mut Terminal<CrosstermBackend<Stdout>>,
         model: &mut AppModel,
-    ) -> Result<CompletedFrame<'b>> {
+    ) -> std::io::Result<CompletedFrame<'b>> {
         terminal.draw(|f| {
             let list: Vec<ListItem> = model
                 .items()
@@ -67,36 +67,36 @@ impl<'a> Mode for NavigateMode<'a> {
         })
     }
 
-    fn handle_input(&self, event: &KeyEvent, model: &mut AppModel) -> Result<bool> {
+    fn handle_input(&self, event: &KeyEvent, mut model: AppModel) -> Result<Box<dyn Command>, Box<dyn Error>> {
         match event.code {
-            KeyCode::Char('q') => Ok(true),
+            KeyCode::Char('q') => Ok(Box::new(QuitCommand::new(model))),
             KeyCode::Char('j') => {
                 model.select_next();
-                Ok(false)
+                Ok(Box::new(NoopCommand::new(model)))
             }
             KeyCode::Char('k') => {
                 model.select_prev();
-                Ok(false)
+                Ok(Box::new(NoopCommand::new(model)))
             }
             KeyCode::Char('J') => {
                 model.select_next_tab();
-                Ok(false)
+                Ok(Box::new(NoopCommand::new(model)))
             }
             KeyCode::Char('K') => {
                 model.select_prev_tab();
-                Ok(false)
+                Ok(Box::new(NoopCommand::new(model)))
             }
             KeyCode::Char('x') => {
                 model.selected().map(|entry| self.kitty_model.close_entry(entry));
-                Ok(false)
+                Ok(Box::new(LoadCommand::new()))
             }
             KeyCode::Enter => {
                 model.selected().map(|selected_item| {
                     self.kitty_model.focus_entry(selected_item);
                 });
-                Ok(true)
+                Ok(Box::new(QuitCommand::new(model)))
             }
-            _ => Ok(false),
+            _ => Ok(Box::new(NoopCommand::new(model))),
         }
     }
 }
@@ -105,7 +105,7 @@ impl<'a> Mode for NavigateMode<'a> {
 mod tests {
     use crossterm::event::{KeyModifiers, KeyEventState};
 
-    use crate::kitty_model::{entry_type::EntryType, KittyModel};
+    use crate::kitty_model::{entry_type::EntryType, KittyModel, MockKittyModel};
 
     use super::*;
 
@@ -200,11 +200,12 @@ mod tests {
 
     #[test]
     fn given_0_selected_when_j_pressed_1_selected() {
-        let window_list = KittyModel::new();
-        let mode = NavigateMode::new(&window_list);
+        let kitty_model: Box<dyn KittyModel> = Box::new(MockKittyModel::new());
+        let mode = NavigateMode::new(&kitty_model);
         let mut model = AppModel::with_items(basic_windows());
         let event = KeyEvent::new_with_kind_and_state(KeyCode::Char('j'), KeyModifiers::empty(), crossterm::event::KeyEventKind::Press, KeyEventState::NONE);
-        mode.handle_input(&event, &mut model).unwrap();
+        let mut cmd = mode.handle_input(&event, model).unwrap();
+        model = Result::expect(cmd.execute(&kitty_model), "Command returned an error when executed").unwrap();
         let expected = WindowListEntry {
             id: 1,
             text: "my tab".to_string(),
@@ -223,11 +224,12 @@ mod tests {
 
     #[test]
     fn given_0_selected_when_shift_j_pressed_1_selected() {
-        let window_list = KittyModel::new();
-        let mode = NavigateMode::new(&window_list);
+        let kitty_model: Box<dyn KittyModel> = Box::new(MockKittyModel::new());
+        let mode = NavigateMode::new(&kitty_model);
         let mut model = AppModel::with_items(basic_windows());
         let event = KeyEvent::new_with_kind_and_state(KeyCode::Char('J'), KeyModifiers::SHIFT, crossterm::event::KeyEventKind::Press, KeyEventState::NONE);
-        mode.handle_input(&event, &mut model).unwrap();
+        let mut cmd = mode.handle_input(&event, model).unwrap();
+        model = Result::expect(cmd.execute(&kitty_model), "Command returned an error").unwrap();
         let expected = WindowListEntry {
             id: 1,
             text: "my tab".to_string(),
@@ -247,8 +249,8 @@ mod tests {
 
     #[test]
     fn given_1_selected_when_shift_j_pressed_3_selected() {
-        let window_list = KittyModel::new();
-        let mode = NavigateMode::new(&window_list);
+        let kitty_model: Box<dyn KittyModel> = Box::new(MockKittyModel::new());
+        let mode = NavigateMode::new(&kitty_model);
 
         let mut model = AppModel::with_items(basic_windows());
         model.state().select(Some(1));
@@ -267,14 +269,15 @@ mod tests {
             tab_id: 2,
         };
 
-        mode.handle_input(&event, &mut model).unwrap();
+        let mut cmd = mode.handle_input(&event, model).unwrap();
+        model = Result::expect(cmd.execute(&kitty_model), "Command returned error").unwrap();
         assert_eq!(*model.selected().unwrap(), expected);
     }
 
     #[test]
     fn given_3_selected_when_shift_k_pressed_1_selected() {
-        let window_list = KittyModel::new();
-        let mode = NavigateMode::new(&window_list);
+        let kitty_model: Box<dyn KittyModel> = Box::new(MockKittyModel::new());
+        let mode = NavigateMode::new(&kitty_model);
 
         let mut model = AppModel::with_items(basic_windows());
         model.state().select(Some(3));
@@ -293,25 +296,27 @@ mod tests {
             tab_id: 1,
         };
 
-        mode.handle_input(&event, &mut model).unwrap();
+        let mut cmd = mode.handle_input(&event, model).unwrap();
+        model = Result::expect(cmd.execute(&kitty_model), "Command returned an error").unwrap();
         assert_eq!(*model.selected().unwrap(), expected);
     }
 
     #[test]
     fn given_1_selected_when_x_pressed_then_close_entry_called() {
-        let mut mock_window_list = KittyModel::new();
+        let mut mock_window_list = MockKittyModel::new();
         mock_window_list.expect_close_entry()
             .withf(|_entry: &WindowListEntry| true)
             .times(1)
             .returning(|_| ());
 
-        let mode = NavigateMode::new(&mock_window_list);
+        let kitty_model: Box<dyn KittyModel> = Box::new(mock_window_list);
+        let mode = NavigateMode::new(&kitty_model);
 
         let mut model = AppModel::with_items(basic_windows());
         model.state().select(Some(1));
 
         let event = KeyEvent::new_with_kind_and_state(KeyCode::Char('x'), KeyModifiers::empty(), crossterm::event::KeyEventKind::Press, KeyEventState::NONE);
-        mode.handle_input(&event, &mut model);
+        mode.handle_input(&event, model);
     }
 
 }

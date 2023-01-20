@@ -131,7 +131,7 @@ impl WindowListEntry {
 
 #[cfg(test)]
 mod tests {
-    use crate::entry_list::entry_type::EntryType;
+    use crate::kitty_model::entry_type::EntryType;
 
     use super::WindowListEntry;
 
