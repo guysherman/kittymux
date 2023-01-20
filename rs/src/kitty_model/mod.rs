@@ -26,10 +26,6 @@ impl BaseKittyModel<'_> {
     pub fn new(connector: KittyConnector) -> BaseKittyModel {
         BaseKittyModel { connector }
     }
-
-    pub fn connector(&self) -> &KittyConnector {
-        &self.connector
-    }
 }
 
 impl KittyModel for BaseKittyModel<'_> {
