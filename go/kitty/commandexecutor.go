@@ -14,6 +14,9 @@ type CommandExecutor interface {
 type KittyCommandExecutor struct{}
 
 func (c *KittyCommandExecutor) ExecuteCommand(args []string) string {
+  if os.Getenv("KITTYMUX_REMOTE_TO") != "" {
+    args = append([]string{"--to", os.Getenv("KITTYMUX_REMOTE_TO")}, args...)
+  }
 	args = append([]string{"@"}, args...)
 	cmd := exec.Command("kitty", args...)
 	output, err := cmd.Output()
