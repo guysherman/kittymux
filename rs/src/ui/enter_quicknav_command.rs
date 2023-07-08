@@ -1,32 +1,43 @@
+use std::error::Error;
+
 use crate::kitty_model::KittyModel;
 
-use super::{command::Command, mode::Mode::SetQuickNav, model::AppModel};
+use super::{command::Command, mode, model::AppModel};
 
-pub struct EnterSetQuickNavCommand {
+// has an optional AppModel model
+pub struct EnterQuickNavCommand {
     model: Option<AppModel>,
 }
 
-impl EnterSetQuickNavCommand {
+impl EnterQuickNavCommand {
     pub fn new(model: AppModel) -> Self {
         Self { model: Some(model) }
     }
 }
 
-impl Command for EnterSetQuickNavCommand {
+impl Command for EnterQuickNavCommand {
     fn execute(
         &mut self,
         _kitty_model: &dyn KittyModel,
-    ) -> Result<Option<AppModel>, Box<dyn std::error::Error>> {
+    ) -> Result<Option<AppModel>, Box<dyn Error>> {
         let model = self.model.as_mut().unwrap();
-        model.set_mode(SetQuickNav);
+        model.set_mode(mode::Mode::QuickNav);
         Ok(self.model.take())
     }
 }
 
 #[cfg(test)]
 mod tests {
-    use super::*;
-    use crate::{kitty_model::{entry_type, window_list_entry::WindowListEntry, MockKittyModel}, quicknav::QuickNavDatabase};
+    use crate::{
+        kitty_model::{entry_type, window_list_entry::WindowListEntry, MockKittyModel},
+        quicknav::QuickNavDatabase,
+        ui::{
+            mode::{self, Mode::Navigate},
+            model::AppModel,
+        },
+    };
+
+    use super::Command;
 
     fn basic_windows() -> Vec<WindowListEntry> {
         vec![
@@ -70,16 +81,17 @@ mod tests {
     }
 
     #[test]
-    fn test_execute() {
+    fn test_enter_quicknav_command() {
         let kitty_model = MockKittyModel::new();
-        let mut command = EnterSetQuickNavCommand::new(AppModel::new(
-            basic_windows(),
-            QuickNavDatabase::new(),
-            crate::ui::mode::Mode::Navigate,
-        ));
-        let result = command.execute(&kitty_model);
-        assert!(result.is_ok());
-        let model = result.unwrap().unwrap();
-        assert_eq!(model.mode(), SetQuickNav);
+
+        let mut model = AppModel::new(basic_windows(), QuickNavDatabase::new(), Navigate);
+        model.select(Some(1));
+
+        let mut command = super::EnterQuickNavCommand::new(model);
+        let result = command
+            .execute(&kitty_model)
+            .expect("Command should succeed")
+            .expect("Command should return a model");
+        assert_eq!(result.mode(), mode::Mode::QuickNav);
     }
 }

@@ -7,7 +7,7 @@ use crate::kitty_model::KittyModel;
 use super::{
     command::Command, enter_rename_command::EnterRenameCommand,
     enter_setquicknav_command::EnterSetQuickNavCommand, load_command::LoadCommand, model::AppModel,
-    noop_command::NoopCommand, quit_command::QuitCommand,
+    noop_command::NoopCommand, quit_command::QuitCommand, enter_quicknav_command::EnterQuickNavCommand,
 };
 
 pub struct NavigateMode {}
@@ -49,6 +49,7 @@ impl NavigateMode {
                 Ok(Box::new(QuitCommand::new(model)))
             }
             KeyCode::Char('m') => Ok(Box::new(EnterSetQuickNavCommand::new(model))),
+            KeyCode::Char('\'') => Ok(Box::new(EnterQuickNavCommand::new(model))),
             _ => Ok(Box::new(NoopCommand::new(model))),
         }
     }
@@ -350,5 +351,29 @@ mod tests {
             .expect("Command had no AppModel");
 
         assert_eq!(result.mode(), mode::Mode::SetQuickNav);
+    }
+
+    #[test]
+    fn given_1_selected_when_apostraphe_pressed_then_quicknav_mode_entered() {
+        let mock_window_list = MockKittyModel::new();
+
+        let kitty_model = mock_window_list;
+
+        let mut model = AppModel::new(basic_windows(), QuickNavDatabase::new(), Navigate);
+        model.state().select(Some(1));
+
+        let event = KeyEvent::new_with_kind_and_state(
+            KeyCode::Char('\''),
+            KeyModifiers::empty(),
+            crossterm::event::KeyEventKind::Press,
+            KeyEventState::NONE,
+        );
+        let mut cmd = NavigateMode::handle_input(&event, model, &kitty_model).unwrap();
+        let result = cmd
+            .execute(&kitty_model)
+            .unwrap()
+            .expect("Command had no AppModel");
+
+        assert_eq!(result.mode(), mode::Mode::QuickNav);
     }
 }

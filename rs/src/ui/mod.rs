@@ -12,6 +12,7 @@ mod quit_command;
 mod enter_rename_command;
 mod enter_navigate_command;
 mod enter_setquicknav_command;
+mod enter_quicknav_command;
 mod rename_entry_command;
 
 use crossterm::{
@@ -24,7 +25,7 @@ use tui::{backend::CrosstermBackend, Terminal};
 
 use crate::{kitty_model::KittyModel, quicknav::QuickNavDatabase};
 
-use self::{model::AppModel, navigatemode::NavigateMode, mode::Mode::{Navigate, Rename}, renderer::render, renamemode::RenameMode, setquicknavmode::SetQuickNavMode};
+use self::{model::AppModel, navigatemode::NavigateMode, mode::Mode::{Navigate, Rename, SetQuickNav}, renderer::render, renamemode::RenameMode, setquicknavmode::SetQuickNavMode, quicknavmode::QuickNavMode};
 
 pub fn run(kitty_model: &dyn KittyModel) -> Result<(), Box<dyn Error>> {
     // setup terminal
@@ -43,7 +44,8 @@ pub fn run(kitty_model: &dyn KittyModel) -> Result<(), Box<dyn Error>> {
                 let mut cmd = match app_model.mode() {
                     Navigate => NavigateMode::handle_input(&key, app_model, kitty_model)?,
                     Rename => RenameMode::handle_input(&key, app_model, kitty_model)?,
-                    mode::Mode::SetQuickNav => SetQuickNavMode::handle_input(&key, app_model, kitty_model)?,
+                    SetQuickNav => SetQuickNavMode::handle_input(&key, app_model, kitty_model)?,
+                    mode::Mode::QuickNav => QuickNavMode::handle_input(&key, app_model, kitty_model)?
                 };
 
                 app_model = cmd.execute(kitty_model)?.unwrap();

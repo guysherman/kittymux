@@ -13,7 +13,7 @@ use unicode_width::UnicodeWidthStr;
 use crate::kitty_model::window_list_entry::WindowListEntry;
 
 use super::{
-    mode::Mode::{Navigate, Rename},
+    mode::Mode::{Navigate, QuickNav, Rename, SetQuickNav},
     model::AppModel,
 };
 pub fn render<'b>(
@@ -25,8 +25,18 @@ pub fn render<'b>(
             .items()
             .iter()
             .map(|x: &WindowListEntry| {
-                ListItem::new(x.text.clone())
-                    .style(Style::default().fg(Color::White).bg(Color::Black))
+                let key = model
+                    .quicknavs()
+                    .find_entry_by_title(x.title.as_str())
+                    .map_or(" ".to_string(), |x| x.key.to_owned().to_string());
+                let text = match model.mode() {
+                    Navigate => x.text.clone(),
+                    Rename => x.text.clone(),
+                    SetQuickNav => format!("{}{}", key, x.text.clone()),
+                    QuickNav => format!("{}{}", key, x.text.clone()),
+                };
+                // Look into spans
+                ListItem::new(text).style(Style::default().fg(Color::White).bg(Color::Black))
             })
             .collect();
 
@@ -54,9 +64,10 @@ pub fn render<'b>(
             .style(match model.mode() {
                 Navigate => Style::default(),
                 Rename => Style::default().fg(Color::Yellow),
-                super::mode::Mode::SetQuickNav => Style::default(),
+                SetQuickNav => Style::default().fg(Color::Red),
+                QuickNav => Style::default().fg(Color::Blue),
             })
-        .block(Block::default().borders(Borders::ALL));
+            .block(Block::default().borders(Borders::ALL));
         f.render_widget(input, panes[1]);
         match model.mode() {
             Navigate =>
@@ -72,7 +83,8 @@ pub fn render<'b>(
                     panes[1].y + 1,
                 )
             }
-            super::mode::Mode::SetQuickNav => {}
+            SetQuickNav => {}
+            QuickNav => {}
         }
     })
 }

@@ -74,6 +74,13 @@ impl QuickNavDatabase {
     fn find_entry_by_title_mut(&mut self, title: &str) -> Option<&mut QuickNavEntry> {
         self.entries.iter_mut().find(|entry| entry.title == title)
     }
+
+    pub fn find_entries_by_key(&self, key: char) -> Vec<&QuickNavEntry> {
+        self.entries
+            .iter()
+            .filter(|entry| entry.key == key)
+            .collect()
+    }
 }
 
 // generate a function that returns a file path based on the presence of the following environment

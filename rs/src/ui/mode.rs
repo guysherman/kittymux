@@ -3,4 +3,5 @@ pub enum Mode {
     Navigate,
     Rename,
     SetQuickNav,
+    QuickNav,
 }
