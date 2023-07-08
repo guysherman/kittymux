@@ -20,6 +20,7 @@ pub trait KittyModel {
     fn load(&self) -> Result<Vec<WindowListEntry>, Box<dyn Error>>;
     fn focus_entry(&self, entry: &WindowListEntry);
     fn close_entry(&self, entry: &WindowListEntry);
+    fn rename_entry(&self, entry: &WindowListEntry, new_name: &str);
 }
 
 impl BaseKittyModel<'_> {
@@ -55,6 +56,14 @@ impl KittyModel for BaseKittyModel<'_> {
         match &entry.entry_type {
             Window => self.connector.close_window(entry.id),
             Tab => self.connector.close_tab(entry.tab_id),
+            _ => {}
+        }
+    }
+
+    fn rename_entry(&self, entry: &WindowListEntry,new_name: &str) {
+        match &entry.entry_type {
+            Window => self.connector.set_window_title(entry.id, new_name),
+            Tab => self.connector.set_tab_title(entry.tab_id, new_name),
             _ => {}
         }
     }
@@ -253,6 +262,7 @@ mod tests {
         el.close_entry(&entry);
     }
 
+    #[test]
     fn given_window_when_close_entry_called_then_command_is_close_window() {
         let mut mock = MockCommandExecutor::new();
         mock.expect_execute_command()
@@ -279,6 +289,65 @@ mod tests {
         };
 
         el.close_entry(&entry);
+    }
+
+    #[test]
+    fn given_tab_when_rename_entry_called_then_command_is_set_tab_title() {
+        let mut mock = MockCommandExecutor::new();
+        mock.expect_execute_command()
+            .withf(|cmd: &str, _args: &[&str]| cmd == "set-tab-title")
+            .times(1)
+            .returning(|_cmd: &str, _args: &[&str]| "".to_string());
+
+        let connector = KittyConnector { executor: &mock };
+        let el = BaseKittyModel {
+            connector,
+        };
+
+        let entry = WindowListEntry {
+            id: 1,
+            text: "my tab".to_string(),
+            title: "my tab".to_string(),
+            entry_type: EntryType::Tab,
+            pid: 0,
+            cwd: "".to_string(),
+            is_focused: true,
+            tab_is_focused: true,
+            os_window_is_focused: true,
+            tab_id: 1,
+        };
+
+        el.rename_entry(&entry, "new-name");
+    }
+
+    #[test]
+    fn given_window_when_rename_entry_called_then_command_is_set_window_title() {
+        let mut mock = MockCommandExecutor::new();
+        mock.expect_execute_command()
+            .withf(|cmd: &str, _args: &[&str]| cmd == "set-window-title")
+            .times(1)
+            .returning(|_cmd: &str, _args: &[&str]| "".to_string());
+
+        let connector = KittyConnector { executor: &mock };
+        let el = BaseKittyModel {
+            connector,
+        };
+
+        let entry = WindowListEntry {
+            id: 1,
+            tab_id: 1,
+            pid: 1,
+            cwd: "/foo".to_string(),
+            text: "1".to_string(),
+            title: "1".to_string(),
+            entry_type: EntryType::Window,
+            is_focused: true,
+            tab_is_focused: true,
+            os_window_is_focused: true,
+        };
+
+        el.rename_entry(&entry, "new-name");
+
     }
 
 }

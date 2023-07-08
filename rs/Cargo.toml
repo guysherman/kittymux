@@ -13,7 +13,11 @@ A terminal navigator for the kitty terminal
 [dependencies]
 assert = "0.7.4"
 crossterm = "0.25.0"
+derive_more = { version = "0.99.17", features = ["display"] }
 json = "0.12.4"
 mockall = "0.11.3"
+serde ={ version = "1.0.164", features = ["derive"] }
+serde_json = "1.0.99"
 tui = "0.19.0"
+unicode-width = "0.1.10"
 

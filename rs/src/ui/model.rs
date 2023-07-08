@@ -1,14 +1,19 @@
-use crate::kitty_model::{entry_type::EntryType, window_list_entry::WindowListEntry};
+use crate::{kitty_model::{entry_type::EntryType, window_list_entry::WindowListEntry}, quicknav::QuickNavDatabase};
 use tui::widgets::ListState;
+
+use super::mode::Mode;
 
 pub struct AppModel {
     list_state: ListState,
     items: Vec<WindowListEntry>,
     should_quit: bool,
+    mode: Mode,
+    quicknavs: QuickNavDatabase,
+    pub(in crate::ui) text_input: String,
 }
 
 impl AppModel {
-    pub fn with_items(items: Vec<WindowListEntry>) -> AppModel {
+    pub fn new(items: Vec<WindowListEntry>, quicknavs: QuickNavDatabase, mode: Mode) -> AppModel {
         let selected: Option<usize>;
         if items.len() > 0 {
             selected = Some(0);
@@ -19,7 +24,25 @@ impl AppModel {
         let mut state = ListState::default();
         state.select(selected);
 
-        AppModel { list_state: state, items, should_quit: false }
+        AppModel { list_state: state, items, should_quit: false, mode, text_input: "".to_string(), quicknavs }
+    }
+
+    pub fn mode(&self) -> Mode {
+        self.mode
+    }
+
+    pub fn set_mode(&mut self, mode: Mode) {
+        self.mode = mode;
+    }
+
+    pub fn select(&mut self, selected: Option<usize>) {
+        if selected < Some(self.items.len()) {
+            self.list_state.select(selected);
+        }
+    }
+
+    pub fn selected_index(&self) -> Option<usize> {
+        self.list_state.selected()
     }
 
     pub fn select_next(&mut self) {
@@ -81,12 +104,30 @@ impl AppModel {
         }
     }
 
+    pub fn with_selected(mut self, selected_index: Option<usize>) -> AppModel {
+        self.select(selected_index);
+        self
+    }
+
+    pub fn with_text_input(mut self, text_input: String) -> AppModel {
+        self.text_input = text_input;
+        self
+    }
+
     pub fn quit(&mut self) {
         self.should_quit = true;
     }
 
     pub fn should_quit(&self) -> bool {
         self.should_quit
+    }
+
+    pub fn quicknavs(&self) -> & QuickNavDatabase {
+        &self.quicknavs
+    }
+
+    pub fn quicknavs_mut(&mut self) -> &mut QuickNavDatabase {
+        &mut self.quicknavs
     }
 }
 
@@ -137,11 +178,13 @@ mod tests {
         ]
     }
 
+
     #[test]
     fn given_selected_0_when_select_prev_selected_0() {
         let items = basic_windows();
+        let quicknavs = QuickNavDatabase::new();
 
-        let mut list = AppModel::with_items(items);
+        let mut list = AppModel::new(items, quicknavs, Mode::Navigate);
         let expected = WindowListEntry {
             id: 1,
             tab_id: 1,
@@ -163,6 +206,7 @@ mod tests {
     #[test]
     fn given_selected_1_when_select_prev_selected_0() {
         let items = basic_windows();
+        let quicknavs = QuickNavDatabase::new();
         let expected = WindowListEntry {
             id: 1,
             tab_id: 1,
@@ -175,7 +219,7 @@ mod tests {
             tab_is_focused: true,
             os_window_is_focused: true,
         };
-        let mut list = AppModel::with_items(items);
+        let mut list = AppModel::new(items, quicknavs, Mode::Navigate);
         list.list_state.select(Some(1));
 
         list.select_prev();
@@ -186,8 +230,9 @@ mod tests {
     #[test]
     fn given_selected_0_when_select_next_selected_1() {
         let items = basic_windows();
+        let quicknavs = QuickNavDatabase::new();
 
-        let mut list = AppModel::with_items(items);
+        let mut list = AppModel::new(items, quicknavs, Mode::Navigate);
         let expected = WindowListEntry {
             id: 2,
             tab_id: 2,
@@ -209,8 +254,9 @@ mod tests {
     #[test]
     fn given_selected_2_when_select_next_selected_2() {
         let items = basic_windows();
+        let quicknavs = QuickNavDatabase::new();
 
-        let mut list = AppModel::with_items(items);
+        let mut list = AppModel::new(items, quicknavs, Mode::Navigate);
         list.list_state.select(Some(2));
         let expected = WindowListEntry {
             id: 3,
@@ -233,8 +279,9 @@ mod tests {
     #[test]
     fn given_selected_2_selected_returns_correct_item() {
         let items = basic_windows();
+        let quicknavs = QuickNavDatabase::new();
 
-        let mut list = AppModel::with_items(items);
+        let mut list = AppModel::new(items, quicknavs, Mode::Navigate);
         list.list_state.select(Some(2));
         let expected = WindowListEntry {
             id: 3,
@@ -343,7 +390,8 @@ mod tests {
 
     #[test]
     fn given_1_selected_when_select_next_tab_3_selected() {
-        let mut app_model = AppModel::with_items(windows_and_tabs());
+        let quicknavs = QuickNavDatabase::new();
+        let mut app_model = AppModel::new(windows_and_tabs(), quicknavs, Mode::Navigate);
         app_model.list_state.select(Some(1));
         app_model.select_next_tab();
 
@@ -365,7 +413,8 @@ mod tests {
 
     #[test]
     fn given_3_selected_when_select_prev_tab_1_selected() {
-        let mut app_model = AppModel::with_items(windows_and_tabs());
+        let quicknavs = QuickNavDatabase::new();
+        let mut app_model = AppModel::new(windows_and_tabs(), quicknavs, Mode::Navigate);
         app_model.list_state.select(Some(3));
         app_model.select_prev_tab();
 

@@ -17,14 +17,14 @@ impl KittyConnector<'_> {
             .execute_command("close-tab", &["-m", format!("id:{}", id).as_str()]);
     }
 
-    pub fn set_window_title(&self, id: i32, new_title: &str) -> () {
+    pub fn set_window_title(&self, id: u32, new_title: &str) -> () {
         self.executor.execute_command(
             "set-window-title",
             &["-m", format!("id:{}", id).as_str(), new_title],
         );
     }
 
-    pub fn set_tab_title(&self, id: i32, new_title: &str) -> () {
+    pub fn set_tab_title(&self, id: u32, new_title: &str) -> () {
         self.executor.execute_command(
             "set-tab-title",
             &["-m", format!("id:{}", id).as_str(), new_title],

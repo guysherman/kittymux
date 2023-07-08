@@ -9,6 +9,8 @@ use kitty_connector::{
 mod kitty_model;
 mod kitty_connector;
 mod ui;
+mod quicknav;
+mod error;
 
 
 fn main() -> Result<(), Box<dyn Error>> {
