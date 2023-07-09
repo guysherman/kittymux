@@ -5,6 +5,7 @@ use tui::{
     layout::{Constraint, Direction, Layout},
     style::{Color, Modifier, Style},
     terminal::CompletedFrame,
+    text::{Span, Spans, Text},
     widgets::{Block, Borders, List, ListItem, Paragraph},
     Terminal,
 };
@@ -27,16 +28,12 @@ pub fn render<'b>(
             .map(|x: &WindowListEntry| {
                 let key = model
                     .quicknavs()
-                    .find_entry_by_title(x.title.as_str())
+                    .find_entry_by_id(x.id)
                     .map_or(" ".to_string(), |x| x.key.to_owned().to_string());
-                let text = match model.mode() {
-                    Navigate => x.text.clone(),
-                    Rename => x.text.clone(),
-                    SetQuickNav => format!("{}{}", key, x.text.clone()),
-                    QuickNav => format!("{}{}", key, x.text.clone()),
-                };
-                // Look into spans
-                ListItem::new(text).style(Style::default().fg(Color::White).bg(Color::Black))
+                let gutter = Span::styled(gutter_text(&key, model.mode()), gutter_style(model.mode()));
+                let text = Span::styled(x.text.clone(), default_style());
+                
+                ListItem::new(Text::from(Spans::from(vec![gutter, text])))
             })
             .collect();
 
@@ -87,4 +84,41 @@ pub fn render<'b>(
             QuickNav => {}
         }
     })
+}
+
+fn gutter_style(mode: super::mode::Mode) -> Style {
+    // each arm calls a function that returns a style
+    match mode {
+        Navigate => default_style(),
+        Rename => default_style(),
+        SetQuickNav => set_quicknav_style(),
+        QuickNav => quicknav_style(),
+    }
+}
+
+fn default_style() -> Style {
+    Style::default().fg(Color::White).bg(Color::Black)
+}
+
+fn selected_style() -> Style {
+    Style::default()
+        .bg(Color::Blue)
+        .add_modifier(Modifier::BOLD)
+}
+
+fn set_quicknav_style() -> Style {
+    Style::default().bg(Color::Yellow).fg(Color::Black)
+}
+
+fn quicknav_style() -> Style {
+    Style::default().bg(Color::Green).fg(Color::Black)
+}
+
+fn gutter_text(key: &String, mode: super::mode::Mode) -> String {
+    match mode {
+        Navigate => "   ".to_string(),
+        Rename => "   ".to_string(), 
+        SetQuickNav => format!(" {} ", key),
+        QuickNav => format!(" {} ", key),
+    }
 }

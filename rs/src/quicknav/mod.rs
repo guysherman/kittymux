@@ -1,20 +1,21 @@
 use serde::{Deserialize, Serialize};
 
-use crate::error::KittyMuxError;
+pub mod persistence;
 
 #[derive(Debug, PartialEq, Eq, Serialize, Deserialize)]
 pub struct QuickNavEntry {
     pub title: String,
+    pub id: u32,
     pub key: char,
 }
 
 impl QuickNavEntry {
-    pub fn new(title: String, key: char) -> QuickNavEntry {
-        QuickNavEntry { title, key }
+    pub fn new(title: String, key: char, id: u32) -> QuickNavEntry {
+        QuickNavEntry { title, key, id }
     }
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, PartialEq, Eq)]
 pub struct QuickNavDatabase {
     entries: Vec<QuickNavEntry>,
 }
@@ -25,55 +26,27 @@ impl QuickNavDatabase {
             entries: Vec::new(),
         }
     }
+    
+    pub fn from_entries(entries: Vec<QuickNavEntry>) -> QuickNavDatabase {
+        QuickNavDatabase { entries }
+    }
 
     pub fn add_entry(&mut self, entry: QuickNavEntry) {
-        if let Some(existing_entry) = self.find_entry_by_title_mut(&entry.title) {
+        if let Some(existing_entry) = self.find_entry_by_id_mut(entry.id) {
             existing_entry.key = entry.key;
         } else {
             self.entries.push(entry);
         }
-        self.save();
+        //self.save();
     }
 
     pub fn load() -> QuickNavDatabase {
-        let filename = get_quicknav_file_path();
-        QuickNavDatabase::from_file(&filename).unwrap_or(QuickNavDatabase::new())
+        QuickNavDatabase::new()
     }
 
-    fn from_file(filename: &str) -> Result<QuickNavDatabase, KittyMuxError> {
-        let json = std::fs::read_to_string(filename)?;
-        Ok(QuickNavDatabase::from_json(&json)?)
-    }
-
-    fn from_json(json: &str) -> Result<QuickNavDatabase, serde_json::Error> {
-        serde_json::from_str::<QuickNavDatabase>(json)
-    }
-
-    pub fn save(&self) {
-        let filename = get_quicknav_file_path();
-        self.to_file(&filename);
-    }
-
-    fn to_file(&self, filename: &str) {
-        std::fs::write(filename, self.to_json()).unwrap();
-    }
-
-    fn to_json(&self) -> String {
-        serde_json::to_string(&self).unwrap()
-    }
-
-    pub fn clear(&mut self) {
-        self.entries.clear();
-    }
-
-    // generate a function which finds an entry by its title field
-    pub fn find_entry_by_title(&self, title: &str) -> Option<&QuickNavEntry> {
-        self.entries.iter().find(|entry| entry.title == title)
-    }
-
-    fn find_entry_by_title_mut(&mut self, title: &str) -> Option<&mut QuickNavEntry> {
-        self.entries.iter_mut().find(|entry| entry.title == title)
-    }
+    //pub fn save(&self) {
+        //println!("Dummy save");
+    //}
 
     pub fn find_entries_by_key(&self, key: char) -> Vec<&QuickNavEntry> {
         self.entries
@@ -81,26 +54,32 @@ impl QuickNavDatabase {
             .filter(|entry| entry.key == key)
             .collect()
     }
-}
 
-// generate a function that returns a file path based on the presence of the following environment
-// variables: KITTYMUX_STATE_DIR, XDG_STATE_HOME, HOME. The file path should be:
-// $KITTYMUX_STATE_DIR/quicknav-rs.json
-// $XDG_STATE_HOME/kittymux/quicknav-rs.json
-// $HOME/.local/state/kittymux/quicknav-rs.json
-// If none of those environment variables are set, use the current directory
-// If the file doesn't exist, create it
-pub fn get_quicknav_file_path() -> String {
-    if let Ok(kittymux_state_dir) = std::env::var("KITTYMUX_STATE_DIR") {
-        format!("{}/quicknav-rs.json", kittymux_state_dir)
-    } else if let Ok(xdg_state_home) = std::env::var("XDG_STATE_HOME") {
-        format!("{}/kittymux/quicknav-rs.json", xdg_state_home)
-    } else if let Ok(home) = std::env::var("HOME") {
-        format!("{}/.local/state/kittymux/quicknav-rs.json", home)
-    } else {
-        "quicknav-rs.json".to_string()
+    pub fn find_entry_by_id(&self, id: u32) -> Option<&QuickNavEntry> {
+        self.entries.iter().find(|entry| entry.id == id)
+    }
+
+    fn find_entry_by_id_mut(&mut self, id: u32) -> Option<&mut QuickNavEntry> {
+        self.entries.iter_mut().find(|entry| entry.id == id)
+    }
+
+    pub fn clean_up(&mut self, entries: Vec<(String, u32)>) {
+        let mut entries_to_remove = Vec::new();
+        for entry in &self.entries {
+            if !entries.iter().any(|(title, id)| entry.title == *title && entry.id == *id) {
+                entries_to_remove.push(entry.id);
+            }
+        }
+        self.entries.retain(|entry| !entries_to_remove.contains(&entry.id));
+    }
+
+    pub fn rename_entry(&mut self, id: u32, new_title: String) {
+        if let Some(entry) = self.find_entry_by_id_mut(id) {
+            entry.title = new_title;
+        }
     }
 }
+
 
 #[cfg(test)]
 mod tests {
@@ -108,102 +87,38 @@ mod tests {
 
     #[test]
     fn deserialises_from_json() {
-        let json_string = r###"{"title":"Foo","key":"c"}"###;
+        let json_string = r###"{"title":"Foo","id":1,"key":"c"}"###;
         // generate code to deseralise jsonString and test its values
         let entry: QuickNavEntry = serde_json::from_str(json_string).unwrap();
-        assert_eq!(entry.title, "Foo");
         assert_eq!(entry.key, 'c');
+        assert_eq!(entry.id, 1);
     }
 
     // generate a test to serialize a QuickNavEntry to json and verify the output
     #[test]
     fn serializes_to_json() {
-        let entry = QuickNavEntry::new("Foo".to_string(), 'c');
+        let entry = QuickNavEntry::new("Foo".to_string(), 'c', 1);
         let json_string = serde_json::to_string(&entry).unwrap();
-        assert_eq!(json_string, r###"{"title":"Foo","key":"c"}"###);
+        assert_eq!(json_string, r###"{"title":"Foo","id":1,"key":"c"}"###);
     }
 
     #[test]
-    fn from_json() {
-        let json_string = r###"{"entries":[{"title":"Foo","key":"c"}]}"###;
-        let db = QuickNavDatabase::from_json(json_string)
-            .expect("Could not deserialize a QuickNavDatabase");
-        assert_eq!(db.entries.len(), 1);
-    }
-
-    #[test]
-    fn to_json() {
+    fn find_entry_by_id() {
         let mut db = QuickNavDatabase::new();
-        let entry = QuickNavEntry::new("Foo".to_string(), 'c');
-        db.add_entry(entry);
-        let json_string = db.to_json();
-        assert_eq!(
-            json_string,
-            r###"{"entries":[{"title":"Foo","key":"c"}]}"###
-        );
-    }
-
-    #[test]
-    fn save() {
-        let mut db = QuickNavDatabase::new();
-        let entry = QuickNavEntry::new("Foo".to_string(), 'c');
-        db.add_entry(entry);
-        db.to_file("test.json");
-        let json_string = std::fs::read_to_string("test.json").unwrap();
-        assert_eq!(
-            json_string,
-            r###"{"entries":[{"title":"Foo","key":"c"}]}"###
-        );
-        std::fs::remove_file("test.json").unwrap();
-    }
-
-    // generate a test for QuikNavDatabase::load
-    #[test]
-    fn loads_from_file() {
-        let mut db = QuickNavDatabase::new();
-        let entry = QuickNavEntry::new("Foo".to_string(), 'c');
-        db.add_entry(entry);
-        db.to_file("load_test.json");
-        db.clear();
-        db = QuickNavDatabase::from_file("load_test.json")
-            .expect("Failed to load a QuickNavDatabase from file");
-        assert_eq!(db.entries.len(), 1);
-        std::fs::remove_file("load_test.json").unwrap();
-    }
-
-    #[test]
-    fn loading_a_non_existent_file_returns_an_error() {
-        let qdb = QuickNavDatabase::from_file("null_load_test.json");
-        assert_eq!(qdb.is_err(), true);
-    }
-
-    #[test]
-    fn clear() {
-        let mut db = QuickNavDatabase::new();
-        let entry = QuickNavEntry::new("Foo".to_string(), 'c');
-        db.add_entry(entry);
-        db.clear();
-        assert_eq!(db.entries.len(), 0);
-    }
-
-    // generate a test for find_entry_by_title
-    #[test]
-    fn find_entry_by_title() {
-        let mut db = QuickNavDatabase::new();
-        let entry = QuickNavEntry::new("Foo".to_string(), 'c');
-        let entry2 = QuickNavEntry::new("Bar".to_string(), 'd');
+        let entry = QuickNavEntry::new("Foo".to_string(),'c', 1);
+        let entry2 = QuickNavEntry::new("Bar".to_string(),'d', 2);
         db.add_entry(entry);
         db.add_entry(entry2);
-        let result = db.find_entry_by_title("Foo");
-        assert_eq!(result.unwrap().key, 'c');
+        let result = db.find_entry_by_id(2);
+        assert_eq!(result.unwrap().key, 'd');
     }
 
     // test for upsert
     #[test]
     fn when_title_exists_upsert_changes_key() {
         let mut db = QuickNavDatabase::new();
-        let entry = QuickNavEntry::new("Foo".to_string(), 'c');
-        let entry2 = QuickNavEntry::new("Foo".to_string(), 'd');
+        let entry = QuickNavEntry::new("Foo".to_string(),'c', 1);
+        let entry2 = QuickNavEntry::new("Bar".to_string(),'d', 1);
         db.add_entry(entry);
         db.add_entry(entry2);
         assert_eq!(db.entries.len(), 1);
@@ -214,9 +129,25 @@ mod tests {
     #[test]
     fn when_title_does_not_exist_upsert_adds_entry() {
         let mut db = QuickNavDatabase::new();
-        let entry = QuickNavEntry::new("Foo".to_string(), 'c');
+        let entry = QuickNavEntry::new("Foo".to_string(),'c', 1);
         db.add_entry(entry);
         assert_eq!(db.entries.len(), 1);
         assert_eq!(db.entries[0].key, 'c');
+    }
+
+    // test for clean_up
+    #[test]
+    fn clean_up_removes_missing_entries() {
+        let mut db = QuickNavDatabase::new();
+        db.add_entry(QuickNavEntry::new("Foo".to_string(),'c', 1));
+        db.add_entry(QuickNavEntry::new("Bar".to_string(),'d', 2));
+        db.add_entry(QuickNavEntry::new("Baz".to_string(),'e', 3));
+        db.add_entry(QuickNavEntry::new("Bag".to_string(),'f', 4));
+
+        let entries = vec![("Foo".to_string(), 2), ("Bar".to_string(), 3), ("Bag".to_string(), 4)];
+        db.clean_up(entries);
+
+        assert_eq!(db.entries.len(), 1);
+        assert_eq!(db.entries[0].key, 'f');
     }
 }

@@ -1,9 +1,7 @@
-use std::error::Error;
-
 use crossterm::event::{KeyCode, KeyEvent};
 
 use crate::{
-    kitty_model::KittyModel, quicknav::QuickNavEntry,
+    error::KittyMuxError, kitty_model::KittyModel, quicknav::{QuickNavEntry, persistence::QuickNavPersistence},
     ui::enter_navigate_command::EnterNavigateCommand,
 };
 
@@ -16,14 +14,18 @@ impl SetQuickNavMode {
         event: &KeyEvent,
         mut model: AppModel,
         _kitty_model: &dyn KittyModel,
-    ) -> Result<Box<dyn Command>, Box<dyn Error>> {
+        quick_nav_persistence: &dyn QuickNavPersistence,
+    ) -> Result<Box<dyn Command>, KittyMuxError> {
         match event.code {
             KeyCode::Char(c) => {
                 if let Some(selected) = model.selected() {
-                    let title = selected.title.to_string();
+                    let title = selected.title.clone();
+                    let id = selected.id;
                     model
                         .quicknavs_mut()
-                        .add_entry(QuickNavEntry::new(title, c));
+                        .add_entry(QuickNavEntry::new(title, c, id));
+
+                    quick_nav_persistence.save(model.quicknavs())?;
                 }
             }
             _ => (),
@@ -38,7 +40,7 @@ mod tests {
 
     use crate::{
         kitty_model::{entry_type, window_list_entry::WindowListEntry, MockKittyModel},
-        quicknav::QuickNavDatabase,
+        quicknav::{persistence::MockQuickNavPersistence, QuickNavDatabase},
         ui::{mode, model::AppModel},
     };
 
@@ -87,6 +89,11 @@ mod tests {
 
     #[test]
     fn when_a_pressed_quicknav_set_under_tabid() {
+        let mut quicknav_persistence = MockQuickNavPersistence::default();
+        quicknav_persistence
+            .expect_save()
+            .times(1)
+            .returning(|_| Ok(()));
         let mock_window_list = MockKittyModel::new();
         let kitty_model = mock_window_list;
 
@@ -100,10 +107,10 @@ mod tests {
             KeyEventState::NONE,
         );
 
-        let mut command = SetQuickNavMode::handle_input(&event, model, &kitty_model)
+        let mut command = SetQuickNavMode::handle_input(&event, model, &kitty_model, &quicknav_persistence)
             .expect("handle_input failed");
         let result = command
-            .execute(&kitty_model)
+            .execute(&kitty_model, &quicknav_persistence)
             .expect("execute failed")
             .expect("did not contain a model");
 
@@ -111,7 +118,7 @@ mod tests {
         assert_eq!(
             result
                 .quicknavs()
-                .find_entry_by_title("1")
+                .find_entry_by_id(1)
                 .expect("quicknav entry not created")
                 .key,
             'a'

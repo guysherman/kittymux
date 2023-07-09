@@ -1,6 +1,6 @@
 use std::error::Error;
 
-use crate::kitty_model::KittyModel;
+use crate::{kitty_model::KittyModel, quicknav::persistence::QuickNavPersistence, error::KittyMuxError};
 
 use super::{command::Command, mode, model::AppModel};
 
@@ -19,7 +19,8 @@ impl Command for EnterQuickNavCommand {
     fn execute(
         &mut self,
         _kitty_model: &dyn KittyModel,
-    ) -> Result<Option<AppModel>, Box<dyn Error>> {
+        _quick_nav_persistence: &dyn QuickNavPersistence,
+    ) -> Result<Option<AppModel>, KittyMuxError> {
         let model = self.model.as_mut().unwrap();
         model.set_mode(mode::Mode::QuickNav);
         Ok(self.model.take())
@@ -30,7 +31,7 @@ impl Command for EnterQuickNavCommand {
 mod tests {
     use crate::{
         kitty_model::{entry_type, window_list_entry::WindowListEntry, MockKittyModel},
-        quicknav::QuickNavDatabase,
+        quicknav::{QuickNavDatabase, persistence::MockQuickNavPersistence},
         ui::{
             mode::{self, Mode::Navigate},
             model::AppModel,
@@ -82,14 +83,15 @@ mod tests {
 
     #[test]
     fn test_enter_quicknav_command() {
-        let kitty_model = MockKittyModel::new();
+        let kitty_model = MockKittyModel::default();
+        let qnp = MockQuickNavPersistence::default();
 
         let mut model = AppModel::new(basic_windows(), QuickNavDatabase::new(), Navigate);
         model.select(Some(1));
 
         let mut command = super::EnterQuickNavCommand::new(model);
         let result = command
-            .execute(&kitty_model)
+            .execute(&kitty_model, &qnp)
             .expect("Command should succeed")
             .expect("Command should return a model");
         assert_eq!(result.mode(), mode::Mode::QuickNav);

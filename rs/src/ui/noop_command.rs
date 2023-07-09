@@ -1,23 +1,25 @@
 use std::error::Error;
 
-use crate::kitty_model::KittyModel;
+use crate::{kitty_model::KittyModel, quicknav::persistence::QuickNavPersistence, error::KittyMuxError};
 
-use super::{model::AppModel, command::Command};
+use super::{command::Command, model::AppModel};
 
 pub struct NoopCommand {
-    model: Option<AppModel>
+    model: Option<AppModel>,
 }
 
 impl NoopCommand {
     pub fn new(model: AppModel) -> NoopCommand {
-        NoopCommand {
-            model: Some(model)
-        }
+        NoopCommand { model: Some(model) }
     }
 }
 
 impl Command for NoopCommand {
-    fn execute(&mut self, _kitty_model: &dyn KittyModel) -> Result<Option<AppModel>, Box<dyn Error>> {
+    fn execute(
+        &mut self,
+        _kitty_model: &dyn KittyModel,
+        _quick_nav_persistence: &dyn QuickNavPersistence,
+    ) -> Result<Option<AppModel>, KittyMuxError> {
         Ok(self.model.take())
     }
 }

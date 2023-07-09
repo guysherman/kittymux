@@ -1,4 +1,6 @@
-use crate::kitty_model::KittyModel;
+use crate::{
+    error::KittyMuxError, kitty_model::KittyModel, quicknav::persistence::QuickNavPersistence,
+};
 
 use super::{command::Command, mode::Mode::Rename, model::AppModel};
 
@@ -16,7 +18,8 @@ impl Command for EnterRenameCommand {
     fn execute(
         &mut self,
         _kitty_model: &dyn KittyModel,
-    ) -> Result<Option<super::model::AppModel>, Box<dyn std::error::Error>> {
+        _quick_nav_persistence: &dyn QuickNavPersistence,
+    ) -> Result<Option<super::model::AppModel>, KittyMuxError> {
         let model = self.model.as_mut().expect("Command did not have a model");
         model.set_mode(Rename);
         let selected_text = model
@@ -30,7 +33,11 @@ impl Command for EnterRenameCommand {
 
 #[cfg(test)]
 mod tests {
-    use crate::{kitty_model::{entry_type, window_list_entry::WindowListEntry, MockKittyModel}, ui::{model, mode, enter_rename_command::EnterRenameCommand}, quicknav::QuickNavDatabase};
+    use crate::{
+        kitty_model::{entry_type, window_list_entry::WindowListEntry, MockKittyModel},
+        quicknav::{persistence::MockQuickNavPersistence, QuickNavDatabase},
+        ui::{enter_rename_command::EnterRenameCommand, mode, model},
+    };
 
     use super::Command;
 
@@ -77,11 +84,19 @@ mod tests {
 
     #[test]
     fn returns_a_model_with_rename_mode() {
-        let initial_model = model::AppModel::new(basic_windows(), QuickNavDatabase::new(), mode::Mode::Navigate);
+        let initial_model = model::AppModel::new(
+            basic_windows(),
+            QuickNavDatabase::new(),
+            mode::Mode::Navigate,
+        );
         let mock_window_list = MockKittyModel::new();
+        let qnp = MockQuickNavPersistence::default();
 
         let mut cmd = EnterRenameCommand::new(initial_model);
-        let result = cmd.execute(&mock_window_list).unwrap().expect("Result had no AppModel");
+        let result = cmd
+            .execute(&mock_window_list, &qnp)
+            .unwrap()
+            .expect("Result had no AppModel");
 
         assert_eq!(result.mode(), mode::Mode::Rename);
     }

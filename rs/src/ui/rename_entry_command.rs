@@ -1,4 +1,8 @@
-use crate::{kitty_model::KittyModel, quicknav::QuickNavDatabase};
+use crate::{
+    error::KittyMuxError,
+    kitty_model::{window_list_entry::WindowListEntry, KittyModel},
+    quicknav::{persistence::QuickNavPersistence, QuickNavDatabase},
+};
 
 use super::{command::Command, model::AppModel};
 
@@ -16,19 +20,24 @@ impl Command for RenameEntryCommand {
     fn execute(
         &mut self,
         kitty_model: &dyn KittyModel,
-    ) -> Result<Option<super::model::AppModel>, Box<dyn std::error::Error>> {
-        self.model.as_ref().map(|m| {
-            m.selected().as_ref().map(|s| {
-                kitty_model.rename_entry(s, &m.text_input.as_ref());
-            });
-        });
+        quick_nav_persistence: &dyn QuickNavPersistence,
+    ) -> Result<Option<super::model::AppModel>, KittyMuxError> {
+        let mut quicknavs = quick_nav_persistence.load()?;
+
+        if let Some(model) = self.model.as_ref() {
+            if let Some(selected) = model.selected() {
+                kitty_model.rename_entry(selected, model.text_input.as_str());
+                quicknavs.rename_entry(selected.id, model.text_input.to_owned());
+                quick_nav_persistence.save(&quicknavs)?;
+            }
+        }
 
         let selected_index: Option<usize> =
             self.model.as_ref().map_or(None, |m| m.selected_index());
         Ok(Some(
             AppModel::new(
                 kitty_model.load()?,
-                QuickNavDatabase::load(),
+                quick_nav_persistence.load()?,
                 super::mode::Mode::Navigate,
             )
             .with_selected(selected_index),

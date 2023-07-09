@@ -1,8 +1,9 @@
-use std::error::Error;
-
 use crossterm::event::{KeyCode, KeyEvent};
 
-use crate::kitty_model::KittyModel;
+use crate::{
+    error::KittyMuxError,
+    kitty_model::{entry_type::EntryType, KittyModel}, quicknav::persistence::QuickNavPersistence,
+};
 
 use super::{
     command::Command, enter_navigate_command::EnterNavigateCommand, model::AppModel,
@@ -16,31 +17,41 @@ impl QuickNavMode {
         event: &KeyEvent,
         model: AppModel,
         kitty_model: &dyn KittyModel,
-    ) -> Result<Box<dyn Command>, Box<dyn Error>> {
+        _quick_nav_persistence: &dyn QuickNavPersistence,
+    ) -> Result<Box<dyn Command>, KittyMuxError> {
         match event.code {
-            KeyCode::Char(c) => {
-                if let Some(selected) = model.selected() {
-                    let candidate_titles = model
+            KeyCode::Char(c) => match c {
+                '0'..='9' | 'a'..='z' => {
+                    let candidate_ids = model
                         .quicknavs()
                         .find_entries_by_key(c)
                         .iter()
-                        .map(|e| e.title.clone())
-                        .collect::<Vec<String>>();
+                        .map(|e| e.id)
+                        .collect::<Vec<u32>>();
+
+                    println!("candidate_ids: {:?}", candidate_ids);
 
                     let window = model.items().iter().find(|w| {
-                        w.tab_id == selected.tab_id && candidate_titles.contains(&w.title)
+                        candidate_ids.contains(&w.id)
+                            && w.tab_is_focused
+                            && w.entry_type == EntryType::Window
                     });
+
+                    println!("window: {:?}", window);
 
                     if let Some(window) = window {
                         kitty_model.focus_entry(window);
-                        return Ok(Box::new(QuitCommand::new(model)));
+                        println!("focus window: {}", window.id);
+                        Ok(Box::new(QuitCommand::new(model)))
+                    } else {
+                        println!("no window found");
+                        Ok(Box::new(NoopCommand::new(model)))
                     }
                 }
-
-                return Ok(Box::new(NoopCommand::new(model)));
-            }
+                _ => Ok(Box::new(NoopCommand::new(model))),
+            },
             KeyCode::Esc => Ok(Box::new(EnterNavigateCommand::new(model))),
-            _ => Ok(Box::new(EnterNavigateCommand::new(model))),
+            _ => Ok(Box::new(NoopCommand::new(model))),
         }
     }
 }
@@ -51,12 +62,8 @@ mod tests {
 
     use crate::{
         kitty_model::{entry_type::EntryType, window_list_entry::WindowListEntry, MockKittyModel},
-        quicknav::{QuickNavDatabase, QuickNavEntry},
-        ui::{
-            mode::Mode::Navigate,
-            model::AppModel,
-            navigatemode::NavigateMode, quicknavmode::QuickNavMode,
-        },
+        quicknav::{persistence::MockQuickNavPersistence, QuickNavDatabase, QuickNavEntry},
+        ui::{mode::Mode::QuickNav, model::AppModel, quicknavmode::QuickNavMode},
     };
 
     fn basic_windows() -> Vec<WindowListEntry> {
@@ -150,21 +157,26 @@ mod tests {
 
     fn qndb() -> QuickNavDatabase {
         let mut db = QuickNavDatabase::new();
-        db.add_entry(QuickNavEntry::new("2".to_string(), 'a'));
+        db.add_entry(QuickNavEntry::new("1".to_string(), 'a', 1));
+        db.add_entry(QuickNavEntry::new("2".to_string(), 'a', 2));
         db
     }
 
     #[test]
-    fn when_a_pressed_then_2_entered() {
-        let mut mock_window_list = MockKittyModel::new();
-        mock_window_list
+    fn when_a_pressed_then_1_entered() {
+        let mut mock_quicknav_persistence = MockQuickNavPersistence::default();
+        mock_quicknav_persistence
+            .expect_save()
+            .times(1)
+            .returning(|_| Ok(()));
+        let mut kitty_model = MockKittyModel::default();
+        kitty_model
             .expect_focus_entry()
-            .withf(|e| e.id == 2)
+            .withf(|e| e.id == 1 && e.entry_type == EntryType::Window)
             .times(1)
             .returning(|_| ());
-        let kitty_model = mock_window_list;
 
-        let mut model = AppModel::new(basic_windows(), qndb(), Navigate);
+        let mut model = AppModel::new(basic_windows(), qndb(), QuickNav);
         model.state().select(Some(4));
 
         let event = KeyEvent::new_with_kind_and_state(
@@ -174,9 +186,9 @@ mod tests {
             KeyEventState::NONE,
         );
 
-        let mut cmd = QuickNavMode::handle_input(&event, model, &kitty_model).unwrap();
+        let mut cmd = QuickNavMode::handle_input(&event, model, &kitty_model, &mock_quicknav_persistence).unwrap();
         let result = cmd
-            .execute(&kitty_model)
+            .execute(&kitty_model, &mock_quicknav_persistence)
             .unwrap()
             .expect("Command had no AppModel");
 

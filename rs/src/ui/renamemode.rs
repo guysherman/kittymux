@@ -1,8 +1,6 @@
-use std::error::Error;
-
 use crossterm::event::{KeyCode, KeyEvent};
 
-use crate::kitty_model::KittyModel;
+use crate::{error::KittyMuxError, kitty_model::KittyModel, quicknav::persistence::QuickNavPersistence};
 
 use super::{
     command::Command, enter_navigate_command::EnterNavigateCommand, model::AppModel,
@@ -16,7 +14,8 @@ impl RenameMode {
         event: &KeyEvent,
         mut model: AppModel,
         _kitty_model: &dyn KittyModel,
-    ) -> Result<Box<dyn Command>, Box<dyn Error>> {
+        _quick_nav_persistence: &dyn QuickNavPersistence,
+    ) -> Result<Box<dyn Command>, KittyMuxError> {
         match event.code {
             KeyCode::Esc => Ok(Box::new(EnterNavigateCommand::new(model))),
             KeyCode::Enter => Ok(Box::new(RenameEntryCommand::new(model))),
@@ -39,8 +38,8 @@ mod tests {
 
     use crate::{
         kitty_model::{entry_type, window_list_entry::WindowListEntry, MockKittyModel},
-        quicknav::QuickNavDatabase,
-        ui::{mode, model::AppModel},
+        quicknav::{persistence::MockQuickNavPersistence, QuickNavDatabase, QuickNavEntry},
+        ui::{mode, model::AppModel, rename_entry_command::RenameEntryCommand},
     };
 
     use super::RenameMode;
@@ -88,6 +87,7 @@ mod tests {
 
     #[test]
     fn when_1_selected_and_a_pressed_text_input_appends_a() {
+        let mock_quicknav_persistence = MockQuickNavPersistence::new();
         let mock_window_list = MockKittyModel::new();
         let kitty_model = mock_window_list;
 
@@ -101,14 +101,22 @@ mod tests {
             crossterm::event::KeyEventKind::Press,
             KeyEventState::NONE,
         );
-        let mut cmd = RenameMode::handle_input(&event, model, &kitty_model)
+        let mut cmd = RenameMode::handle_input(&event, model, &kitty_model, &mock_quicknav_persistence)
             .expect("Handle input had an error");
         let result = cmd
-            .execute(&kitty_model)
+            .execute(&kitty_model, &mock_quicknav_persistence)
             .unwrap()
             .expect("NoopCommand did not contain a model");
 
         assert_eq!(result.text_input, "1a".to_string());
+    }
+
+    fn original_quicknavs() -> QuickNavDatabase {
+            QuickNavDatabase::from_entries(vec![QuickNavEntry::new("1".to_string(), 'c', 1)])
+    }
+
+    fn updated_quicknavs() -> QuickNavDatabase {
+            QuickNavDatabase::from_entries(vec![QuickNavEntry::new("new name".to_string(), 'c', 1)])
     }
 
     #[test]
@@ -120,15 +128,31 @@ mod tests {
             .returning(|| Ok(vec![]));
         mock_window_list
             .expect_rename_entry()
-            .withf(|_entry: &WindowListEntry, new_name: &str| new_name == "new-name")
+            .withf(|_entry: &WindowListEntry, new_name: &str| new_name == "new name")
             .times(1)
             .returning(|_, _| ());
 
         let kitty_model = mock_window_list;
 
+        let mut quicknav_persistence = MockQuickNavPersistence::default();
+        quicknav_persistence
+            .expect_load()
+            .times(1)
+            .returning(|| Ok(original_quicknavs()));
+
+        quicknav_persistence
+            .expect_load()
+            .times(1)
+            .returning(|| Ok(updated_quicknavs()));
+
+        quicknav_persistence
+            .expect_save()
+            .times(1)
+            .returning(|_| Ok(()));
+
         let mut model = AppModel::new(basic_windows(), QuickNavDatabase::new(), mode::Mode::Rename)
-            .with_text_input("new-name".to_string());
-        model.state().select(Some(1));
+            .with_text_input("new name".to_string());
+        model.state().select(Some(0));
 
         let event = KeyEvent::new_with_kind_and_state(
             KeyCode::Enter,
@@ -136,10 +160,11 @@ mod tests {
             crossterm::event::KeyEventKind::Press,
             KeyEventState::NONE,
         );
-        let mut cmd = RenameMode::handle_input(&event, model, &kitty_model)
+        let mut cmd = RenameMode::handle_input(&event, model, &kitty_model, &quicknav_persistence)
             .expect("Handle input had an error");
+
         let result = cmd
-            .execute(&kitty_model)
+            .execute(&kitty_model, &quicknav_persistence)
             .unwrap()
             .expect("NoopCommand did not contain a model");
 
@@ -148,6 +173,7 @@ mod tests {
 
     #[test]
     fn when_esc_pressed_enters_navigate_mode() {
+        let mut quicknav_persistence = MockQuickNavPersistence::default();
         let mock_window_list = MockKittyModel::new();
         let kitty_model = mock_window_list;
 
@@ -161,10 +187,10 @@ mod tests {
             crossterm::event::KeyEventKind::Press,
             KeyEventState::NONE,
         );
-        let mut cmd = RenameMode::handle_input(&event, model, &kitty_model)
+        let mut cmd = RenameMode::handle_input(&event, model, &kitty_model, &quicknav_persistence)
             .expect("Handle input had an error");
         let result = cmd
-            .execute(&kitty_model)
+            .execute(&kitty_model, &quicknav_persistence)
             .unwrap()
             .expect("EnterNavigateCommand did not contain a model");
 

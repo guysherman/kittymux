@@ -1,15 +1,13 @@
 pub mod entry_type;
 pub mod window_list_entry;
 
-use std::error::Error;
-
 use json::JsonValue;
 use mockall::automock;
 
 use self::{
     entry_type::EntryType::{Tab, Window},
     window_list_entry::WindowListEntry };
-use crate::kitty_connector::KittyConnector;
+use crate::{kitty_connector::KittyConnector, error::KittyMuxError};
 
 pub struct BaseKittyModel<'a> {
     connector: KittyConnector<'a>,
@@ -17,7 +15,7 @@ pub struct BaseKittyModel<'a> {
 
 #[automock]
 pub trait KittyModel {
-    fn load(&self) -> Result<Vec<WindowListEntry>, Box<dyn Error>>;
+    fn load(&self) -> Result<Vec<WindowListEntry>, KittyMuxError>;
     fn focus_entry(&self, entry: &WindowListEntry);
     fn close_entry(&self, entry: &WindowListEntry);
     fn rename_entry(&self, entry: &WindowListEntry, new_name: &str);
@@ -30,7 +28,7 @@ impl BaseKittyModel<'_> {
 }
 
 impl KittyModel for BaseKittyModel<'_> {
-    fn load(&self) -> Result<Vec<WindowListEntry>, Box<dyn Error>> {
+    fn load(&self) -> Result<Vec<WindowListEntry>, KittyMuxError> {
         let ls_text = self.connector.ls();
         let ls_response = json::parse(&ls_text)?;
         let num_entries = count_entries(&ls_response);

@@ -13,13 +13,16 @@ pub struct AppModel {
 }
 
 impl AppModel {
-    pub fn new(items: Vec<WindowListEntry>, quicknavs: QuickNavDatabase, mode: Mode) -> AppModel {
+    pub fn new(items: Vec<WindowListEntry>, mut quicknavs: QuickNavDatabase, mode: Mode) -> AppModel {
         let selected: Option<usize>;
         if items.len() > 0 {
             selected = Some(0);
         } else {
             selected = None;
         }
+
+        let entries = items.iter().map(|e| (e.title.clone(), e.id)).collect::<Vec<(String, u32)>>();
+        quicknavs.clean_up(entries);
 
         let mut state = ListState::default();
         state.select(selected);
@@ -133,7 +136,7 @@ impl AppModel {
 
 #[cfg(test)]
 mod tests {
-    use crate::kitty_model::entry_type;
+    use crate::{kitty_model::entry_type, quicknav::QuickNavEntry};
 
     use super::*;
 
@@ -432,5 +435,17 @@ mod tests {
         };
 
         assert_eq!(*app_model.selected().unwrap(), expected);
+    }
+
+    #[test]
+    fn cleans_up_quicknavs() {
+        let mut quicknavs = QuickNavDatabase::new();
+        quicknavs.add_entry(QuickNavEntry::new("Fake".to_string(), 'z', 7));
+        let mut app_model = AppModel::new(windows_and_tabs(), quicknavs, Mode::Navigate);
+        app_model.list_state.select(Some(3));
+        app_model.select_prev_tab();
+
+        let cleaned_entry = app_model.quicknavs().find_entry_by_id(7);
+        assert!(cleaned_entry.is_none());
     }
 }
