@@ -43,7 +43,6 @@ fn main() -> Result<(), KittyMuxError> {
                 .map(|w| w.title.clone())
                 .ok_or(error::InvalidWindowIdError { window_id })?;
             let mut quicknavs = qnp.load()?;
-            println!("Saving quicknavs: {:?}", quicknavs);
             quicknavs.add_entry(quicknav::QuickNavEntry {
                 key,
                 id: window_id,

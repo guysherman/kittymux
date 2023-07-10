@@ -44,10 +44,6 @@ impl QuickNavDatabase {
         QuickNavDatabase::new()
     }
 
-    //pub fn save(&self) {
-        //println!("Dummy save");
-    //}
-
     pub fn find_entries_by_key(&self, key: char) -> Vec<&QuickNavEntry> {
         self.entries
             .iter()

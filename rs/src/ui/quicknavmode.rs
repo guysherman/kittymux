@@ -29,22 +29,16 @@ impl QuickNavMode {
                         .map(|e| e.id)
                         .collect::<Vec<u32>>();
 
-                    println!("candidate_ids: {:?}", candidate_ids);
-
                     let window = model.items().iter().find(|w| {
                         candidate_ids.contains(&w.id)
                             && w.tab_is_focused
                             && w.entry_type == EntryType::Window
                     });
 
-                    println!("window: {:?}", window);
-
                     if let Some(window) = window {
                         kitty_model.focus_entry(window);
-                        println!("focus window: {}", window.id);
                         Ok(Box::new(QuitCommand::new(model)))
                     } else {
-                        println!("no window found");
                         Ok(Box::new(NoopCommand::new(model)))
                     }
                 }
