@@ -11,7 +11,7 @@ use tui::{
 };
 use unicode_width::UnicodeWidthStr;
 
-use crate::kitty_model::window_list_entry::WindowListEntry;
+use crate::kitty_model::{window_list_entry::WindowListEntry, entry_type::EntryType};
 
 use super::{
     mode::Mode::{Navigate, QuickNav, Rename, SetQuickNav},
@@ -30,7 +30,7 @@ pub fn render<'b>(
                     .quicknavs()
                     .find_entry_by_id(x.id)
                     .map_or(" ".to_string(), |x| x.key.to_owned().to_string());
-                let gutter = Span::styled(gutter_text(&key, model.mode()), gutter_style(model.mode()));
+                let gutter = Span::styled(gutter_text(x, &key, model.mode()), gutter_style(model.mode()));
                 let text = Span::styled(x.text.clone(), default_style());
                 
                 ListItem::new(Text::from(Spans::from(vec![gutter, text])))
@@ -43,11 +43,7 @@ pub fn render<'b>(
                     .borders(Borders::ALL)
                     .border_type(tui::widgets::BorderType::Rounded),
             )
-            .highlight_style(
-                Style::default()
-                    .bg(Color::Blue)
-                    .add_modifier(Modifier::BOLD),
-            );
+            .highlight_style(selected_style());
 
         let panes = Layout::default()
             .direction(Direction::Vertical)
@@ -114,11 +110,15 @@ fn quicknav_style() -> Style {
     Style::default().bg(Color::Green).fg(Color::Black)
 }
 
-fn gutter_text(key: &String, mode: super::mode::Mode) -> String {
-    match mode {
-        Navigate => "   ".to_string(),
-        Rename => "   ".to_string(), 
-        SetQuickNav => format!(" {} ", key),
-        QuickNav => format!(" {} ", key),
+fn gutter_text(window_list_entry: &WindowListEntry, key: &String, mode: super::mode::Mode) -> String {
+    if window_list_entry.entry_type == EntryType::Window {
+        match mode {
+            Navigate => "   ".to_string(),
+            Rename => "   ".to_string(), 
+            SetQuickNav => format!(" {} ", key),
+            QuickNav => format!(" {} ", key),
+        }
+    } else {
+        "   ".to_string()
     }
 }

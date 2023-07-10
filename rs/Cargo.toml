@@ -12,6 +12,7 @@ A terminal navigator for the kitty terminal
 
 [dependencies]
 assert = "0.7.4"
+clap = { version = "4.3.11", features = ["derive"] }
 crossterm = "0.25.0"
 derive_more = { version = "0.99.17", features = ["display"] }
 json = "0.12.4"
