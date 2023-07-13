@@ -171,7 +171,7 @@ mod tests {
 
     #[test]
     fn given_0_selected_when_j_pressed_1_selected() {
-        let mut quicknav_persistence = MockQuickNavPersistence::default();
+        let quicknav_persistence = MockQuickNavPersistence::default();
         let kitty_model = MockKittyModel::new();
         let mut model = AppModel::new(basic_windows(), QuickNavDatabase::new(), Navigate);
         let event = KeyEvent::new_with_kind_and_state(
@@ -204,7 +204,7 @@ mod tests {
 
     #[test]
     fn given_0_selected_when_shift_j_pressed_1_selected() {
-        let mut quicknav_persistence = MockQuickNavPersistence::default();
+        let quicknav_persistence = MockQuickNavPersistence::default();
         let kitty_model = MockKittyModel::new();
         let mut model = AppModel::new(basic_windows(), QuickNavDatabase::new(), Navigate);
         let event = KeyEvent::new_with_kind_and_state(
@@ -233,7 +233,7 @@ mod tests {
 
     #[test]
     fn given_1_selected_when_shift_j_pressed_3_selected() {
-        let mut quicknav_persistence = MockQuickNavPersistence::default();
+        let quicknav_persistence = MockQuickNavPersistence::default();
         let kitty_model = MockKittyModel::new();
         let mut model = AppModel::new(basic_windows(), QuickNavDatabase::new(), Navigate);
         model.state().select(Some(1));
@@ -264,7 +264,7 @@ mod tests {
 
     #[test]
     fn given_3_selected_when_shift_k_pressed_1_selected() {
-        let mut quicknav_persistence = MockQuickNavPersistence::default();
+        let quicknav_persistence = MockQuickNavPersistence::default();
         let kitty_model = MockKittyModel::new();
 
         let mut model = AppModel::new(basic_windows(), QuickNavDatabase::new(), Navigate);
@@ -296,7 +296,7 @@ mod tests {
 
     #[test]
     fn given_1_selected_when_x_pressed_then_close_entry_called() {
-        let mut quicknav_persistence = MockQuickNavPersistence::default();
+        let quicknav_persistence = MockQuickNavPersistence::default();
         let mut mock_window_list = MockKittyModel::new();
         mock_window_list
             .expect_close_entry()
@@ -323,7 +323,7 @@ mod tests {
 
     #[test]
     fn given_1_selected_when_a_pressed_then_rename_entry_mode_entered() {
-        let mut quicknav_persistence = MockQuickNavPersistence::default();
+        let quicknav_persistence = MockQuickNavPersistence::default();
         let mock_window_list = MockKittyModel::new();
 
         let kitty_model = mock_window_list;
@@ -348,7 +348,7 @@ mod tests {
 
     #[test]
     fn given_1_selected_when_m_pressed_then_setquicknav_mode_entered() {
-        let mut quicknav_persistence = MockQuickNavPersistence::default();
+        let quicknav_persistence = MockQuickNavPersistence::default();
         let mock_window_list = MockKittyModel::new();
 
         let kitty_model = mock_window_list;
@@ -373,7 +373,7 @@ mod tests {
 
     #[test]
     fn given_1_selected_when_apostraphe_pressed_then_quicknav_mode_entered() {
-        let mut quicknav_persistence = MockQuickNavPersistence::default();
+        let quicknav_persistence = MockQuickNavPersistence::default();
         let mock_window_list = MockKittyModel::new();
 
         let kitty_model = mock_window_list;

@@ -1,5 +1,3 @@
-use std::error::Error;
-
 use crate::{kitty_model::KittyModel, quicknav::persistence::QuickNavPersistence, error::KittyMuxError};
 
 use super::model::AppModel;

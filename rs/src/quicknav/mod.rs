@@ -27,6 +27,7 @@ impl QuickNavDatabase {
         }
     }
     
+    #[cfg(test)]
     pub fn from_entries(entries: Vec<QuickNavEntry>) -> QuickNavDatabase {
         QuickNavDatabase { entries }
     }
@@ -37,11 +38,6 @@ impl QuickNavDatabase {
         } else {
             self.entries.push(entry);
         }
-        //self.save();
-    }
-
-    pub fn load() -> QuickNavDatabase {
-        QuickNavDatabase::new()
     }
 
     pub fn find_entries_by_key(&self, key: char) -> Vec<&QuickNavEntry> {

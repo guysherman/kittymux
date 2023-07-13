@@ -112,6 +112,7 @@ impl AppModel {
         self
     }
 
+    #[cfg(test)]
     pub fn with_text_input(mut self, text_input: String) -> AppModel {
         self.text_input = text_input;
         self

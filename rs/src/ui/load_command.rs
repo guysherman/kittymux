@@ -1,6 +1,4 @@
-use std::error::Error;
-
-use crate::{kitty_model::KittyModel, quicknav::{QuickNavDatabase, persistence::QuickNavPersistence}, error::KittyMuxError};
+use crate::{kitty_model::KittyModel, quicknav::persistence::QuickNavPersistence, error::KittyMuxError};
 
 use super::{command::Command, model::AppModel};
 
@@ -11,11 +9,6 @@ pub struct LoadCommand {
 impl<'a> LoadCommand {
     pub fn new() -> LoadCommand {
         LoadCommand { selected: None }
-    }
-
-    pub fn with_selected(mut self, selected: Option<usize>) -> LoadCommand {
-        self.selected = selected;
-        self
     }
 }
 

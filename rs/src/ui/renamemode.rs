@@ -39,7 +39,7 @@ mod tests {
     use crate::{
         kitty_model::{entry_type, window_list_entry::WindowListEntry, MockKittyModel},
         quicknav::{persistence::MockQuickNavPersistence, QuickNavDatabase, QuickNavEntry},
-        ui::{mode, model::AppModel, rename_entry_command::RenameEntryCommand},
+        ui::{mode, model::AppModel},
     };
 
     use super::RenameMode;
@@ -173,7 +173,7 @@ mod tests {
 
     #[test]
     fn when_esc_pressed_enters_navigate_mode() {
-        let mut quicknav_persistence = MockQuickNavPersistence::default();
+        let quicknav_persistence = MockQuickNavPersistence::default();
         let mock_window_list = MockKittyModel::new();
         let kitty_model = mock_window_list;
 

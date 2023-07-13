@@ -1,7 +1,7 @@
 use crate::{
     error::KittyMuxError,
-    kitty_model::{window_list_entry::WindowListEntry, KittyModel},
-    quicknav::{persistence::QuickNavPersistence, QuickNavDatabase},
+    kitty_model::KittyModel,
+    quicknav::persistence::QuickNavPersistence,
 };
 
 use super::{command::Command, model::AppModel};
