@@ -64,12 +64,8 @@ pub fn run(
                 let cmds = match app_model.mode() {
                     Navigate => NavigateMode::handle_input(&key)?,
                     Rename => RenameMode::handle_input(&key)?,
-                    SetQuickNav => {
-                        SetQuickNavMode::handle_input(&key)?
-                    }
-                    QuickNav => {
-                        QuickNavMode::handle_input(&key)?
-                    }
+                    SetQuickNav => SetQuickNavMode::handle_input(&key)?,
+                    QuickNav => QuickNavMode::handle_input(&key)?,
                 };
 
                 let mut it = cmds.iter();
