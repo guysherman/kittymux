@@ -1,10 +1,10 @@
 use crate::{
     error::KittyMuxError,
     kitty_model::{entry_type::EntryType::Window, KittyModel},
-    quicknav::persistence::QuickNavPersistence,
+    quicknav::persistence::QuickNavPersistence, ui::{model::AppModel, mode::Mode::SetQuickNav},
 };
 
-use super::{command::Command, mode::Mode::SetQuickNav, model::AppModel};
+use super::Command;
 
 pub struct EnterSetQuickNavCommand {}
 

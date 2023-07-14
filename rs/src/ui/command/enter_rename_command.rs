@@ -1,11 +1,13 @@
 use crate::{
-    error::KittyMuxError, kitty_model::KittyModel, quicknav::persistence::QuickNavPersistence,
+    error::KittyMuxError,
+    kitty_model::KittyModel,
+    quicknav::persistence::QuickNavPersistence,
+    ui::{mode::Mode::Rename, model::AppModel},
 };
 
-use super::{command::Command, mode::Mode::Rename, model::AppModel};
+use super::Command;
 
-pub struct EnterRenameCommand {
-}
+pub struct EnterRenameCommand {}
 
 impl EnterRenameCommand {
     pub fn new() -> Self {
@@ -19,7 +21,7 @@ impl Command for EnterRenameCommand {
         _kitty_model: &dyn KittyModel,
         _quick_nav_persistence: &dyn QuickNavPersistence,
         mut model: AppModel,
-    ) -> Result<super::model::AppModel, KittyMuxError> {
+    ) -> Result<AppModel, KittyMuxError> {
         model.set_mode(Rename);
         let selected_text = model
             .selected()
@@ -32,10 +34,11 @@ impl Command for EnterRenameCommand {
 
 #[cfg(test)]
 mod tests {
+    use super::EnterRenameCommand;
     use crate::{
         kitty_model::{entry_type, window_list_entry::WindowListEntry, MockKittyModel},
         quicknav::{persistence::MockQuickNavPersistence, QuickNavDatabase},
-        ui::{enter_rename_command::EnterRenameCommand, mode, model},
+        ui::{mode, model},
     };
 
     use super::Command;

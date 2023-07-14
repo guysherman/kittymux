@@ -1,7 +1,11 @@
-use crate::{kitty_model::KittyModel, quicknav::persistence::QuickNavPersistence, error::KittyMuxError};
-use super::{command::Command, mode::Mode::Navigate, model::AppModel};
+use crate::{
+    error::KittyMuxError, kitty_model::KittyModel, quicknav::persistence::QuickNavPersistence,
+    ui::mode::Mode::Navigate, ui::model::AppModel,
+};
 
-pub struct EnterNavigateCommand { }
+use super::Command;
+
+pub struct EnterNavigateCommand {}
 
 impl EnterNavigateCommand {
     pub fn new() -> Self {
@@ -15,9 +19,8 @@ impl Command for EnterNavigateCommand {
         _kitty_model: &dyn KittyModel,
         _quick_nav_persistence: &dyn QuickNavPersistence,
         mut model: AppModel,
-    ) -> Result<super::model::AppModel, KittyMuxError> {
+    ) -> Result<AppModel, KittyMuxError> {
         model.set_mode(Navigate);
         Ok(model)
     }
 }
-

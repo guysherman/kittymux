@@ -1,6 +1,6 @@
-use crate::{kitty_model::KittyModel, quicknav::persistence::QuickNavPersistence, error::KittyMuxError};
+use crate::{kitty_model::KittyModel, quicknav::persistence::QuickNavPersistence, error::KittyMuxError, ui::{model::AppModel, mode}};
 
-use super::{command::Command, mode, model::AppModel};
+use super::Command;
 
 // has an optional AppModel model
 pub struct EnterQuickNavCommand { }

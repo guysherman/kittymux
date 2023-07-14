@@ -1,6 +1,6 @@
-use crate::{error::KittyMuxError, quicknav::persistence::QuickNavPersistence, kitty_model::KittyModel};
+use crate::{error::KittyMuxError, quicknav::persistence::QuickNavPersistence, kitty_model::KittyModel, ui::model::AppModel};
 
-use super::{model::AppModel, command::Command};
+use super::Command;
 
 pub struct SelectNextCommand {
 }

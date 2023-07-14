@@ -2,16 +2,14 @@ use crossterm::event::{KeyCode, KeyEvent};
 
 use crate::error::KittyMuxError;
 
-use super::{
-    command::Command, enter_navigate_command::EnterNavigateCommand, quicknav_command::QuickNavCommand,
+use super::command::{
+    enter_navigate_command::EnterNavigateCommand, quicknav_command::QuickNavCommand, Command,
 };
 
 pub struct QuickNavMode {}
 
 impl QuickNavMode {
-    pub fn handle_input(
-        event: &KeyEvent,
-    ) -> Result<Vec<Box<dyn Command>>, KittyMuxError> {
+    pub fn handle_input(event: &KeyEvent) -> Result<Vec<Box<dyn Command>>, KittyMuxError> {
         match event.code {
             KeyCode::Char(c) => match c {
                 '0'..='9' | 'a'..='z' => Ok(vec![Box::new(QuickNavCommand::new(c))]),
@@ -149,12 +147,12 @@ mod tests {
             KeyEventState::NONE,
         );
 
-        let cmds =
-            QuickNavMode::handle_input(&event)
-                .unwrap();
+        let cmds = QuickNavMode::handle_input(&event).unwrap();
         let mut it = cmds.iter();
         while let Some(cmd) = it.next() {
-            model = cmd.execute(&kitty_model, &mock_quicknav_persistence, model).expect("command failed");
+            model = cmd
+                .execute(&kitty_model, &mock_quicknav_persistence, model)
+                .expect("command failed");
         }
 
         assert_eq!(model.should_quit(), true);

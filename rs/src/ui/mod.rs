@@ -1,27 +1,11 @@
-mod close_entry_command;
 mod command;
-mod enter_navigate_command;
-mod enter_quicknav_command;
-mod enter_rename_command;
-mod enter_setquicknav_command;
-mod load_command;
 mod mode;
 mod model;
-mod navigatemode;
-mod quicknav_command;
-mod quicknavmode;
-mod quit_command;
-mod rename_entry_command;
-mod renamemode;
 mod renderer;
-mod select_entry_command;
-mod select_next_command;
-mod select_next_tab_command;
-mod select_prev_command;
-mod select_prev_tab_command;
-mod set_quicknav_command;
+mod navigatemode;
+mod renamemode;
 mod setquicknavmode;
-mod text_command;
+mod quicknavmode;
 
 use crossterm::{
     event::{self, DisableMouseCapture, EnableMouseCapture, Event},

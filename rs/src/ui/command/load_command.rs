@@ -1,6 +1,6 @@
-use crate::{kitty_model::KittyModel, quicknav::persistence::QuickNavPersistence, error::KittyMuxError};
+use crate::{kitty_model::KittyModel, quicknav::persistence::QuickNavPersistence, error::KittyMuxError, ui::{model::AppModel, mode::Mode::Navigate}};
 
-use super::{command::Command, model::AppModel};
+use super::Command;
 
 pub struct LoadCommand {
     selected: Option<usize>,
@@ -23,7 +23,7 @@ impl Command for LoadCommand {
         let mut new_model = AppModel::new(
             kitty_model.load()?,
             _quick_nav_persistence.load()?,
-            super::mode::Mode::Navigate,
+            Navigate,
         );
         new_model.select(selected);
         Ok(new_model)

@@ -1,6 +1,6 @@
-use crate::{kitty_model::KittyModel, quicknav::persistence::QuickNavPersistence, error::KittyMuxError};
+use crate::{kitty_model::KittyModel, quicknav::persistence::QuickNavPersistence, error::KittyMuxError, ui::model::AppModel};
 
-use super::{command::Command, model::AppModel};
+use super::Command;
 
 pub struct CloseEntryCommand {
 }

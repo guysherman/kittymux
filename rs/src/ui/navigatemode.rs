@@ -2,21 +2,18 @@ use crossterm::event::{KeyCode, KeyEvent};
 
 use crate::error::KittyMuxError;
 
-use super::{
-    close_entry_command::CloseEntryCommand, command::Command,
-    enter_quicknav_command::EnterQuickNavCommand, enter_rename_command::EnterRenameCommand,
-    enter_setquicknav_command::EnterSetQuickNavCommand, load_command::LoadCommand,
-    quit_command::QuitCommand, select_entry_command::SelectEntryCommand,
+use super::command::{
+    close_entry_command::CloseEntryCommand, enter_quicknav_command::EnterQuickNavCommand,
+    enter_rename_command::EnterRenameCommand, enter_setquicknav_command::EnterSetQuickNavCommand,
+    load_command::LoadCommand, quit_command::QuitCommand, select_entry_command::SelectEntryCommand,
     select_next_command::SelectNextCommand, select_next_tab_command::SelectNextTabCommand,
-    select_prev_command::SelectPrevCommand, select_prev_tab_command::SelectPrevTabCommand,
+    select_prev_command::SelectPrevCommand, select_prev_tab_command::SelectPrevTabCommand, Command,
 };
 
 pub struct NavigateMode {}
 
 impl NavigateMode {
-    pub fn handle_input(
-        event: &KeyEvent,
-    ) -> Result<Vec<Box<dyn Command>>, KittyMuxError> {
+    pub fn handle_input(event: &KeyEvent) -> Result<Vec<Box<dyn Command>>, KittyMuxError> {
         match event.code {
             KeyCode::Char('q') => Ok(vec![Box::new(QuitCommand::new())]),
             KeyCode::Esc => Ok(vec![Box::new(QuitCommand::new())]),
@@ -153,8 +150,7 @@ mod tests {
             crossterm::event::KeyEventKind::Press,
             KeyEventState::NONE,
         );
-        let cmds =
-            NavigateMode::handle_input(&event).unwrap();
+        let cmds = NavigateMode::handle_input(&event).unwrap();
         let cmd = cmds.get(0).expect("No command returned");
         model = Result::expect(
             cmd.execute(&kitty_model, &quicknav_persistence, model),
@@ -187,8 +183,7 @@ mod tests {
             crossterm::event::KeyEventKind::Press,
             KeyEventState::NONE,
         );
-        let cmds =
-            NavigateMode::handle_input(&event).unwrap();
+        let cmds = NavigateMode::handle_input(&event).unwrap();
         let cmd = cmds.get(0).expect("No command returned");
         model = Result::expect(
             cmd.execute(&kitty_model, &quicknav_persistence, model),
@@ -236,8 +231,7 @@ mod tests {
             tab_id: 2,
         };
 
-        let cmds =
-            NavigateMode::handle_input(&event).unwrap();
+        let cmds = NavigateMode::handle_input(&event).unwrap();
         let cmd = cmds.get(0).expect("No command returned");
         model = Result::expect(
             cmd.execute(&kitty_model, &quicknav_persistence, model),
@@ -273,8 +267,7 @@ mod tests {
             tab_id: 1,
         };
 
-        let cmds =
-            NavigateMode::handle_input(&event).unwrap();
+        let cmds = NavigateMode::handle_input(&event).unwrap();
         let cmd = cmds.get(0).expect("No command returned");
         model = Result::expect(
             cmd.execute(&kitty_model, &quicknav_persistence, model),
@@ -304,8 +297,7 @@ mod tests {
             crossterm::event::KeyEventKind::Press,
             KeyEventState::NONE,
         );
-        let cmds =
-            NavigateMode::handle_input(&event).unwrap();
+        let cmds = NavigateMode::handle_input(&event).unwrap();
         let cmd = cmds.get(0).expect("No command returned");
         Result::expect(
             cmd.execute(&kitty_model, &quicknav_persistence, model),
@@ -329,8 +321,7 @@ mod tests {
             crossterm::event::KeyEventKind::Press,
             KeyEventState::NONE,
         );
-        let cmds =
-            NavigateMode::handle_input(&event).unwrap();
+        let cmds = NavigateMode::handle_input(&event).unwrap();
         let cmd = cmds.get(0).expect("No command returned");
         model = Result::expect(
             cmd.execute(&kitty_model, &quicknav_persistence, model),
@@ -356,8 +347,7 @@ mod tests {
             crossterm::event::KeyEventKind::Press,
             KeyEventState::NONE,
         );
-        let cmds =
-            NavigateMode::handle_input(&event).unwrap();
+        let cmds = NavigateMode::handle_input(&event).unwrap();
         let cmd = cmds.get(0).expect("No command returned");
         model = Result::expect(
             cmd.execute(&kitty_model, &quicknav_persistence, model),
@@ -383,8 +373,7 @@ mod tests {
             crossterm::event::KeyEventKind::Press,
             KeyEventState::NONE,
         );
-        let cmds =
-            NavigateMode::handle_input(&event).unwrap();
+        let cmds = NavigateMode::handle_input(&event).unwrap();
         let cmd = cmds.get(0).expect("No command returned");
         model = Result::expect(
             cmd.execute(&kitty_model, &quicknav_persistence, model),

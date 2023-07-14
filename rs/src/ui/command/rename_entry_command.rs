@@ -1,10 +1,10 @@
 use crate::{
     error::KittyMuxError,
     kitty_model::KittyModel,
-    quicknav::persistence::QuickNavPersistence,
+    quicknav::persistence::QuickNavPersistence, ui::{model::AppModel, mode::Mode::Navigate},
 };
 
-use super::{command::Command, model::AppModel};
+use super::Command;
 
 pub struct RenameEntryCommand { }
 
@@ -20,7 +20,7 @@ impl Command for RenameEntryCommand {
         kitty_model: &dyn KittyModel,
         quick_nav_persistence: &dyn QuickNavPersistence,
         model: AppModel,
-    ) -> Result<super::model::AppModel, KittyMuxError> {
+    ) -> Result<AppModel, KittyMuxError> {
         let mut quicknavs = quick_nav_persistence.load()?;
 
         if let Some(selected) = model.selected() {
@@ -33,7 +33,7 @@ impl Command for RenameEntryCommand {
         Ok(AppModel::new(
                 kitty_model.load()?,
                 quick_nav_persistence.load()?,
-                super::mode::Mode::Navigate,
+                Navigate,
                 )
             .with_selected(selected_index),
             )

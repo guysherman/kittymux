@@ -1,11 +1,8 @@
 use crossterm::event::{KeyCode, KeyEvent};
 
-use crate::{
-    error::KittyMuxError,
-    ui::enter_navigate_command::EnterNavigateCommand,
-};
+use crate::error::KittyMuxError;
 
-use super::{command::Command, set_quicknav_command::SetQuickNavCommand};
+use super::command::{Command, set_quicknav_command::SetQuickNavCommand, enter_navigate_command::EnterNavigateCommand};
 
 pub struct SetQuickNavMode {}
 

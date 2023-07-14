@@ -2,8 +2,8 @@ use crossterm::event::{KeyCode, KeyEvent};
 
 use crate::error::KittyMuxError;
 
-use super::{
-    command::Command, enter_navigate_command::EnterNavigateCommand,
+use super::command::{
+    Command, enter_navigate_command::EnterNavigateCommand,
     rename_entry_command::RenameEntryCommand, text_command::TextCommand,
 };
 
