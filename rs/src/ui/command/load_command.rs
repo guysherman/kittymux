@@ -1,4 +1,9 @@
-use crate::{kitty_model::KittyModel, quicknav::persistence::QuickNavPersistence, error::KittyMuxError, ui::{model::AppModel, mode::Mode::Navigate}};
+use crate::{
+    error::KittyMuxError,
+    kitty_model::KittyModel,
+    quicknav::persistence::QuickNavPersistence,
+    ui::{mode::Mode::Navigate, model::AppModel},
+};
 
 use super::Command;
 

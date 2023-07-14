@@ -2,7 +2,7 @@ use crossterm::event::{KeyCode, KeyEvent};
 
 use crate::error::KittyMuxError;
 
-use super::command::{
+use crate::ui::command::{
     enter_navigate_command::EnterNavigateCommand, quicknav_command::QuickNavCommand, Command,
 };
 
@@ -25,11 +25,7 @@ impl QuickNavMode {
 mod tests {
     use crossterm::event::{KeyCode, KeyEvent, KeyEventState, KeyModifiers};
 
-    use crate::{
-        kitty_model::{entry_type::EntryType, window_list_entry::WindowListEntry, MockKittyModel},
-        quicknav::{persistence::MockQuickNavPersistence, QuickNavDatabase, QuickNavEntry},
-        ui::{mode::Mode::QuickNav, model::AppModel, quicknavmode::QuickNavMode},
-    };
+                use crate::{ui::{mode::{quicknavmode::QuickNavMode, Mode::QuickNav}, model::AppModel}, kitty_model::{entry_type::EntryType, window_list_entry::WindowListEntry, MockKittyModel}, quicknav::{persistence::MockQuickNavPersistence, QuickNavDatabase, QuickNavEntry}};
 
     fn basic_windows() -> Vec<WindowListEntry> {
         vec![

@@ -2,7 +2,7 @@ use crossterm::event::{KeyCode, KeyEvent};
 
 use crate::error::KittyMuxError;
 
-use super::command::{
+use crate::ui::command::{
     close_entry_command::CloseEntryCommand, enter_quicknav_command::EnterQuickNavCommand,
     enter_rename_command::EnterRenameCommand, enter_setquicknav_command::EnterSetQuickNavCommand,
     load_command::LoadCommand, quit_command::QuitCommand, select_entry_command::SelectEntryCommand,

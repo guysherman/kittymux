@@ -2,14 +2,14 @@ use crossterm::event::{KeyCode, KeyEvent};
 
 use crate::error::KittyMuxError;
 
-use super::command::{Command, set_quicknav_command::SetQuickNavCommand, enter_navigate_command::EnterNavigateCommand};
+use crate::ui::command::{
+    enter_navigate_command::EnterNavigateCommand, set_quicknav_command::SetQuickNavCommand, Command,
+};
 
 pub struct SetQuickNavMode {}
 
 impl SetQuickNavMode {
-    pub fn handle_input(
-        event: &KeyEvent,
-    ) -> Result<Vec<Box<dyn Command>>, KittyMuxError> {
+    pub fn handle_input(event: &KeyEvent) -> Result<Vec<Box<dyn Command>>, KittyMuxError> {
         match event.code {
             KeyCode::Char(c) => match c {
                 '0'..='9' | 'a'..='z' => Ok(vec![
@@ -97,11 +97,12 @@ mod tests {
             KeyEventState::NONE,
         );
 
-        let cmds = SetQuickNavMode::handle_input(&event)
-            .expect("handle_input failed");
+        let cmds = SetQuickNavMode::handle_input(&event).expect("handle_input failed");
         let mut it = cmds.iter();
         while let Some(cmd) = it.next() {
-            model = cmd.execute(&kitty_model, &quicknav_persistence, model).expect("command failed");
+            model = cmd
+                .execute(&kitty_model, &quicknav_persistence, model)
+                .expect("command failed");
         }
 
         assert_eq!(model.mode(), mode::Mode::Navigate);

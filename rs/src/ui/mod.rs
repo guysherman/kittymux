@@ -2,10 +2,6 @@ mod command;
 mod mode;
 mod model;
 mod renderer;
-mod navigatemode;
-mod renamemode;
-mod setquicknavmode;
-mod quicknavmode;
 
 use crossterm::{
     event::{self, DisableMouseCapture, EnableMouseCapture, Event},
@@ -19,15 +15,14 @@ use crate::{
     error::KittyMuxError, kitty_model::KittyModel, quicknav::persistence::QuickNavPersistence,
 };
 
-use self::{
-    mode::Mode::{Navigate, QuickNav, Rename, SetQuickNav},
-    model::AppModel,
+use self::mode::{
     navigatemode::NavigateMode,
     quicknavmode::QuickNavMode,
     renamemode::RenameMode,
-    renderer::render,
     setquicknavmode::SetQuickNavMode,
+    Mode::{Navigate, QuickNav, Rename, SetQuickNav},
 };
+use self::{model::AppModel, renderer::render};
 
 pub fn run(
     kitty_model: &dyn KittyModel,
