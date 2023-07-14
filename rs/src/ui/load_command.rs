@@ -14,10 +14,11 @@ impl<'a> LoadCommand {
 
 impl Command for LoadCommand {
     fn execute(
-        &mut self,
+        &self,
         kitty_model: &dyn KittyModel,
         _quick_nav_persistence: &dyn QuickNavPersistence,
-    ) -> Result<Option<AppModel>, KittyMuxError> {
+        _model: AppModel,
+    ) -> Result<AppModel, KittyMuxError> {
         let selected = self.selected;
         let mut new_model = AppModel::new(
             kitty_model.load()?,
@@ -25,6 +26,6 @@ impl Command for LoadCommand {
             super::mode::Mode::Navigate,
         );
         new_model.select(selected);
-        Ok(Some(new_model))
+        Ok(new_model)
     }
 }

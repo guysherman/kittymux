@@ -1,13 +1,9 @@
 use crossterm::event::{KeyCode, KeyEvent};
 
-use crate::{
-    error::KittyMuxError,
-    kitty_model::{entry_type::EntryType, KittyModel}, quicknav::persistence::QuickNavPersistence,
-};
+use crate::error::KittyMuxError;
 
 use super::{
-    command::Command, enter_navigate_command::EnterNavigateCommand, model::AppModel,
-    noop_command::NoopCommand, quit_command::QuitCommand,
+    command::Command, enter_navigate_command::EnterNavigateCommand, quicknav_command::QuickNavCommand,
 };
 
 pub struct QuickNavMode {}
@@ -15,37 +11,14 @@ pub struct QuickNavMode {}
 impl QuickNavMode {
     pub fn handle_input(
         event: &KeyEvent,
-        model: AppModel,
-        kitty_model: &dyn KittyModel,
-        _quick_nav_persistence: &dyn QuickNavPersistence,
-    ) -> Result<Box<dyn Command>, KittyMuxError> {
+    ) -> Result<Vec<Box<dyn Command>>, KittyMuxError> {
         match event.code {
             KeyCode::Char(c) => match c {
-                '0'..='9' | 'a'..='z' => {
-                    let candidate_ids = model
-                        .quicknavs()
-                        .find_entries_by_key(c)
-                        .iter()
-                        .map(|e| e.id)
-                        .collect::<Vec<u32>>();
-
-                    let window = model.items().iter().find(|w| {
-                        candidate_ids.contains(&w.id)
-                            && w.tab_is_focused
-                            && w.entry_type == EntryType::Window
-                    });
-
-                    if let Some(window) = window {
-                        kitty_model.focus_entry(window);
-                        Ok(Box::new(QuitCommand::new(model)))
-                    } else {
-                        Ok(Box::new(NoopCommand::new(model)))
-                    }
-                }
-                _ => Ok(Box::new(NoopCommand::new(model))),
+                '0'..='9' | 'a'..='z' => Ok(vec![Box::new(QuickNavCommand::new(c))]),
+                _ => Ok(vec![]),
             },
-            KeyCode::Esc => Ok(Box::new(EnterNavigateCommand::new(model))),
-            _ => Ok(Box::new(NoopCommand::new(model))),
+            KeyCode::Esc => Ok(vec![Box::new(EnterNavigateCommand::new())]),
+            _ => Ok(vec![]),
         }
     }
 }
@@ -158,11 +131,7 @@ mod tests {
 
     #[test]
     fn when_a_pressed_then_1_entered() {
-        let mut mock_quicknav_persistence = MockQuickNavPersistence::default();
-        mock_quicknav_persistence
-            .expect_save()
-            .times(1)
-            .returning(|_| Ok(()));
+        let mock_quicknav_persistence = MockQuickNavPersistence::default();
         let mut kitty_model = MockKittyModel::default();
         kitty_model
             .expect_focus_entry()
@@ -180,12 +149,14 @@ mod tests {
             KeyEventState::NONE,
         );
 
-        let mut cmd = QuickNavMode::handle_input(&event, model, &kitty_model, &mock_quicknav_persistence).unwrap();
-        let result = cmd
-            .execute(&kitty_model, &mock_quicknav_persistence)
-            .unwrap()
-            .expect("Command had no AppModel");
+        let cmds =
+            QuickNavMode::handle_input(&event)
+                .unwrap();
+        let mut it = cmds.iter();
+        while let Some(cmd) = it.next() {
+            model = cmd.execute(&kitty_model, &mock_quicknav_persistence, model).expect("command failed");
+        }
 
-        assert_eq!(result.should_quit(), true);
+        assert_eq!(model.should_quit(), true);
     }
 }

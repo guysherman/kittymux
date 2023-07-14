@@ -3,25 +3,23 @@ use crate::{kitty_model::KittyModel, quicknav::persistence::QuickNavPersistence,
 use super::{command::Command, mode, model::AppModel};
 
 // has an optional AppModel model
-pub struct EnterQuickNavCommand {
-    model: Option<AppModel>,
-}
+pub struct EnterQuickNavCommand { }
 
 impl EnterQuickNavCommand {
-    pub fn new(model: AppModel) -> Self {
-        Self { model: Some(model) }
+    pub fn new() -> Self {
+        Self {}
     }
 }
 
 impl Command for EnterQuickNavCommand {
     fn execute(
-        &mut self,
+        &self,
         _kitty_model: &dyn KittyModel,
         _quick_nav_persistence: &dyn QuickNavPersistence,
-    ) -> Result<Option<AppModel>, KittyMuxError> {
-        let model = self.model.as_mut().unwrap();
+        mut model: AppModel,
+    ) -> Result<AppModel, KittyMuxError> {
         model.set_mode(mode::Mode::QuickNav);
-        Ok(self.model.take())
+        Ok(model)
     }
 }
 
@@ -87,11 +85,10 @@ mod tests {
         let mut model = AppModel::new(basic_windows(), QuickNavDatabase::new(), Navigate);
         model.select(Some(1));
 
-        let mut command = super::EnterQuickNavCommand::new(model);
+        let command = super::EnterQuickNavCommand::new();
         let result = command
-            .execute(&kitty_model, &qnp)
-            .expect("Command should succeed")
-            .expect("Command should return a model");
+            .execute(&kitty_model, &qnp, model)
+            .expect("Command should succeed");
         assert_eq!(result.mode(), mode::Mode::QuickNav);
     }
 }

@@ -4,8 +4,9 @@ use super::model::AppModel;
 
 pub trait Command {
     fn execute(
-        &mut self,
+        &self,
         kitty_model: &dyn KittyModel,
         quick_nav_persistence: &dyn QuickNavPersistence,
-    ) -> Result<Option<AppModel>, KittyMuxError>;
+        model: AppModel,
+    ) -> Result<AppModel, KittyMuxError>;
 }

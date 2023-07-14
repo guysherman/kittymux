@@ -5,29 +5,28 @@ use crate::{
 use super::{command::Command, mode::Mode::Rename, model::AppModel};
 
 pub struct EnterRenameCommand {
-    model: Option<AppModel>,
 }
 
 impl EnterRenameCommand {
-    pub fn new(model: AppModel) -> Self {
-        EnterRenameCommand { model: Some(model) }
+    pub fn new() -> Self {
+        EnterRenameCommand {}
     }
 }
 
 impl Command for EnterRenameCommand {
     fn execute(
-        &mut self,
+        &self,
         _kitty_model: &dyn KittyModel,
         _quick_nav_persistence: &dyn QuickNavPersistence,
-    ) -> Result<Option<super::model::AppModel>, KittyMuxError> {
-        let model = self.model.as_mut().expect("Command did not have a model");
+        mut model: AppModel,
+    ) -> Result<super::model::AppModel, KittyMuxError> {
         model.set_mode(Rename);
         let selected_text = model
             .selected()
             .map(|md| md.title.clone())
             .unwrap_or_default();
         model.text_input = selected_text;
-        Ok(self.model.take())
+        Ok(model)
     }
 }
 
@@ -92,10 +91,9 @@ mod tests {
         let mock_window_list = MockKittyModel::new();
         let qnp = MockQuickNavPersistence::default();
 
-        let mut cmd = EnterRenameCommand::new(initial_model);
+        let cmd = EnterRenameCommand::new();
         let result = cmd
-            .execute(&mock_window_list, &qnp)
-            .unwrap()
+            .execute(&mock_window_list, &qnp, initial_model)
             .expect("Result had no AppModel");
 
         assert_eq!(result.mode(), mode::Mode::Rename);

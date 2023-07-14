@@ -1,36 +1,29 @@
 use crossterm::event::{KeyCode, KeyEvent};
 
 use crate::{
-    error::KittyMuxError, kitty_model::KittyModel, quicknav::{QuickNavEntry, persistence::QuickNavPersistence},
+    error::KittyMuxError,
     ui::enter_navigate_command::EnterNavigateCommand,
 };
 
-use super::{command::Command, model::AppModel};
+use super::{command::Command, set_quicknav_command::SetQuickNavCommand};
 
 pub struct SetQuickNavMode {}
 
 impl SetQuickNavMode {
     pub fn handle_input(
         event: &KeyEvent,
-        mut model: AppModel,
-        _kitty_model: &dyn KittyModel,
-        quick_nav_persistence: &dyn QuickNavPersistence,
-    ) -> Result<Box<dyn Command>, KittyMuxError> {
+    ) -> Result<Vec<Box<dyn Command>>, KittyMuxError> {
         match event.code {
-            KeyCode::Char(c) => {
-                if let Some(selected) = model.selected() {
-                    let title = selected.title.clone();
-                    let id = selected.id;
-                    model
-                        .quicknavs_mut()
-                        .add_entry(QuickNavEntry::new(title, c, id));
-
-                    quick_nav_persistence.save(model.quicknavs())?;
-                }
-            }
-            _ => (),
+            KeyCode::Char(c) => match c {
+                '0'..='9' | 'a'..='z' => Ok(vec![
+                    Box::new(SetQuickNavCommand::new(c)),
+                    Box::new(EnterNavigateCommand::new()),
+                ]),
+                _ => Ok(vec![]),
+            },
+            KeyCode::Esc => Ok(vec![Box::new(EnterNavigateCommand::new())]),
+            _ => Ok(vec![]),
         }
-        Ok(Box::new(EnterNavigateCommand::new(model)))
     }
 }
 
@@ -107,16 +100,16 @@ mod tests {
             KeyEventState::NONE,
         );
 
-        let mut command = SetQuickNavMode::handle_input(&event, model, &kitty_model, &quicknav_persistence)
+        let cmds = SetQuickNavMode::handle_input(&event)
             .expect("handle_input failed");
-        let result = command
-            .execute(&kitty_model, &quicknav_persistence)
-            .expect("execute failed")
-            .expect("did not contain a model");
+        let mut it = cmds.iter();
+        while let Some(cmd) = it.next() {
+            model = cmd.execute(&kitty_model, &quicknav_persistence, model).expect("command failed");
+        }
 
-        assert_eq!(result.mode(), mode::Mode::Navigate);
+        assert_eq!(model.mode(), mode::Mode::Navigate);
         assert_eq!(
-            result
+            model
                 .quicknavs()
                 .find_entry_by_id(1)
                 .expect("quicknav entry not created")

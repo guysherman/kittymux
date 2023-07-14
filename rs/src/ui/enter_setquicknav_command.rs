@@ -1,33 +1,42 @@
-use crate::{kitty_model::KittyModel, quicknav::persistence::QuickNavPersistence, error::KittyMuxError};
+use crate::{
+    error::KittyMuxError,
+    kitty_model::{entry_type::EntryType::Window, KittyModel},
+    quicknav::persistence::QuickNavPersistence,
+};
 
 use super::{command::Command, mode::Mode::SetQuickNav, model::AppModel};
 
-pub struct EnterSetQuickNavCommand {
-    model: Option<AppModel>,
-}
+pub struct EnterSetQuickNavCommand {}
 
 impl EnterSetQuickNavCommand {
-    pub fn new(model: AppModel) -> Self {
-        Self { model: Some(model) }
+    pub fn new() -> Self {
+        Self {}
     }
 }
 
 impl Command for EnterSetQuickNavCommand {
     fn execute(
-        &mut self,
+        &self,
         _kitty_model: &dyn KittyModel,
         _quick_nav_persistence: &dyn QuickNavPersistence,
-    ) -> Result<Option<AppModel>, KittyMuxError> {
-        let model = self.model.as_mut().unwrap();
-        model.set_mode(SetQuickNav);
-        Ok(self.model.take())
+        mut model: AppModel,
+    ) -> Result<AppModel, KittyMuxError> {
+        if let Some(selected) = model.selected() {
+            if let Window = selected.entry_type {
+                model.set_mode(SetQuickNav);
+            };
+        }
+        Ok(model)
     }
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::{kitty_model::{entry_type, window_list_entry::WindowListEntry, MockKittyModel}, quicknav::{QuickNavDatabase, persistence::MockQuickNavPersistence}};
+    use crate::{
+        kitty_model::{entry_type, window_list_entry::WindowListEntry, MockKittyModel},
+        quicknav::{persistence::MockQuickNavPersistence, QuickNavDatabase},
+    };
 
     fn basic_windows() -> Vec<WindowListEntry> {
         vec![
@@ -74,14 +83,15 @@ mod tests {
     fn test_execute() {
         let kitty_model = MockKittyModel::new();
         let qnp = MockQuickNavPersistence::default();
-        let mut command = EnterSetQuickNavCommand::new(AppModel::new(
+        let model = AppModel::new(
             basic_windows(),
             QuickNavDatabase::new(),
             crate::ui::mode::Mode::Navigate,
-        ));
-        let result = command.execute(&kitty_model, &qnp);
+        );
+        let command = EnterSetQuickNavCommand::new();
+        let result = command.execute(&kitty_model, &qnp, model);
         assert!(result.is_ok());
-        let model = result.unwrap().unwrap();
+        let model = result.expect("Command returned an error");
         assert_eq!(model.mode(), SetQuickNav);
     }
 }
