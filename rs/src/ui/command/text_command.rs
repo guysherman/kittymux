@@ -1,4 +1,7 @@
-use crate::{kitty_model::KittyModel, quicknav::persistence::QuickNavPersistence, error::KittyMuxError, ui::model::AppModel};
+use crate::{
+    error::KittyMuxError, kitty_model::KittyModel, quicknav::persistence::QuickNavPersistence,
+    ui::model::AppModel,
+};
 
 use super::Command;
 
@@ -8,9 +11,7 @@ pub struct TextCommand {
 
 impl TextCommand {
     pub fn new(character: Option<char>) -> Self {
-        TextCommand {
-            character,
-        }
+        TextCommand { character }
     }
 }
 

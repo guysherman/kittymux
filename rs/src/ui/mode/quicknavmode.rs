@@ -25,7 +25,14 @@ impl QuickNavMode {
 mod tests {
     use crossterm::event::{KeyCode, KeyEvent, KeyEventState, KeyModifiers};
 
-                use crate::{ui::{mode::{quicknavmode::QuickNavMode, Mode::QuickNav}, model::AppModel}, kitty_model::{entry_type::EntryType, window_list_entry::WindowListEntry, MockKittyModel}, quicknav::{persistence::MockQuickNavPersistence, QuickNavDatabase, QuickNavEntry}};
+    use crate::{
+        kitty_model::{entry_type::EntryType, window_list_entry::WindowListEntry, MockKittyModel},
+        quicknav::{persistence::MockQuickNavPersistence, QuickNavDatabase, QuickNavEntry},
+        ui::{
+            mode::{quicknavmode::QuickNavMode, Mode::QuickNav},
+            model::AppModel,
+        },
+    };
 
     fn basic_windows() -> Vec<WindowListEntry> {
         vec![

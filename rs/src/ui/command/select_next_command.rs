@@ -1,9 +1,11 @@
-use crate::{error::KittyMuxError, quicknav::persistence::QuickNavPersistence, kitty_model::KittyModel, ui::model::AppModel};
+use crate::{
+    error::KittyMuxError, kitty_model::KittyModel, quicknav::persistence::QuickNavPersistence,
+    ui::model::AppModel,
+};
 
 use super::Command;
 
-pub struct SelectNextCommand {
-}
+pub struct SelectNextCommand {}
 
 impl SelectNextCommand {
     pub fn new() -> SelectNextCommand {

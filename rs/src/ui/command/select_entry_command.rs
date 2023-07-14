@@ -1,5 +1,6 @@
 use crate::{
-    error::KittyMuxError, kitty_model::KittyModel, quicknav::persistence::QuickNavPersistence, ui::model::AppModel,
+    error::KittyMuxError, kitty_model::KittyModel, quicknav::persistence::QuickNavPersistence,
+    ui::model::AppModel,
 };
 
 use super::Command;

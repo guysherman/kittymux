@@ -1,9 +1,11 @@
-use crate::{error::KittyMuxError, quicknav::persistence::QuickNavPersistence, kitty_model::KittyModel, ui::model::AppModel};
+use crate::{
+    error::KittyMuxError, kitty_model::KittyModel, quicknav::persistence::QuickNavPersistence,
+    ui::model::AppModel,
+};
 
 use super::Command;
 
-pub struct SelectPrevCommand {
-}
+pub struct SelectPrevCommand {}
 
 impl SelectPrevCommand {
     pub fn new() -> SelectPrevCommand {
@@ -22,4 +24,3 @@ impl Command for SelectPrevCommand {
         Ok(model)
     }
 }
-

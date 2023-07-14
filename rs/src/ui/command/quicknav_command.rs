@@ -1,7 +1,8 @@
 use crate::{
     error::KittyMuxError,
-    kitty_model::{KittyModel, entry_type::EntryType},
-    quicknav::persistence::QuickNavPersistence, ui::model::AppModel,
+    kitty_model::{entry_type::EntryType, KittyModel},
+    quicknav::persistence::QuickNavPersistence,
+    ui::model::AppModel,
 };
 
 use super::Command;
@@ -37,7 +38,7 @@ impl Command for QuickNavCommand {
         if let Some(window) = window {
             kitty_model.focus_entry(window);
             model.quit();
-        } 
+        }
         Ok(model)
     }
 }

@@ -51,9 +51,11 @@ fn main() -> Result<(), KittyMuxError> {
             qnp.save(&quicknavs)?;
             return Ok(());
         } else {
-            return Err(KittyMuxError::MissingArgumentError(error::MissingArgumentError {
-                arugment: "window-id".to_string(),
-            }));
+            return Err(KittyMuxError::MissingArgumentError(
+                error::MissingArgumentError {
+                    arugment: "window-id".to_string(),
+                },
+            ));
         }
     }
 

@@ -1,10 +1,11 @@
 use crate::{
-    error::KittyMuxError, kitty_model::KittyModel, quicknav::persistence::QuickNavPersistence, ui::model::AppModel,
+    error::KittyMuxError, kitty_model::KittyModel, quicknav::persistence::QuickNavPersistence,
+    ui::model::AppModel,
 };
 
 use super::Command;
 
-pub struct QuitCommand { }
+pub struct QuitCommand {}
 
 impl QuitCommand {
     pub fn new() -> QuitCommand {

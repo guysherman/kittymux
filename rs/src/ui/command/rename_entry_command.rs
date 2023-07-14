@@ -1,12 +1,13 @@
 use crate::{
     error::KittyMuxError,
     kitty_model::KittyModel,
-    quicknav::persistence::QuickNavPersistence, ui::{model::AppModel, mode::Mode::Navigate},
+    quicknav::persistence::QuickNavPersistence,
+    ui::{mode::Mode::Navigate, model::AppModel},
 };
 
 use super::Command;
 
-pub struct RenameEntryCommand { }
+pub struct RenameEntryCommand {}
 
 impl RenameEntryCommand {
     pub fn new() -> Self {
@@ -30,12 +31,9 @@ impl Command for RenameEntryCommand {
         }
 
         let selected_index: Option<usize> = model.selected_index();
-        Ok(AppModel::new(
-                kitty_model.load()?,
-                quick_nav_persistence.load()?,
-                Navigate,
-                )
-            .with_selected(selected_index),
-            )
+        Ok(
+            AppModel::new(kitty_model.load()?, quick_nav_persistence.load()?, Navigate)
+                .with_selected(selected_index),
+        )
     }
 }

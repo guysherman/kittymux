@@ -7,7 +7,7 @@ use super::QuickNavDatabase;
 
 #[cfg_attr(test, automock)]
 pub trait QuickNavPersistence {
-    fn load(&self) -> Result<QuickNavDatabase, KittyMuxError>; 
+    fn load(&self) -> Result<QuickNavDatabase, KittyMuxError>;
     fn save(&self, entries: &QuickNavDatabase) -> Result<(), KittyMuxError>;
 }
 
@@ -45,7 +45,7 @@ impl QuickNavPersistence for ConfigFileQuickNavPersistence {
         }
     }
 
-    fn save(&self, entries: &QuickNavDatabase) -> Result<(), KittyMuxError>{
+    fn save(&self, entries: &QuickNavDatabase) -> Result<(), KittyMuxError> {
         let file = std::fs::File::create(&self.file_path);
         if let Ok(file) = file {
             let writer = std::io::BufWriter::new(file);
@@ -64,22 +64,26 @@ mod tests {
 
     fn get_test_entries() -> QuickNavDatabase {
         QuickNavDatabase::from_entries(vec![
-         QuickNavEntry::new("Foo".to_string(), 'c', 1),
-         QuickNavEntry::new("Bar".to_string(), 'd', 2), 
+            QuickNavEntry::new("Foo".to_string(), 'c', 1),
+            QuickNavEntry::new("Bar".to_string(), 'd', 2),
         ])
     }
-
 
     #[test]
     fn saves_to_json() {
         let entries = get_test_entries();
         let persistence = super::ConfigFileQuickNavPersistence::new("savetest.json".to_string());
-        persistence.save(&entries).expect("Failed to save QuickNavDatabase");
+        persistence
+            .save(&entries)
+            .expect("Failed to save QuickNavDatabase");
         let file = std::fs::File::open("savetest.json");
         assert!(file.is_ok());
-        
+
         let file_contents = std::fs::read_to_string("savetest.json").unwrap();
-        assert_eq!(file_contents, r###"{"entries":[{"title":"Foo","id":1,"key":"c"},{"title":"Bar","id":2,"key":"d"}]}"###);
+        assert_eq!(
+            file_contents,
+            r###"{"entries":[{"title":"Foo","id":1,"key":"c"},{"title":"Bar","id":2,"key":"d"}]}"###
+        );
         std::fs::remove_file("savetest.json").unwrap();
     }
 
@@ -90,7 +94,9 @@ mod tests {
         let expected = get_test_entries();
 
         let persistence = super::ConfigFileQuickNavPersistence::new("loadtest.json".to_string());
-        let loaded_entries = persistence.load().expect("Failed to load a QuickNavDatabase");
+        let loaded_entries = persistence
+            .load()
+            .expect("Failed to load a QuickNavDatabase");
         assert_eq!(expected, loaded_entries);
 
         std::fs::remove_file("loadtest.json").unwrap();

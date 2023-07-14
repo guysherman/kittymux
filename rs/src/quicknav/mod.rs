@@ -26,7 +26,7 @@ impl QuickNavDatabase {
             entries: Vec::new(),
         }
     }
-    
+
     #[cfg(test)]
     pub fn from_entries(entries: Vec<QuickNavEntry>) -> QuickNavDatabase {
         QuickNavDatabase { entries }
@@ -58,11 +58,15 @@ impl QuickNavDatabase {
     pub fn clean_up(&mut self, entries: Vec<(String, u32)>) {
         let mut entries_to_remove = Vec::new();
         for entry in &self.entries {
-            if !entries.iter().any(|(title, id)| entry.title == *title && entry.id == *id) {
+            if !entries
+                .iter()
+                .any(|(title, id)| entry.title == *title && entry.id == *id)
+            {
                 entries_to_remove.push(entry.id);
             }
         }
-        self.entries.retain(|entry| !entries_to_remove.contains(&entry.id));
+        self.entries
+            .retain(|entry| !entries_to_remove.contains(&entry.id));
     }
 
     pub fn rename_entry(&mut self, id: u32, new_title: String) {
@@ -71,7 +75,6 @@ impl QuickNavDatabase {
         }
     }
 }
-
 
 #[cfg(test)]
 mod tests {
@@ -97,8 +100,8 @@ mod tests {
     #[test]
     fn find_entry_by_id() {
         let mut db = QuickNavDatabase::new();
-        let entry = QuickNavEntry::new("Foo".to_string(),'c', 1);
-        let entry2 = QuickNavEntry::new("Bar".to_string(),'d', 2);
+        let entry = QuickNavEntry::new("Foo".to_string(), 'c', 1);
+        let entry2 = QuickNavEntry::new("Bar".to_string(), 'd', 2);
         db.add_entry(entry);
         db.add_entry(entry2);
         let result = db.find_entry_by_id(2);
@@ -109,8 +112,8 @@ mod tests {
     #[test]
     fn when_title_exists_upsert_changes_key() {
         let mut db = QuickNavDatabase::new();
-        let entry = QuickNavEntry::new("Foo".to_string(),'c', 1);
-        let entry2 = QuickNavEntry::new("Bar".to_string(),'d', 1);
+        let entry = QuickNavEntry::new("Foo".to_string(), 'c', 1);
+        let entry2 = QuickNavEntry::new("Bar".to_string(), 'd', 1);
         db.add_entry(entry);
         db.add_entry(entry2);
         assert_eq!(db.entries.len(), 1);
@@ -121,7 +124,7 @@ mod tests {
     #[test]
     fn when_title_does_not_exist_upsert_adds_entry() {
         let mut db = QuickNavDatabase::new();
-        let entry = QuickNavEntry::new("Foo".to_string(),'c', 1);
+        let entry = QuickNavEntry::new("Foo".to_string(), 'c', 1);
         db.add_entry(entry);
         assert_eq!(db.entries.len(), 1);
         assert_eq!(db.entries[0].key, 'c');
@@ -131,12 +134,16 @@ mod tests {
     #[test]
     fn clean_up_removes_missing_entries() {
         let mut db = QuickNavDatabase::new();
-        db.add_entry(QuickNavEntry::new("Foo".to_string(),'c', 1));
-        db.add_entry(QuickNavEntry::new("Bar".to_string(),'d', 2));
-        db.add_entry(QuickNavEntry::new("Baz".to_string(),'e', 3));
-        db.add_entry(QuickNavEntry::new("Bag".to_string(),'f', 4));
+        db.add_entry(QuickNavEntry::new("Foo".to_string(), 'c', 1));
+        db.add_entry(QuickNavEntry::new("Bar".to_string(), 'd', 2));
+        db.add_entry(QuickNavEntry::new("Baz".to_string(), 'e', 3));
+        db.add_entry(QuickNavEntry::new("Bag".to_string(), 'f', 4));
 
-        let entries = vec![("Foo".to_string(), 2), ("Bar".to_string(), 3), ("Bag".to_string(), 4)];
+        let entries = vec![
+            ("Foo".to_string(), 2),
+            ("Bar".to_string(), 3),
+            ("Bag".to_string(), 4),
+        ];
         db.clean_up(entries);
 
         assert_eq!(db.entries.len(), 1);

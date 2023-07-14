@@ -6,8 +6,9 @@ use mockall::automock;
 
 use self::{
     entry_type::EntryType::{Tab, Window},
-    window_list_entry::WindowListEntry };
-use crate::{kitty_connector::KittyConnector, error::KittyMuxError};
+    window_list_entry::WindowListEntry,
+};
+use crate::{error::KittyMuxError, kitty_connector::KittyConnector};
 
 pub struct BaseKittyModel<'a> {
     connector: KittyConnector<'a>,
@@ -58,7 +59,7 @@ impl KittyModel for BaseKittyModel<'_> {
         }
     }
 
-    fn rename_entry(&self, entry: &WindowListEntry,new_name: &str) {
+    fn rename_entry(&self, entry: &WindowListEntry, new_name: &str) {
         match &entry.entry_type {
             Window => self.connector.set_window_title(entry.id, new_name),
             Tab => self.connector.set_tab_title(entry.tab_id, new_name),
@@ -125,7 +126,7 @@ fn flatten_tab(
 #[cfg(test)]
 mod tests {
     use super::entry_type::EntryType;
-    use super::{BaseKittyModel, WindowListEntry, KittyModel};
+    use super::{BaseKittyModel, KittyModel, WindowListEntry};
     use crate::kitty_connector::command_executor::MockCommandExecutor;
     use crate::kitty_connector::KittyConnector;
 
@@ -139,9 +140,7 @@ mod tests {
 
         let connector = KittyConnector { executor: &mock };
         let expected: Vec<WindowListEntry> = vec![];
-        let el = BaseKittyModel {
-            connector,
-        };
+        let el = BaseKittyModel { connector };
         let list = Result::expect(el.load(), "KittyModel::load returned an error");
 
         assert_eq!(expected.as_slice(), list.as_slice());
@@ -223,9 +222,7 @@ mod tests {
             WindowListEntry::new_from_tab(tab_json, true, true),
             WindowListEntry::new_from_window(window_json, true, true, true, true, 3),
         ];
-        let el = BaseKittyModel {
-            connector,
-        };
+        let el = BaseKittyModel { connector };
         let list = Result::expect(el.load(), "KittyModel::load returned an error");
 
         assert_eq!(expected.as_slice(), list.as_slice());
@@ -240,9 +237,7 @@ mod tests {
             .returning(|_cmd: &str, _args: &[&str]| "".to_string());
 
         let connector = KittyConnector { executor: &mock };
-        let el = BaseKittyModel {
-            connector,
-        };
+        let el = BaseKittyModel { connector };
 
         let entry = WindowListEntry {
             id: 1,
@@ -269,9 +264,7 @@ mod tests {
             .returning(|_cmd: &str, _args: &[&str]| "".to_string());
 
         let connector = KittyConnector { executor: &mock };
-        let el = BaseKittyModel {
-            connector,
-        };
+        let el = BaseKittyModel { connector };
 
         let entry = WindowListEntry {
             id: 1,
@@ -298,9 +291,7 @@ mod tests {
             .returning(|_cmd: &str, _args: &[&str]| "".to_string());
 
         let connector = KittyConnector { executor: &mock };
-        let el = BaseKittyModel {
-            connector,
-        };
+        let el = BaseKittyModel { connector };
 
         let entry = WindowListEntry {
             id: 1,
@@ -327,9 +318,7 @@ mod tests {
             .returning(|_cmd: &str, _args: &[&str]| "".to_string());
 
         let connector = KittyConnector { executor: &mock };
-        let el = BaseKittyModel {
-            connector,
-        };
+        let el = BaseKittyModel { connector };
 
         let entry = WindowListEntry {
             id: 1,
@@ -345,7 +334,5 @@ mod tests {
         };
 
         el.rename_entry(&entry, "new-name");
-
     }
-
 }

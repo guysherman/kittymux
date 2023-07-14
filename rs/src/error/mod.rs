@@ -1,9 +1,9 @@
 use derive_more::Display;
 
 use core::fmt;
-use std::io::Error as IoError;
-use serde_json::Error as SerdeJsonError;
 use json::Error as JsonError;
+use serde_json::Error as SerdeJsonError;
+use std::io::Error as IoError;
 
 #[derive(Debug, Display)]
 pub enum KittyMuxError {
@@ -12,9 +12,7 @@ pub enum KittyMuxError {
     JsonError(JsonError),
     MissingArgumentError(MissingArgumentError),
     InvalidWindowIdError(InvalidWindowIdError),
-
 }
-
 
 impl From<SerdeJsonError> for KittyMuxError {
     fn from(err: SerdeJsonError) -> Self {

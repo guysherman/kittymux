@@ -1,4 +1,7 @@
-use crate::{kitty_model::{entry_type::EntryType, window_list_entry::WindowListEntry}, quicknav::QuickNavDatabase};
+use crate::{
+    kitty_model::{entry_type::EntryType, window_list_entry::WindowListEntry},
+    quicknav::QuickNavDatabase,
+};
 use tui::widgets::ListState;
 
 use super::mode::Mode;
@@ -13,7 +16,11 @@ pub struct AppModel {
 }
 
 impl AppModel {
-    pub fn new(items: Vec<WindowListEntry>, mut quicknavs: QuickNavDatabase, mode: Mode) -> AppModel {
+    pub fn new(
+        items: Vec<WindowListEntry>,
+        mut quicknavs: QuickNavDatabase,
+        mode: Mode,
+    ) -> AppModel {
         let selected: Option<usize>;
         if items.len() > 0 {
             selected = Some(0);
@@ -21,13 +28,23 @@ impl AppModel {
             selected = None;
         }
 
-        let entries = items.iter().map(|e| (e.title.clone(), e.id)).collect::<Vec<(String, u32)>>();
+        let entries = items
+            .iter()
+            .map(|e| (e.title.clone(), e.id))
+            .collect::<Vec<(String, u32)>>();
         quicknavs.clean_up(entries);
 
         let mut state = ListState::default();
         state.select(selected);
 
-        AppModel { list_state: state, items, should_quit: false, mode, text_input: "".to_string(), quicknavs }
+        AppModel {
+            list_state: state,
+            items,
+            should_quit: false,
+            mode,
+            text_input: "".to_string(),
+            quicknavs,
+        }
     }
 
     pub fn mode(&self) -> Mode {
@@ -126,7 +143,7 @@ impl AppModel {
         self.should_quit
     }
 
-    pub fn quicknavs(&self) -> & QuickNavDatabase {
+    pub fn quicknavs(&self) -> &QuickNavDatabase {
         &self.quicknavs
     }
 
@@ -181,7 +198,6 @@ mod tests {
             },
         ]
     }
-
 
     #[test]
     fn given_selected_0_when_select_prev_selected_0() {

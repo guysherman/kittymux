@@ -1,9 +1,14 @@
-use crate::{kitty_model::KittyModel, quicknav::persistence::QuickNavPersistence, error::KittyMuxError, ui::{model::AppModel, mode}};
+use crate::{
+    error::KittyMuxError,
+    kitty_model::KittyModel,
+    quicknav::persistence::QuickNavPersistence,
+    ui::{mode, model::AppModel},
+};
 
 use super::Command;
 
 // has an optional AppModel model
-pub struct EnterQuickNavCommand { }
+pub struct EnterQuickNavCommand {}
 
 impl EnterQuickNavCommand {
     pub fn new() -> Self {
@@ -27,7 +32,7 @@ impl Command for EnterQuickNavCommand {
 mod tests {
     use crate::{
         kitty_model::{entry_type, window_list_entry::WindowListEntry, MockKittyModel},
-        quicknav::{QuickNavDatabase, persistence::MockQuickNavPersistence},
+        quicknav::{persistence::MockQuickNavPersistence, QuickNavDatabase},
         ui::{
             mode::{self, Mode::Navigate},
             model::AppModel,

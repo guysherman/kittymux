@@ -3,16 +3,14 @@ use crossterm::event::{KeyCode, KeyEvent};
 use crate::error::KittyMuxError;
 
 use crate::ui::command::{
-    Command, enter_navigate_command::EnterNavigateCommand,
-    rename_entry_command::RenameEntryCommand, text_command::TextCommand,
+    enter_navigate_command::EnterNavigateCommand, rename_entry_command::RenameEntryCommand,
+    text_command::TextCommand, Command,
 };
 
 pub struct RenameMode {}
 
 impl RenameMode {
-    pub fn handle_input(
-        event: &KeyEvent,
-    ) -> Result<Vec<Box<dyn Command>>, KittyMuxError> {
+    pub fn handle_input(event: &KeyEvent) -> Result<Vec<Box<dyn Command>>, KittyMuxError> {
         match event.code {
             KeyCode::Esc => Ok(vec![Box::new(EnterNavigateCommand::new())]),
             KeyCode::Enter => Ok(vec![Box::new(RenameEntryCommand::new())]),
@@ -92,9 +90,7 @@ mod tests {
             crossterm::event::KeyEventKind::Press,
             KeyEventState::NONE,
         );
-        let cmds =
-            RenameMode::handle_input(&event)
-                .expect("Handle input had an error");
+        let cmds = RenameMode::handle_input(&event).expect("Handle input had an error");
         let cmd = cmds.get(0).expect("Did not return a command");
         let result = cmd
             .execute(&kitty_model, &mock_quicknav_persistence, model)
@@ -152,8 +148,7 @@ mod tests {
             crossterm::event::KeyEventKind::Press,
             KeyEventState::NONE,
         );
-        let cmds = RenameMode::handle_input(&event)
-            .expect("Handle input had an error");
+        let cmds = RenameMode::handle_input(&event).expect("Handle input had an error");
 
         let cmd = cmds.get(0).expect("Did not return a command");
         let result = cmd
@@ -179,8 +174,7 @@ mod tests {
             crossterm::event::KeyEventKind::Press,
             KeyEventState::NONE,
         );
-        let cmds = RenameMode::handle_input(&event)
-            .expect("Handle input had an error");
+        let cmds = RenameMode::handle_input(&event).expect("Handle input had an error");
         let cmd = cmds.get(0).expect("Did not return a command");
         let result = cmd
             .execute(&kitty_model, &quicknav_persistence, model)

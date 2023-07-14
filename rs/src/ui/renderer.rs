@@ -11,7 +11,7 @@ use tui::{
 };
 use unicode_width::UnicodeWidthStr;
 
-use crate::kitty_model::{window_list_entry::WindowListEntry, entry_type::EntryType};
+use crate::kitty_model::{entry_type::EntryType, window_list_entry::WindowListEntry};
 
 use super::{
     mode::Mode::{Navigate, QuickNav, Rename, SetQuickNav},
@@ -30,9 +30,12 @@ pub fn render<'b>(
                     .quicknavs()
                     .find_entry_by_id(x.id)
                     .map_or(" ".to_string(), |x| x.key.to_owned().to_string());
-                let gutter = Span::styled(gutter_text(x, &key, model.mode()), gutter_style(model.mode()));
+                let gutter = Span::styled(
+                    gutter_text(x, &key, model.mode()),
+                    gutter_style(model.mode()),
+                );
                 let text = Span::styled(x.text.clone(), default_style());
-                
+
                 ListItem::new(Text::from(Spans::from(vec![gutter, text])))
             })
             .collect();
@@ -110,11 +113,15 @@ fn quicknav_style() -> Style {
     Style::default().bg(Color::Green).fg(Color::Black)
 }
 
-fn gutter_text(window_list_entry: &WindowListEntry, key: &String, mode: super::mode::Mode) -> String {
+fn gutter_text(
+    window_list_entry: &WindowListEntry,
+    key: &String,
+    mode: super::mode::Mode,
+) -> String {
     if window_list_entry.entry_type == EntryType::Window {
         match mode {
             Navigate => "   ".to_string(),
-            Rename => "   ".to_string(), 
+            Rename => "   ".to_string(),
             SetQuickNav => format!(" {} ", key),
             QuickNav => format!(" {} ", key),
         }

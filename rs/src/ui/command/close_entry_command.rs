@@ -1,16 +1,17 @@
-use crate::{kitty_model::KittyModel, quicknav::persistence::QuickNavPersistence, error::KittyMuxError, ui::model::AppModel};
+use crate::{
+    error::KittyMuxError, kitty_model::KittyModel, quicknav::persistence::QuickNavPersistence,
+    ui::model::AppModel,
+};
 
 use super::Command;
 
-pub struct CloseEntryCommand {
-}
+pub struct CloseEntryCommand {}
 
 impl CloseEntryCommand {
     pub fn new() -> CloseEntryCommand {
         CloseEntryCommand {}
     }
 }
-
 
 impl Command for CloseEntryCommand {
     fn execute(

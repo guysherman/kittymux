@@ -15,7 +15,9 @@ pub mod select_prev_tab_command;
 pub mod set_quicknav_command;
 pub mod text_command;
 
-use crate::{kitty_model::KittyModel, quicknav::persistence::QuickNavPersistence, error::KittyMuxError};
+use crate::{
+    error::KittyMuxError, kitty_model::KittyModel, quicknav::persistence::QuickNavPersistence,
+};
 
 use super::model::AppModel;
 
